@@ -1,3 +1,4 @@
+const alias = require('./alias')
 module.exports = {
   mode: 'spa',
   /*
@@ -55,6 +56,24 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+    extend(config, ctx) {
+      config.resolve = alias.resolve
+
+      if (ctx.isClient) {
+        config.module.rules.push(
+          {
+            enforce: 'pre',
+            test: /\.(js|vue)$/,
+            loader: 'eslint-loader',
+            exclude: /(node_modules)/
+          },
+          {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            exclude: /(node_modules)/
+          }
+        )
+      }
+    }
   }
 }
