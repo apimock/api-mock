@@ -3,7 +3,6 @@ import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import { VueAxios } from './vueAxios'
-import store from '@/store'
 
 // 创建 axios 实例
 const service = axios.create({
@@ -18,9 +17,6 @@ const err = (error) => {
       console.error({
         message: '登录失效',
         description: data.message
-      })
-      store.dispatch('Logout').then(() => {
-        location.reload()
       })
     }
   }

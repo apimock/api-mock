@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
-import { axios } from '@/utils/request'
+import { axios } from '@utils/request'
 
 module.exports = function(app) {
   // 注入axios

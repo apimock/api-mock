@@ -1,13 +1,16 @@
 require('@babel/register')
+const moduleAlias = require('module-alias')
 const Koa = require('koa')
 const bodyParser = require('koa-bodyparser')
 const consola = require('consola')
-const { Nuxt } = require('nuxt')
+const { Nuxt, Builder } = require('nuxt')
 const config = require('../nuxt.config.js')
-const routes = require('./routes')
 const app = new Koa()
 config.dev = app.env !== 'production'
+moduleAlias.addAliases(require('../alias').resolve.alias)
 app.use(bodyParser())
+
+const routes = require('./routes')
 routes(app)
 
 function start() {
@@ -19,11 +22,28 @@ function start() {
     port = process.env.PORT || 3000
   } = nuxt.options.server
 
+  // await nuxt.ready()
+  // // Build in development
+  // if (config.dev) {
+  //   const builder = new Builder(nuxt)
+  //   await builder.build()
+  // }
+
+  // await nuxt.ready()
+  // Build in development
   app.use((ctx) => {
     ctx.status = 200
     ctx.respond = false // Bypass Koa's built-in response handling
     ctx.req.ctx = ctx // This might be useful later on, e.g. in nuxtServerInit or with nuxt-stash
     // nuxt.render(ctx.req, ctx.res)
+    return new Promise((resolve, reject) => {
+      ctx.res.on('close', resolve)
+      ctx.res.on('finish', resolve)
+      nuxt.render(ctx.req, ctx.res, (promise) => {
+        // nuxt.render passes a rejected promise into callback on error.
+        promise.then(resolve).catch(reject)
+      })
+    })
   })
 
   app.listen(port, host)

@@ -1,16 +1,24 @@
+require('@babel/register')
+const moduleAlias = require('module-alias')
 const Koa = require('koa')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
+const Router = require('koa-router')
 
 const app = new Koa()
-
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 config.dev = app.env !== 'production'
+moduleAlias.addAliases(require('../alias').resolve.alias)
 
+const router = new Router()
 async function start() {
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
+
+  router.get('/api/test', (ctx) => {
+    ctx.body = 'hello world'
+  })
 
   const {
     host = process.env.HOST || '127.0.0.1',
@@ -23,6 +31,8 @@ async function start() {
     const builder = new Builder(nuxt)
     await builder.build()
   }
+
+  app.use(router.routes()).use(router.allowedMethods())
 
   app.use((ctx) => {
     ctx.status = 200

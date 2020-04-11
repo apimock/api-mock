@@ -1,3 +1,4 @@
+const merge = require('webpack-merge')
 const alias = require('./alias')
 module.exports = {
   mode: 'spa',
@@ -57,8 +58,8 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {
-      config.resolve = alias.resolve
-
+      config.resolve = merge(config.resolve, alias.resolve)
+      console.info(config)
       if (ctx.isClient) {
         config.module.rules.push(
           {
