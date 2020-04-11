@@ -3,22 +3,24 @@ const moduleAlias = require('module-alias')
 const Koa = require('koa')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
-const Router = require('koa-router')
+// const Router = require('koa-router')
 
 const app = new Koa()
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 config.dev = app.env !== 'production'
 moduleAlias.addAliases(require('../alias').resolve.alias)
+const routes = require('./routes')
+routes(app)
 
-const router = new Router()
+// const router = new Router()
 async function start() {
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
 
-  router.get('/api/test', (ctx) => {
-    ctx.body = 'hello world'
-  })
+  // router.get('/api/test', (ctx) => {
+  //   ctx.body = 'hello world'
+  // })
 
   const {
     host = process.env.HOST || '127.0.0.1',
@@ -32,7 +34,7 @@ async function start() {
     await builder.build()
   }
 
-  app.use(router.routes()).use(router.allowedMethods())
+  // app.use(router.routes()).use(router.allowedMethods())
 
   app.use((ctx) => {
     ctx.status = 200

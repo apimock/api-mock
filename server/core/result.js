@@ -27,6 +27,6 @@ export const Message = {
   }
 }
 
-export function ReplyResult(msg, data = null, err) {
+export function Result(msg, data = null, err) {
   return merge({}, msg, { data }, err ? { message: err } : null)
 }

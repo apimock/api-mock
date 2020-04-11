@@ -1,7 +1,7 @@
-import KoaRouter from 'koa-router'
+import Router from 'koa-router'
 import consola from 'consola'
 // import { validate } from './validate'
-import { Message, ReplyResult } from '@/server/core/ReplyResult'
+import { Message, Result } from '@/server/core/result'
 
 const validate = () => {
   return {
@@ -10,14 +10,14 @@ const validate = () => {
 }
 
 export const Controller = (baseUrl = '/api') => {
-  const router = new KoaRouter()
+  const router = new Router()
   if (baseUrl) {
     router.prefix(baseUrl)
   }
   return (target) => {
-    const proper = Object.getOwnPropertyDescriptors(target.prototype)
-    for (const i in proper) {
-      i !== 'constructor' && proper[i].value(router)
+    const property = Object.getOwnPropertyDescriptors(target.prototype)
+    for (const i in property) {
+      i !== 'constructor' && property[i].value(router)
     }
     return router
   }
@@ -36,7 +36,7 @@ export const Route = (method, url, opt) => {
         if (code) {
           await fn(ctx, next)
         } else {
-          ctx.body = ReplyResult(Message.FAIL, null, msg)
+          ctx.body = Result(Message.FAIL, null, msg)
         }
       })
     }

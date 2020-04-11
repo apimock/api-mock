@@ -1,14 +1,15 @@
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
-import { axios } from '@utils/request'
+// import { axios } from '@utils/request'
 
 module.exports = function(app) {
-  // 注入axios
-  app.use(async (ctx, next) => {
-    axios(ctx)
-    await next()
-  })
+  // // 注入axios
+  // app.use(async (ctx, next) => {
+  //   // 访问接口时执行
+  //   // axios(ctx)
+  //   await next()
+  // })
   fs.readdirSync(path.join(__dirname, '../controller')).forEach((o) => {
     consola.ready({
       message: `Init controller: ${o}`

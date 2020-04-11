@@ -41,12 +41,12 @@ service.postQS = (option) => {
   const headers = Object.assign(Object.create(null), option.headers, {
     'content-type': 'application/x-www-form-urlencoded'
   })
-  Object.assign(option, {
+  const config = Object.assign(Object.create(null), option, {
     headers,
     data: qs.stringify(option.data),
     method: 'post'
   })
-  return service(option)
+  return service(config)
 }
 
 const installer = {

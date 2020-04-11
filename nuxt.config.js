@@ -59,7 +59,6 @@ module.exports = {
      */
     extend(config, ctx) {
       config.resolve = merge(config.resolve, alias.resolve)
-      console.info(config)
       if (ctx.isClient) {
         config.module.rules.push(
           {
