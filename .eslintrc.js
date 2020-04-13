@@ -19,6 +19,8 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'nuxt/no-cjs-in-config': 'off'
+    'prettier/prettier': 'off',
+    'nuxt/no-cjs-in-config': 'off',
+    'newline-per-chained-call': 'off'
   }
 }
