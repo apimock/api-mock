@@ -1,14 +1,16 @@
 require('@babel/register')
 const moduleAlias = require('module-alias')
 const Koa = require('koa')
-const bodyParser = require('koa-bodyparser')
+const koaBody = require('koa-body')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
+const validate = require('koa-validate')
 const config = require('../nuxt.config.js')
 const app = new Koa()
 config.dev = app.env !== 'production'
 moduleAlias.addAliases(require('../alias').resolve.alias)
-app.use(bodyParser())
+validate(app)
+app.use(koaBody({ multipart: true }))
 
 const routes = require('./routes')
 routes(app)
