@@ -10,9 +10,9 @@ const config = require('../nuxt.config.js')
 const app = new Koa()
 config.dev = app.env !== 'production'
 moduleAlias.addAliases(require('../alias').resolve.alias)
-app.use(restc.koa())
 validate(app)
 app.use(koaBody({ multipart: true }))
+app.use(restc.koa())
 
 const routes = require('./routes')
 routes(app)
