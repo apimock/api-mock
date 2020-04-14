@@ -1,15 +1,14 @@
+import dateTime from '~/utils/dateTime'
 const Model = require('@models')()
-
 const User = {
-  createOne: (data) => {
-    return Model.User.create({
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      avatar: data.avatar,
-      role: data.role,
-      status: data.status
-    })
+  save: (data) => {
+    if (!data.id) {
+      return Model.User.create({...data, created_at: dateTime()})
+    } else {
+      return Model.User.update({...data, updated_at: dateTime()}, {
+        where: { id: data.id }
+      })
+    }
   }
 }
 
