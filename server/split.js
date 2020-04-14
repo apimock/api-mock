@@ -10,6 +10,7 @@ const config = require('../nuxt.config.js')
 const app = new Koa()
 config.dev = app.env !== 'production'
 moduleAlias.addAliases(require('../alias').resolve.alias)
+require('./core/dbConnect')()
 validate(app)
 app.use(koaBody({ multipart: true }))
 app.use(restc.koa())

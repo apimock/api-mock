@@ -1,0 +1,22 @@
+const Sequlize = require('sequelize')
+const config = require('../../config/dev')
+module.exports = function dbConnect() {
+  if (!config || !config.mysql) {
+    return Promise.reject(new Error('dbConnect: config.mysql is required'))
+  }
+  const mysql = config.mysql
+  global.__seq = new Sequlize(
+    mysql.database,
+    mysql.user,
+    mysql.password,
+    mysql.option
+  )
+  global.__seq
+    .authenticate()
+    .then(() => {
+      console.log('Connection has been established successfully.')
+    })
+    .catch((err) => {
+      console.error('Unable to connect to the database:', err)
+    })
+}
