@@ -1,19 +1,14 @@
 import { Controller, Route } from '@core/decorator'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
+const testJSON = require('./test.json')
 
 @Controller('/api')
 class Test {
-  @Route('get', '/mock', { auth: false })
+  @Route('get', '/test', { auth: false })
   login(ctx) {
     const api = {
-      mode: `{
-          // 属性 list 的值是一个数组，其中含有 1 到 10 个元素
-          'list|1-10': [{
-              // 属性 id 是一个自增数，起始值为 1，每次增 1
-              'id|+1': 1
-          }]
-        }`
+      mode: JSON.stringify(testJSON)
     }
     const vm = new VM({
       timeout: 1000,
