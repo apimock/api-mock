@@ -16,8 +16,15 @@ module.exports = {
       },
       define: {
         timestamps: false // 不自动添加 updateAt 和 createdAt
+      },
+      logging (sql, {bind}) {
+        const res = bind ? sql + bind : sql
+        console.info(res)
       }
     }
-
+  },
+  jwt: {
+    "expire": "14 days",
+    "secret": "apimock-secret"
   }
 }

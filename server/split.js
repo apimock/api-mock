@@ -8,11 +8,13 @@ const restc = require('restc')
 const { Nuxt, Builder } = require('nuxt')
 const validate = require('koa-validate')
 const config = require('../nuxt.config.js')
+const middleware = require('./middleware')
 const app = new Koa()
 config.dev = app.env !== 'production'
 moduleAlias.addAliases(require('../alias').resolve.alias)
 require('./core/dbConnect')()
 validate(app)
+app.use(middleware.util)
 app.use(koaBody({ multipart: true }))
 app.use(convert(restc.koa()))
 

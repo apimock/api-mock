@@ -1,7 +1,7 @@
 const Sequlize = require('sequelize')
-const config = require('../../config/dev')
+const config = require('config')
 module.exports = function dbConnect() {
-  if (!config || !config.mysql) {
+  if (!config.has('mysql')) {
     return Promise.reject(new Error('dbConnect: config.mysql is required'))
   }
   const mysql = config.mysql

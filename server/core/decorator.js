@@ -1,7 +1,5 @@
 import Router from 'koa-router'
-import consola from 'consola'
 // import { validate } from './validate'
-import { Message, Result } from '@/server/core/result'
 
 const validate = () => {
   return {
@@ -36,23 +34,9 @@ export const Route = (method, url, opt) => {
         if (code) {
           await fn(ctx, next)
         } else {
-          ctx.body = Result(Message.FAIL, null, msg)
+          ctx.body = ctx.util.refail(msg)
         }
       })
-    }
-  }
-}
-// TODO
-export const Config = () => {}
-
-export const TryCatch = (target, name, descriptor) => {
-  const fn = descriptor.value
-  descriptor.value = async function(...args) {
-    try {
-      return await fn.call(this, ...args)
-    } catch (e) {
-      consola.error(e)
-      return new Error(e)
     }
   }
 }
