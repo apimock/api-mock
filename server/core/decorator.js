@@ -1,11 +1,5 @@
 import Router from 'koa-router'
-// import { validate } from './validate'
-
-const validate = () => {
-  return {
-    code: true
-  }
-}
+import { validate } from './validate'
 
 export const Controller = (baseUrl = '/api') => {
   const router = new Router()
@@ -21,20 +15,20 @@ export const Controller = (baseUrl = '/api') => {
   }
 }
 
-export const Route = (method, url, opt) => {
+export const Route = (method, url, option) => {
   return (target, name, descriptor) => {
     const fn = descriptor.value
     descriptor.value = (router) => {
       router[method](url, async (ctx, next) => {
         // 登录和权限校验
-        const { code, msg } = await validate(
+        const { code, message } = validate(
           ctx,
-          Object.assign({ auth: true, permission: null }, opt)
+          Object.assign({ auth: true, permission: null }, option)
         )
-        if (code) {
+        if (code === 1) {
           await fn(ctx, next)
         } else {
-          ctx.body = ctx.util.refail(msg)
+          ctx.body = ctx.util.refail(message)
         }
       })
     }

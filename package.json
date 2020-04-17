@@ -11,7 +11,7 @@
     "start": "cross-env NODE_ENV=production node server/index.js",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=development jest",
     "model": "node scripts/model.js"
   },
   "lint-staged": {
@@ -26,6 +26,7 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
     "ant-design-vue": "^1.1.10",
+    "bcryptjs": "^2.4.3",
     "clipboard": "^2.0.6",
     "config": "^3.3.1",
     "consola": "^2.11.3",
@@ -64,6 +65,7 @@
     "lint-staged": "^10.0.0",
     "nodemon": "^1.18.9",
     "prettier": "^1.19.1",
+    "supertest": "^4.0.2",
     "vue-jest": "^4.0.0-0",
     "webpack-merge": "^4.2.2"
   }

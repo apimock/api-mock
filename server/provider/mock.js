@@ -1,12 +1,12 @@
 import dateTime from '~/utils/dateTime'
-const Model = require('~/server/models')()
+const Model = require('@models')()
 
-export default class User {
+export default class Mock {
   static save (data) {
     if (!data.id) {
-      return Model.User.create({...data, created_at: dateTime()})
+      return Model.Mock.create({...data, created_at: dateTime()})
     } else {
-      return Model.User.update({...data, updated_at: dateTime()}, {
+      return Model.Mock.update({...data, updated_at: dateTime()}, {
         where: { id: data.id }
       })
     }
@@ -15,14 +15,6 @@ export default class User {
   static findOne (where) {
     return Model.User.findOne({
       where
-    })
-  }
-
-  static findByName (username) {
-    return Model.User.findOne({
-      where: {
-        username
-      }
     })
   }
 

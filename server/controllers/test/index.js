@@ -1,12 +1,12 @@
-import { Controller, Route } from '@core/decorator'
+import { Controller, Route } from '~/server/core/decorator'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
 const testJSON = require('./test.json')
 
 @Controller('/api')
-class Test {
+class Api {
   @Route('get', '/test', { auth: false })
-  login(ctx) {
+  test(ctx) {
     const api = {
       mode: JSON.stringify(testJSON)
     }
@@ -24,4 +24,4 @@ class Test {
   }
 }
 
-export default Test
+export default Api

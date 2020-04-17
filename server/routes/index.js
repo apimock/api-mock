@@ -10,11 +10,11 @@ module.exports = function(app) {
   //   // axios(ctx)
   //   await next()
   // })
-  fs.readdirSync(path.join(__dirname, '../controller')).forEach((o) => {
+  fs.readdirSync(path.join(__dirname, '../controllers')).forEach((o) => {
     consola.ready({
       message: `Init controller: ${o}`
     })
-    const res = require(`@controller/${o}`)
+    const res = require(`~/server/controllers/${o}`)
     app.use(res.default.routes()).use(res.default.allowedMethods())
   })
 }

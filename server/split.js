@@ -61,4 +61,8 @@ function start() {
   })
 }
 
-start()
+if (!module.parent) {
+  start()
+} else{
+  module.exports = app.listen()
+}
