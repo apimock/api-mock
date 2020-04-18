@@ -1,3 +1,5 @@
+const { pathToRegexp } = require('path-to-regexp')
+
 const codeMap = {
   '-1': 'fail',
   '200': 'success',
@@ -29,6 +31,19 @@ module.exports = class Middleware {
   static util(ctx, next) {
     ctx.set('X-Request-Id', ctx.req.id)
     ctx.util = utilFn
+    return next()
+  }
+
+  static mockFilter (ctx, next) {
+    const pathNode = pathToRegexp('/mock/:projectId(.{8,24})/:mockURL*').exec(ctx.path)
+
+    if (!pathNode) ctx.throw(404)
+
+    ctx.pathNode = {
+      projectId: pathNode[1],
+      mockURL: '/' + (pathNode[2] || '')
+    }
+
     return next()
   }
 }
