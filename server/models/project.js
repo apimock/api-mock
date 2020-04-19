@@ -2,43 +2,48 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('project', {
-    id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    'id': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    uid: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: false
+    'uid': {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      unique: true
     },
-    name: {
+    'name': {
       type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: ''
     },
-    base_url: {
+    'members': {
+      type: DataTypes.STRING(1500),
+      allowNull: true
+    },
+    'base_url': {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    sign: {
+    'sign': {
       type: DataTypes.CHAR(32),
       allowNull: false,
       defaultValue: ''
     },
-    description: {
+    'description': {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    swagger_url: {
+    'swagger_url': {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    created_at: {
+    'created_at': {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updated_at: {
+    'updated_at': {
       type: DataTypes.DATE,
       allowNull: true
     }

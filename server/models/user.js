@@ -2,44 +2,45 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('user', {
-    id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    'id': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    username: {
+    'username': {
       type: DataTypes.STRING(45),
       allowNull: false,
-      defaultValue: ''
+      defaultValue: '',
+      unique: true
     },
-    email: {
+    'email': {
       type: DataTypes.CHAR(40),
       allowNull: true
     },
-    password: {
-      type: DataTypes.CHAR(32),
+    'password': {
+      type: DataTypes.STRING(500),
       allowNull: false,
       defaultValue: ''
     },
-    avatar: {
+    'avatar': {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    role: {
-      type: DataTypes.INTEGER(11),
+    'role': {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
-    status: {
+    'status': {
       type: DataTypes.INTEGER(1),
       allowNull: true,
       defaultValue: '1'
     },
-    created_at: {
+    'created_at': {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updated_at: {
+    'updated_at': {
       type: DataTypes.DATE,
       allowNull: true
     }

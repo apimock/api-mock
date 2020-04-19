@@ -1,30 +1,26 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('mock_rule', {
+  return sequelize.define('user_project', {
     'id': {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    'mock_id': {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false
+    'uid': {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
-    'rule': {
-      type: DataTypes.TEXT,
-      allowNull: false
+    'project_id': {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
     'created_at': {
       type: DataTypes.DATE,
       allowNull: true
-    },
-    'updated_at': {
-      type: DataTypes.DATE,
-      allowNull: true
     }
   }, {
-    tableName: 'mock_rule'
+    tableName: 'user_project'
   });
 };

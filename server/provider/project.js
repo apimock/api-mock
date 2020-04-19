@@ -1,8 +1,10 @@
+import { genProjectId } from '~/utils/index'
 import dateTime from '~/utils/dateTime'
-const Model = require('@models')()
+const Model = require('~/server/models')()
 
 export default class Project {
   static save (data) {
+    data.sign = genProjectId()
     if (!data.id) {
       return Model.Project.create({...data, created_at: dateTime()})
     } else {

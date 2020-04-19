@@ -7,7 +7,7 @@ const checkToken = (token) => {
   try {
     const res = jwt.verify(token, jwtSecret)
     if (res) {
-      return true
+      return res
     } else {
       return false
     }
@@ -17,13 +17,16 @@ const checkToken = (token) => {
 }
 
 export function validate (ctx, option) {
-  const token = ctx.headers.Authorization
+  const token = ctx.request.get('Authorization')
   const res = {
     code: 1,
     message: 'success'
   }
   if (option.auth) {
-    if(!checkToken(token)) {
+    const checked = checkToken(token)
+    if (checked) {
+      ctx.state.user = checked
+    } else {
       res.code = -1
       res.message = '用户未登录'
     }

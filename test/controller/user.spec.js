@@ -1,13 +1,16 @@
 import Util from '~/test/util'
 const app = require('~/server/split')
+const {username, password} = Util.getUser()
 
 describe('/server/controllers/user', () => {
   let request, user
 
   beforeAll(async () => {
-    user = await Util.login('test25', '123456')
+    user = await Util.createUser()
     request = Util.createRequest(app, user.token)
   })
+
+  afterAll(async () => await Util.removeUser(user.id))
 
   describe('register', () => {
     test('params error', async () => {
@@ -19,15 +22,14 @@ describe('/server/controllers/user', () => {
   describe('login', () => {
     test('params error', async () => {
       const res = await request('/api/login', 'post')
-
       expect(res.body.message).toBe('params error')
     })
 
     test('login success', async () => {
       const res = await request('/api/login', 'post')
-        .send({ username: 'test25', password: '123456' })
+        .send({ username, password })
 
-      expect(res.body.data.username).toBe('test25')
+      expect(res.body.data.username).toBe(username)
     })
 
     test('user does not exist', async () => {
@@ -39,7 +41,7 @@ describe('/server/controllers/user', () => {
 
     test('username or password error', async () => {
       const res = await request('/api/login', 'post')
-        .send({ username: 'test255', password: '1234567' })
+        .send({ username, password: '1234567' })
 
       expect(res.body.message).toBe('用户名或密码错误')
     })

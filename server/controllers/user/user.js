@@ -22,13 +22,11 @@ export default class User {
   static async register(ctx) {
     const username = ctx.checkBody('username').notEmpty().len(4, 20).value
     const password = ctx.checkBody('password').notEmpty().len(6, 20).value
-
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
-
-    const user = await UserProxy.findByName(username)
+    const user = await UserProxy.findByUserName(username)
     if (user) {
       ctx.body = ctx.util.refail('用户名已被使用')
       return
@@ -36,7 +34,6 @@ export default class User {
 
     const newPassword = bhash(password)
     await createUser(username, newPassword)
-
 
     ctx.body = ctx.util.resuccess()
   }
@@ -54,7 +51,7 @@ export default class User {
       return
     }
 
-    const user = await UserProxy.findByName(username)
+    const user = await UserProxy.findByUserName(username)
     if (!user) {
       ctx.body = ctx.util.refail('用户不存在')
       return

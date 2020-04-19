@@ -3,7 +3,7 @@ import { Controller, Route } from '~/server/core/decorator'
 
 @Controller('/api')
 class Api {
-  @Route('get', '/project', { auth: false })
+  @Route('post', '/project/create')
   create(ctx) {
     return Project.create(ctx)
   }

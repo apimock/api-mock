@@ -1,7 +1,16 @@
 const request = require('supertest')
 const app = require('~/server/split')
 
+const TestUser = {
+  username: '@testUser@',
+  password: 'askdfwoejf'
+}
+
 class Util {
+  static getUser () {
+    return TestUser
+  }
+
   static login (username, password) {
     return request(app)
       .post('/api/login')
@@ -9,11 +18,18 @@ class Util {
       .then(res => res.body.data)
   }
 
-  static createUser (username = 'admin', password = '123456') {
+  static createUser (username = TestUser.username, password = TestUser.password) {
     return request(app)
       .post('/api/register')
       .send({ username, password })
-      .then(() => this.login(username, password))
+      .then((res) => {
+        return this.login(username, password)
+      })
+  }
+
+  static removeUser (id) {
+    const UserProxy = require('~/server/provider/user')
+    UserProxy.remove(id)
   }
 
   static createRequest (server, token) {

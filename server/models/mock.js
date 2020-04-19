@@ -2,44 +2,45 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock', {
-    id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    'id': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    project_id: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    'project_id': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
-    uid: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
-      allowNull: true
+    'uid': {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      unique: true
     },
-    url: {
+    'url': {
       type: DataTypes.CHAR(255),
       allowNull: false,
       defaultValue: ''
     },
-    method: {
-      type: DataTypes.INTEGER(1).UNSIGNED,
+    'method': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       defaultValue: '1'
     },
-    delay: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+    'delay': {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       defaultValue: '0'
     },
-    description: {
+    'description': {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    created_at: {
+    'created_at': {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updated_at: {
+    'updated_at': {
       type: DataTypes.DATE,
       allowNull: true
     }
