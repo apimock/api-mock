@@ -1,7 +1,7 @@
 import dateTime from '~/utils/dateTime'
 const Model = require('@models')()
 
-export default class Mock {
+module.exports = class Mock {
   static save (data) {
     if (!data.id) {
       return Model.Mock.create({...data, created_at: dateTime()})

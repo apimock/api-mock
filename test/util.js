@@ -29,7 +29,7 @@ class Util {
 
   static removeUser (id) {
     const UserProxy = require('~/server/provider/user')
-    UserProxy.remove(id)
+    return UserProxy.remove(id)
   }
 
   static createRequest (server, token) {

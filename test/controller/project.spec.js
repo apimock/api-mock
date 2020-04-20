@@ -10,7 +10,9 @@ describe('/server/controllers/project', () => {
     request = Util.createRequest(app, user.token)
   })
 
-  afterAll(async () => await Util.removeUser(user.id))
+  afterAll(async () => {
+    await Util.removeUser(user.id)
+  })
 
   describe('create', () => {
     test('params error',async () => {
@@ -28,6 +30,26 @@ describe('/server/controllers/project', () => {
         })
 
       expect(res.body.success).toBe(true)
+    })
+
+    test('project name already exists',async () => {
+      const res = await request('/api/project/create', 'post')
+        .send({
+          name: 'demo',
+          base_url: '/demo1',
+          description: 'demo'
+        })
+      expect(res.body.message).toBe('项目 demo 已存在')
+    })
+
+    test('project base_url already exists',async () => {
+      const res = await request('/api/project/create', 'post')
+        .send({
+          name: 'demo2',
+          base_url: '/demo',
+          description: 'demo'
+        })
+      expect(res.body.message).toBe('请检查 URL 是否已经存在')
     })
   })
 

@@ -1,7 +1,7 @@
 import dateTime from '~/utils/dateTime'
 const Model = require('~/server/models')()
 
-export default class User {
+module.exports = class User {
   static save (data) {
     if (!data.id) {
       return Model.User.create({...data, created_at: dateTime()}).catch((e) => {console.info(e, 'sssssssss')})

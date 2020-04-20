@@ -1,11 +1,12 @@
-const Sequlize = require('sequelize')
+const { Sequelize } = require('sequelize')
 const config = require('config')
+
 module.exports = function dbConnect() {
   if (!config.has('mysql')) {
     return Promise.reject(new Error('dbConnect: config.mysql is required'))
   }
   const mysql = config.mysql
-  global.__seq = new Sequlize(
+  global.__seq = new Sequelize(
     mysql.database,
     mysql.user,
     mysql.password,

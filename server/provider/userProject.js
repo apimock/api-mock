@@ -1,21 +1,13 @@
-import { genProjectId } from '~/utils/index'
 import dateTime from '~/utils/dateTime'
 const Model = require('~/server/models')()
 
 module.exports = class Project {
   static save (data) {
-    data.sign = genProjectId()
-    if (!data.id) {
-      return Model.Project.create({...data, created_at: dateTime()})
-    } else {
-      return Model.Project.update({...data, updated_at: dateTime()}, {
-        where: { id: data.id }
-      })
-    }
+    return Model.UserProject.create({...data, created_at: dateTime()})
   }
 
   static findOne (where) {
-    return Model.Project.findOne({
+    return Model.UserProject.findOne({
       where
     })
   }
@@ -27,5 +19,13 @@ module.exports = class Project {
     //   }
     // })
     return this.save({id, status: 0})
+  }
+
+  static remove (id) {
+    return Model.UserProject.destroy({
+      where: {
+        id
+      }
+    })
   }
 }

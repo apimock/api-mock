@@ -33,9 +33,9 @@ export default class User {
     }
 
     const newPassword = bhash(password)
-    await createUser(username, newPassword)
+    const res = await createUser(username, newPassword)
 
-    ctx.body = ctx.util.resuccess()
+    ctx.body = ctx.util.resuccess(res)
   }
 
   /**
