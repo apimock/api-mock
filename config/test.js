@@ -1,4 +1,5 @@
 module.exports = {
+  pageSize: 30,
   mysql: {
     database: 'apimock',
     user: 'root',

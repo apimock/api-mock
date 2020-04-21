@@ -26,6 +26,7 @@ describe('/server/controllers/project', () => {
           name: 'demo',
           base_url: '/demo',
           description: 'demo',
+          members: [79, 55, 66],
           swagger_url: 'http://localhost:7400'
         })
 
@@ -51,6 +52,15 @@ describe('/server/controllers/project', () => {
         })
       expect(res.body.message).toBe('请检查 URL 是否已经存在')
     })
+  })
+
+  describe('update', () => {
+    test('params error',async () => {
+      const res = await request('/api/project/update', 'post')
+      expect(res.body.message).toBe('params error')
+    })
+
+
   })
 
 })
