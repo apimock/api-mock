@@ -17,10 +17,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: ''
     },
-    'members': {
-      type: DataTypes.STRING(1500),
-      allowNull: true
-    },
     'base_url': {
       type: DataTypes.STRING(255),
       allowNull: false

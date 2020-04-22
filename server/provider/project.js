@@ -1,5 +1,6 @@
 import { genProjectId } from '~/utils/index'
 import dateTime from '~/utils/dateTime'
+import ProjectUserProxy from '~/server/provider/userProject'
 const Model = require('~/server/models')()
 
 const Message = {
@@ -9,14 +10,14 @@ const Message = {
 
 module.exports = class Project {
   static async save (data) {
-    data.sign = genProjectId()
+    const members = data.members
+    delete data.members
     if (!data.id) {
+      data.sign = genProjectId()
       const project = await Model.Project.create({...data, created_at: dateTime()})
       const { id, uid } = project
-      let members = project.members
-      members = members ? members.split(',') : []
       const userProjectAll = members.concat(uid).map(uid => ({ uid, project_id:id , created_at: dateTime()}))
-      await Model.UserProject.bulkCreate(userProjectAll)
+      await ProjectUserProxy.bulkCreate(userProjectAll)
       return project
     } else {
       return Model.Project.update({...data, updated_at: dateTime()}, {
@@ -42,6 +43,7 @@ module.exports = class Project {
       if (project.uid !== uid) {
         if (creater) return Message.NoPermission
       }
+      project.members = await ProjectUserProxy.findUserIdByProjectId(project.id)
       return project
     } else {
       return Message.NotExist

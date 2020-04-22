@@ -6,26 +6,31 @@ module.exports = class Project {
     return Model.UserProject.create({...data, created_at: dateTime()})
   }
 
-  static findOne (where) {
-    return Model.UserProject.findOne({
-      where
-    })
+  static bulkCreate(data) {
+    return Model.UserProject.bulkCreate(data)
   }
 
-  static delete (id) {
-    // return Model.User.destroy({
-    //   where: {
-    //     id
-    //   }
-    // })
-    return this.save({id, status: 0})
-  }
-
-  static remove (id) {
-    return Model.UserProject.destroy({
-      where: {
-        id
+  static findProjectIdByUserId (uid) {
+    const res = Model.UserProject.findAll({
+      attributes: ['project_id'],
+      where:{
+        uid
       }
     })
+    return res.map((item) => item.project_id)
+  }
+
+  static findUserIdByProjectId (projectId) {
+    const res = Model.UserProject.findAll({
+      attributes: ['uid'],
+      where:{
+        project_id: projectId
+      }
+    })
+    return res.map((item) => item.uid)
+  }
+
+  static remove (query) {
+    return Model.UserProject.destroy(query)
   }
 }

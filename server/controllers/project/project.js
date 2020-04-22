@@ -1,7 +1,11 @@
 import ProjectProxy from '~/server/provider/project'
+import ProjectUserProxy from '~/server/provider/userProject'
+import dateTime from '~/utils/dateTime'
 const _ = require('lodash')
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
+const ft = require('../../models/fields_table')
+const Model = require('~/server/models')()
 
 export default class Project {
   static async create (ctx) {
@@ -9,13 +13,14 @@ export default class Project {
     const { description }= ctx.request.body
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    let members = ctx.checkBody('members').empty().type('array').value
+    const members = ctx.checkBody('members').empty().type('array').value
+    const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
+
     if (members && members.length) {
       if (_.includes(members, uid)) {
         ctx.body = ctx.util.refail('项目成员不能包含自己')
         return
       }
-      members = members.join(',')
     }
 
     if (ctx.errors) {
@@ -32,7 +37,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({uid, name, description, members, base_url:baseUrl})
+    const res = await ProjectProxy.save({uid, name, description, members, base_url:baseUrl, swagger_url: swaggerUrl})
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -46,7 +51,8 @@ export default class Project {
     const id = ctx.checkBody('id').notEmpty().value
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    let members = ctx.checkBody('members').empty().type('array').value
+    const members = ctx.checkBody('members').empty().type('array').value
+    const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -54,6 +60,24 @@ export default class Project {
     }
 
     const project = await ProjectProxy.checkById(id, uid)
+    let diffMembers = _.difference(project.members, members)
+    if (diffMembers.length) {
+      await ProjectUserProxy.remove({
+        where: {
+          project_id: project.id,
+          uid: {
+            [Op.in]: diffMembers
+          }
+        }
+      })
+    }
+
+    diffMembers = _.difference(members, project.members)
+    if (diffMembers.length) {
+      const userProjectAll = diffMembers.map(uid => ({ uid, project_id:id , created_at: dateTime()}))
+      await ProjectUserProxy.bulkCreate(userProjectAll)
+    }
+
     if (typeof project === 'string') {
       ctx.body = ctx.util.refail(project)
       return
@@ -64,7 +88,6 @@ export default class Project {
         ctx.body = ctx.util.refail('项目成员不能包含创建者')
         return
       }
-      members = members.join(',')
     }
 
     const findQuery = {id: {[Op.ne]: project.id}, [Op.or]: [{ name }, { base_url: baseUrl }] }
@@ -77,7 +100,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({id, uid, name, description, members, base_url:baseUrl})
+    const res = await ProjectProxy.save({id, uid, name, description, members, base_url:baseUrl, swagger_url: swaggerUrl})
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -87,27 +110,69 @@ export default class Project {
   }
 
   static async list (ctx) {
-    // const uid = ctx.state.user.id
+    const uid = ctx.state.user.id
     const { keywords } = ctx.query
     const pageIndex = ctx.checkQuery('pageIndex').empty().toInt().gt(0).default(1).value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
-    console.info(keywords, pageIndex, pageSize)
+    const source = ctx.checkQuery('source').empty().toInt().default(0).value // 0：全部、1：我创建的、2：我加入的
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
 
-    const projects = await ProjectProxy.findAll({
+    const query = {
       where: {
-        uid: 85
+        uid
       },
       offset: pageSize * (pageIndex - 1),
       limit: pageSize,
       order: [
         ['created_at', 'ASC']
-      ]
+      ],
+      include: Model.User
+    }
+
+    if (source === 0) {
+      const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
+      query.where = {
+        id: {
+          [Op.in] : projectIds
+        }
+      }
+    } else if (source === 2) {
+      const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
+      query.where = {
+        id: {
+          [Op.in] : projectIds
+        },
+        uid: {
+          [Op.ne]: [uid]
+        }
+      }
+    }
+
+    if (keywords) {
+      const kw = {[Op.substring]: keywords}
+      query.where = {
+        [Op.and]:[
+          {
+            [Op.or]:[
+              {base_url: kw},
+              {description: kw},
+              {name: kw}
+            ]
+          }
+        ]
+      }
+    }
+
+    let projects = await ProjectProxy.findAll(query)
+    projects = projects.map((item) => {
+      item.user = _.pick(item.user, ft.user)
+      return _.pick(item, ft.project.concat(['user']))
     })
+
     ctx.body = ctx.util.resuccess(projects)
   }
 }

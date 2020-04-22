@@ -16,5 +16,10 @@ module.exports = function () {
     Model[name].sync()
   }
 
+  Model.Project.belongsTo(Model.User,{
+    foreignKey: 'uid',
+    sourceKey: 'id'
+  })
+
   return Model
 }

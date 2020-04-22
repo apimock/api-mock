@@ -55,13 +55,23 @@ describe('/server/controllers/project', () => {
   })
 
   describe('update', () => {
-    test('params error',async () => {
+    test('params error', async () => {
       const res = await request('/api/project/update', 'post')
       expect(res.body.message).toBe('params error')
     })
 
+      test('update a project',async () => {
+        const res = await request('/api/project/update', 'post')
+          .send({
+            id: 61,
+            name: 'demo1',
+            base_url: '/demo1',
+            description: 'demo1',
+            members: [3, 4, 8, 9],
+            swagger_url: 'http://localhost:7400'
+          })
 
+        expect(res.body.success).toBe(true)
+    })
   })
-
 })
-
