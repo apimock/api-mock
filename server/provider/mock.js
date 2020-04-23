@@ -1,5 +1,5 @@
 import dateTime from '~/utils/dateTime'
-const Model = require('@models')()
+const Model = require('~/server/models')()
 
 module.exports = class Mock {
   static save (data) {
@@ -13,7 +13,7 @@ module.exports = class Mock {
   }
 
   static findOne (where) {
-    return Model.User.findOne({
+    return Model.Mock.findOne({
       where
     })
   }

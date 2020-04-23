@@ -1,15 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
-// import { axios } from '@utils/request'
+import Router from 'koa-router'
+import MockApi from '~/server/controllers/mock/mockApi'
+const restc = require('restc').koa2()
+const middleware = require('../middleware')
 
 module.exports = function(app) {
-  // // 注入axios
-  // app.use(async (ctx, next) => {
-  //   // 访问接口时执行
-  //   // axios(ctx)
-  //   await next()
-  // })
+  const mockRouter = new Router({prefix: '/mock'})
+  mockRouter.all('*', middleware.mockFilter, restc, MockApi.getApi)
+  app.use(mockRouter.routes()).use(mockRouter.allowedMethods())
+
   fs.readdirSync(path.join(__dirname, '../controllers')).filter(file => {
     return (file.indexOf('.') !== 0)
   }).forEach((file) => {

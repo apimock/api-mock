@@ -14,8 +14,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'uid': {
       type: DataTypes.INTEGER(10).UNSIGNED,
-      allowNull: true,
-      unique: true
+      allowNull: true
     },
     'url': {
       type: DataTypes.CHAR(255),

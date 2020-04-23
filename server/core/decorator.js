@@ -1,15 +1,10 @@
 import Router from 'koa-router'
 import { validate } from './validate'
-const restc = require('restc').koa2()
-const middleware = require('../middleware')
 
 export const Controller = (baseUrl = '/api') => {
   const router = new Router()
   if (baseUrl) {
     router.prefix(baseUrl)
-    if (baseUrl === '/mock') {
-      router.all('*', middleware.mockFilter, restc)
-    }
   }
   return (target) => {
     const property = Object.getOwnPropertyDescriptors(target.prototype)

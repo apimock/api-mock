@@ -3,9 +3,9 @@ const { VM } = require('vm2')
 const Mock = require('mockjs')
 const testJSON = require('./test.json')
 
-@Controller('/mock')
+@Controller('/test')
 class Api {
-  @Route('get', '/12345678999/test/test', { auth: false })
+  @Route('get', '/test', { auth: false })
   test(ctx) {
     const api = {
       mode: JSON.stringify(testJSON)

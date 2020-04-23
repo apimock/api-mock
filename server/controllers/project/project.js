@@ -115,6 +115,7 @@ export default class Project {
     const pageIndex = ctx.checkQuery('pageIndex').empty().toInt().gt(0).default(1).value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
     const source = ctx.checkQuery('source').empty().toInt().default(0).value // 0：全部、1：我创建的、2：我加入的
+    console.info(pageSize, 'pageSize')
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)

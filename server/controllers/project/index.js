@@ -3,7 +3,7 @@ import { Controller, Route } from '~/server/core/decorator'
 
 @Controller('/api')
 class Api {
-  @Route('get', '/project', {auth: false})
+  @Route('get', '/project')
   list(ctx) {
     return Project.list(ctx)
   }
