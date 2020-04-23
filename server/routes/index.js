@@ -16,7 +16,11 @@ module.exports = function(app) {
     consola.ready({
       message: `Init controller: ${file}`
     })
-    const res = require(`~/server/controllers/${file}`)
-    app.use(res.default.routes()).use(res.default.allowedMethods())
+    try {
+      const res = require(`~/server/controllers/${file}`)
+      app.use(res.default.routes()).use(res.default.allowedMethods())
+    } catch (e) {
+      console.error(e)
+    }
   })
 }
