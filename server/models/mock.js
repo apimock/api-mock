@@ -32,6 +32,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: '0'
     },
+    'rule': {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     'description': {
       type: DataTypes.STRING(255),
       allowNull: true

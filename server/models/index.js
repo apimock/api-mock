@@ -7,8 +7,7 @@ module.exports = function () {
     User: require('./user')(_seq, DataTypes),
     Project: require('./project')(_seq, DataTypes),
     UserProject: require('./user_project')(_seq, DataTypes),
-    Mock: require('./mock')(_seq, DataTypes),
-    MockRule: require('./mock_rule')(_seq, DataTypes)
+    Mock: require('./mock')(_seq, DataTypes)
   })
 
   // CREATE TABLE IF NOT EXISTS
