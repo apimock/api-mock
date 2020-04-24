@@ -6,10 +6,14 @@ import MockApi from '~/server/controllers/mock/mockApi'
 const restc = require('restc').koa2()
 const middleware = require('../middleware')
 
-module.exports = function(app) {
+function initMockRouter (app) {
   const mockRouter = new Router({prefix: '/mock'})
   mockRouter.all('*', middleware.mockFilter, restc, MockApi.getApi)
   app.use(mockRouter.routes()).use(mockRouter.allowedMethods())
+}
+
+module.exports = function(app) {
+  initMockRouter(app)
 
   fs.readdirSync(path.join(__dirname, '../controllers')).filter(file => {
     return (file.indexOf('.') !== 0)

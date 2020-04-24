@@ -12,6 +12,12 @@ module.exports = class Mock {
     }
   }
 
+  static find (where) {
+    return Model.Mock.find({
+      where
+    })
+  }
+
   static findOne (where) {
     return Model.Mock.findOne({
       where
