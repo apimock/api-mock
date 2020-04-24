@@ -33,8 +33,7 @@ module.exports = class Project {
   }
 
   static findAll(query) {
-    const projects = Model.Project.findAll(query)
-    return projects
+    return  Model.Project.findAll(query)
   }
 
   static async checkById (id, uid, creater) {

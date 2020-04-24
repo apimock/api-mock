@@ -3,7 +3,7 @@ import { Controller, Route } from '~/server/core/decorator'
 
 @Controller('/api')
 class Api {
-  @Route('get', '/mock', {auth: false})
+  @Route('get', '/mock')
   list(ctx) {
     return Mock.list(ctx)
   }

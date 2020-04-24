@@ -1,5 +1,10 @@
 import dateTime from '~/utils/dateTime'
+import ProjectProxy from '~/server/provider/project'
 const Model = require('~/server/models')()
+const Message = {
+  NoPermission: '无权限操作',
+  NotExist: '接口不存在'
+}
 
 module.exports = class Mock {
   static save (data) {
@@ -12,16 +17,28 @@ module.exports = class Mock {
     }
   }
 
-  static find (where) {
-    return Model.Mock.find({
-      where
-    })
+  static findAll (query) {
+    return Model.Mock.findAll(query)
   }
 
   static findOne (where) {
     return Model.Mock.findOne({
       where
     })
+  }
+
+  static async checkById (id, uid, creater) {
+    const mock = await this.findOne({ id })
+    if (mock) {
+      if (mock.uid !== uid) {
+        if (creater) return Message.NoPermission
+      }
+      const checkProjet = await ProjectProxy.checkById(mock.project_id)
+      if (typeof checkProjet === 'string') return checkProjet
+      return mock
+    } else {
+      return Message.NotExist
+    }
   }
 
   static delete (id) {
