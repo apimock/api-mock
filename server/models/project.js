@@ -8,6 +8,11 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
+    'sign': {
+      type: DataTypes.CHAR(32),
+      allowNull: false,
+      unique: true
+    },
     'uid': {
       type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: false
@@ -20,11 +25,6 @@ module.exports = function(sequelize, DataTypes) {
     'base_url': {
       type: DataTypes.STRING(255),
       allowNull: false
-    },
-    'sign': {
-      type: DataTypes.CHAR(32),
-      allowNull: false,
-      defaultValue: ''
     },
     'description': {
       type: DataTypes.STRING(255),

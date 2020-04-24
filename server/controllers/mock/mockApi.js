@@ -37,12 +37,12 @@ export default class MockApi {
       timeout: 1000,
       sandbox: {
         Mock,
-        mode: mock.rule,
+        rule: mock.rule,
         template: new Function(`return ${mock.rule}`) // eslint-disable-line
       }
     })
 
-    vm.run('Mock.mock(new Function("return " + mode)())') // 数据验证，检测 setTimeout 等方法
+    vm.run('Mock.mock(new Function("return " + rule)())') // 数据验证，检测 setTimeout 等方法
     const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
 
     ctx.body = apiData
