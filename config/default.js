@@ -1,4 +1,6 @@
 module.exports = {
+  port: 8000,
+  host: '127.0.0.1',
   pageSize: 30,
   mysql: {
     database: 'apimock',

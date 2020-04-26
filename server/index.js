@@ -1,35 +1,25 @@
+require('@babel/register')
+const moduleAlias = require('module-alias')
 const Koa = require('koa')
+const koaBody = require('koa-body')
 const consola = require('consola')
-const { Nuxt, Builder } = require('nuxt')
-
+const validate = require('koa-validate')
+const config = require('config')
+const middleware = require('./middleware')
 const app = new Koa()
-
-// Import and Set Nuxt.js options
-const config = require('../nuxt.config.js')
 config.dev = app.env !== 'production'
+moduleAlias.addAliases(require('../alias').resolve.alias)
+require('./core/dbConnect')()
+validate(app)
+app.use(middleware.util)
+app.use(koaBody({ multipart: true }))
 
-async function start() {
-  // Instantiate nuxt.js
-  const nuxt = new Nuxt(config)
+const routes = require('./routes')
+routes(app)
 
-  const {
-    host = process.env.HOST || '127.0.0.1',
-    port = process.env.PORT || 3000
-  } = nuxt.options.server
-
-  await nuxt.ready()
-  // Build in development
-  if (config.dev) {
-    const builder = new Builder(nuxt)
-    await builder.build()
-  }
-
-  app.use((ctx) => {
-    ctx.status = 200
-    ctx.respond = false // Bypass Koa's built-in response handling
-    ctx.req.ctx = ctx // This might be useful later on, e.g. in nuxtServerInit or with nuxt-stash
-    nuxt.render(ctx.req, ctx.res)
-  })
+function start() {
+  const port = config.get('port')
+  const host = config.get('host')
 
   app.listen(port, host)
   consola.ready({
@@ -38,4 +28,8 @@ async function start() {
   })
 }
 
-start()
+if (!module.parent) {
+  start()
+} else{
+  module.exports = app.listen()
+}
