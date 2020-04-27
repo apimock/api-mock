@@ -1,19 +1,19 @@
-import dateTime from '~/utils/dateTime'
+import dateTime from '~/server/utils/dateTime'
 const Model = require('~/server/models')()
 
 module.exports = class Project {
   static save (data) {
-    return Model.UserProject.create({...data, created_at: dateTime()})
+    return Model.UserProject.create({ ...data, created_at: dateTime() })
   }
 
-  static bulkCreate(data) {
+  static bulkCreate (data) {
     return Model.UserProject.bulkCreate(data)
   }
 
   static findProjectIdByUserId (uid) {
     const res = Model.UserProject.findAll({
       attributes: ['project_id'],
-      where:{
+      where: {
         uid
       }
     })
@@ -23,7 +23,7 @@ module.exports = class Project {
   static findUserIdByProjectId (projectId) {
     const res = Model.UserProject.findAll({
       attributes: ['uid'],
-      where:{
+      where: {
         project_id: projectId
       }
     })

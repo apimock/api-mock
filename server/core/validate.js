@@ -3,7 +3,7 @@ const config = require('config')
 const jwtSecret = config.get('jwt.secret')
 
 const checkToken = (token) => {
-  if(!token) return false
+  if (!token) return false
   try {
     const res = jwt.verify(token, jwtSecret)
     if (res) {

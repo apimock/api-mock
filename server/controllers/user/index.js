@@ -4,12 +4,12 @@ import { Controller, Route } from '~/server/core/decorator'
 @Controller('/api')
 class Api {
   @Route('post', '/register', { auth: false })
-  register(ctx) {
+  register (ctx) {
     return User.register(ctx)
   }
 
   @Route('post', '/login', { auth: false })
-  login(ctx) {
+  login (ctx) {
     return User.login(ctx)
   }
 }

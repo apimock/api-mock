@@ -1,5 +1,5 @@
 import UserProxy from '~/server/provider/user'
-import { bhash, bcompare } from '~/utils'
+import { bhash, bcompare } from '~/server/utils'
 
 const jwt = require('jsonwebtoken')
 const config = require('config')
@@ -9,8 +9,8 @@ const ft = require('../../models/fields_table')
 const jwtSecret = config.get('jwt.secret')
 const jwtExpire = config.get('jwt.expire')
 
-async function createUser(username, password) {
-  const user = await UserProxy.save({username, password})
+async function createUser (username, password) {
+  const user = await UserProxy.save({ username, password })
   return user
 }
 
@@ -19,7 +19,7 @@ export default class User {
    * 用户注册
    * @param ctx
    */
-  static async register(ctx) {
+  static async register (ctx) {
     const username = ctx.checkBody('username').notEmpty().len(4, 20).value
     const password = ctx.checkBody('password').notEmpty().len(6, 20).value
     if (ctx.errors) {
@@ -42,7 +42,7 @@ export default class User {
    * 用户登录
    * @param ctx
    */
-  static async login(ctx) {
+  static async login (ctx) {
     const username = ctx.checkBody('username').notEmpty().value
     const password = ctx.checkBody('password').notEmpty().value
 

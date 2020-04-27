@@ -4,17 +4,17 @@ import { Controller, Route } from '~/server/core/decorator'
 @Controller('/api')
 class Api {
   @Route('get', '/project')
-  list(ctx) {
+  list (ctx) {
     return Project.list(ctx)
   }
 
   @Route('post', '/project/create')
-  create(ctx) {
+  create (ctx) {
     return Project.create(ctx)
   }
 
   @Route('post', '/project/update')
-  update(ctx) {
+  update (ctx) {
     return Project.update(ctx)
   }
 }

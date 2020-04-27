@@ -51,7 +51,7 @@ service.postQS = (option) => {
 
 const installer = {
   vm: {},
-  install(Vue) {
+  install (Vue) {
     Vue.use(VueAxios, service)
   }
 }

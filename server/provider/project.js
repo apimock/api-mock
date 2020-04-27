@@ -1,5 +1,5 @@
-import { genProjectId } from '~/utils/index'
-import dateTime from '~/utils/dateTime'
+import { genProjectId } from '~/server/utils/index'
+import dateTime from '~/server/utils/dateTime'
 import ProjectUserProxy from '~/server/provider/userProject'
 const Model = require('~/server/models')()
 
@@ -14,13 +14,13 @@ module.exports = class Project {
     delete data.members
     if (!data.id) {
       data.sign = genProjectId()
-      const project = await Model.Project.create({...data, created_at: dateTime()})
+      const project = await Model.Project.create({ ...data, created_at: dateTime() })
       const { id, uid } = project
-      const userProjectAll = members.concat(uid).map(uid => ({ uid, project_id:id , created_at: dateTime()}))
+      const userProjectAll = members.concat(uid).map(uid => ({ uid, project_id: id, created_at: dateTime() }))
       await ProjectUserProxy.bulkCreate(userProjectAll)
       return project
     } else {
-      return Model.Project.update({...data, updated_at: dateTime()}, {
+      return Model.Project.update({ ...data, updated_at: dateTime() }, {
         where: { id: data.id }
       })
     }
@@ -32,8 +32,8 @@ module.exports = class Project {
     })
   }
 
-  static findAll(query) {
-    return  Model.Project.findAll(query)
+  static findAll (query) {
+    return Model.Project.findAll(query)
   }
 
   static async checkById (id, uid, creater) {
@@ -55,6 +55,6 @@ module.exports = class Project {
     //     id
     //   }
     // })
-    return this.save({id, status: 0})
+    return this.save({ id, status: 0 })
   }
 }

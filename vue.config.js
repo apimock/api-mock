@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
-const createThemeColorReplacerPlugin = require('./config/plugin.config')
+const createThemeColorReplacerPlugin = require('./src/config/plugin.config')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -40,7 +40,7 @@ const vueConfig = {
 
   chainWebpack: (config) => {
     config.resolve.alias
-      .set('@$', resolve('client'))
+      .set('@$', resolve('src'))
 
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()
@@ -67,6 +67,7 @@ const vueConfig = {
       })
     }
   },
+
   css: {
     loaderOptions: {
       less: {
@@ -85,15 +86,19 @@ const vueConfig = {
 
   devServer: {
     // development server port 8000
-    port: 8000
+    port: 8000,
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
-    // proxy: {
-    //   '/api': {
-    //     target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-    //     ws: false,
-    //     changeOrigin: true
-    //   }
-    // }
+    proxy: {
+      '^/api': {
+        target: 'http://localhost:8888',
+        ws: false,
+        changeOrigin: true,
+        secure: false, // 若接口地址为https需要设为true
+        logLevel: 'debug',
+        cookieDomainRewrite: 'localhost',
+        preserveHeaderKeyCase: true
+      }
+    }
   },
 
   // disable source map in production
@@ -107,7 +112,7 @@ const vueConfig = {
 if (process.env.VUE_APP_PREVIEW === 'true') {
   console.log('VUE_APP_PREVIEW', true)
   // add `ThemeColorReplacer` plugin to webpack plugins
-  // vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
+  vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
 }
 
 module.exports = vueConfig

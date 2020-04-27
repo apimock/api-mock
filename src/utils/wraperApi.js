@@ -6,7 +6,7 @@ import { axios } from '@/utils/request'
  * @param api
  * @returns {{}}
  */
-export default function wraperApi(api) {
+export default function wraperApi (api) {
   const obj = Object.create(null)
   for (const [name, option] of Object.entries(api)) {
     obj[name] = (parameter, urlObj) => {

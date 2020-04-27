@@ -1,6 +1,6 @@
 import ProjectProxy from '~/server/provider/project'
 import ProjectUserProxy from '~/server/provider/userProject'
-import dateTime from '~/utils/dateTime'
+import dateTime from '~/server/utils/dateTime'
 const _ = require('lodash')
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
@@ -10,7 +10,7 @@ const Model = require('~/server/models')()
 export default class Project {
   static async create (ctx) {
     const uid = ctx.state.user.id
-    const { description }= ctx.request.body
+    const { description } = ctx.request.body
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const members = ctx.checkBody('members').empty().type('array').value
@@ -27,7 +27,7 @@ export default class Project {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
-    const findQuery = {uid, [Op.or]: [{ name }, { base_url: baseUrl }] }
+    const findQuery = { uid, [Op.or]: [{ name }, { base_url: baseUrl }] }
     const project = await ProjectProxy.findOne(findQuery)
 
     if (project) {
@@ -37,7 +37,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({uid, name, description, members, base_url:baseUrl, swagger_url: swaggerUrl})
+    const res = await ProjectProxy.save({ uid, name, description, members, base_url: baseUrl, swagger_url: swaggerUrl })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -47,7 +47,7 @@ export default class Project {
 
   static async update (ctx) {
     const uid = ctx.state.user.id
-    const { description }= ctx.request.body
+    const { description } = ctx.request.body
     const id = ctx.checkBody('id').notEmpty().value
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
@@ -74,7 +74,7 @@ export default class Project {
 
     diffMembers = _.difference(members, project.members)
     if (diffMembers.length) {
-      const userProjectAll = diffMembers.map(uid => ({ uid, project_id:id , created_at: dateTime()}))
+      const userProjectAll = diffMembers.map(uid => ({ uid, project_id: id, created_at: dateTime() }))
       await ProjectUserProxy.bulkCreate(userProjectAll)
     }
 
@@ -90,7 +90,7 @@ export default class Project {
       }
     }
 
-    const findQuery = {id: {[Op.ne]: project.id}, [Op.or]: [{ name }, { base_url: baseUrl }] }
+    const findQuery = { id: { [Op.ne]: project.id }, [Op.or]: [{ name }, { base_url: baseUrl }] }
     const existProject = await ProjectProxy.findOne(findQuery)
 
     if (existProject) {
@@ -100,13 +100,12 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({id, uid, name, description, members, base_url:baseUrl, swagger_url: swaggerUrl})
+    const res = await ProjectProxy.save({ id, uid, name, description, members, base_url: baseUrl, swagger_url: swaggerUrl })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
       ctx.body = ctx.util.refail()
     }
-
   }
 
   static async list (ctx) {
@@ -137,14 +136,14 @@ export default class Project {
       const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
       query.where = {
         id: {
-          [Op.in] : projectIds
+          [Op.in]: projectIds
         }
       }
     } else if (source === 2) {
       const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
       query.where = {
         id: {
-          [Op.in] : projectIds
+          [Op.in]: projectIds
         },
         uid: {
           [Op.ne]: [uid]
@@ -153,14 +152,14 @@ export default class Project {
     }
 
     if (keywords) {
-      const kw = {[Op.substring]: keywords}
+      const kw = { [Op.substring]: keywords }
       query.where = {
-        [Op.and]:[
+        [Op.and]: [
           {
-            [Op.or]:[
-              {base_url: kw},
-              {description: kw},
-              {name: kw}
+            [Op.or]: [
+              { base_url: kw },
+              { description: kw },
+              { name: kw }
             ]
           }
         ]

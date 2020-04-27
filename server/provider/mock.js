@@ -1,4 +1,4 @@
-import dateTime from '~/utils/dateTime'
+import dateTime from '~/server/utils/dateTime'
 import ProjectProxy from '~/server/provider/project'
 const Model = require('~/server/models')()
 const Message = {
@@ -9,9 +9,9 @@ const Message = {
 module.exports = class Mock {
   static save (data) {
     if (!data.id) {
-      return Model.Mock.create({...data, created_at: dateTime()})
+      return Model.Mock.create({ ...data, created_at: dateTime() })
     } else {
-      return Model.Mock.update({...data, updated_at: dateTime()}, {
+      return Model.Mock.update({ ...data, updated_at: dateTime() }, {
         where: { id: data.id }
       })
     }
@@ -47,6 +47,6 @@ module.exports = class Mock {
     //     id
     //   }
     // })
-    return this.save({id, status: 0})
+    return this.save({ id, status: 0 })
   }
 }

@@ -28,7 +28,7 @@ const utilFn = {
 }
 
 module.exports = class Middleware {
-  static util(ctx, next) {
+  static util (ctx, next) {
     ctx.set('X-Request-Id', ctx.req.id)
     ctx.util = utilFn
     return next()

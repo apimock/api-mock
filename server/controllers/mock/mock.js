@@ -1,6 +1,6 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
-import { Method } from '~/utils/enum'
+import { Method } from '~/server/utils/enum'
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
 
@@ -38,7 +38,7 @@ export default class Mock {
       return
     }
 
-    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, rule, delay, description})
+    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, rule, delay, description })
     ctx.body = ctx.util.resuccess()
   }
 
@@ -64,7 +64,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({id, uid, url: mockURL, method: methodCode, rule, delay, description})
+    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, rule, delay, description })
     console.info(res, 'aaaaaaaaaa')
     if (res) {
       ctx.body = ctx.util.resuccess(res)
@@ -85,7 +85,7 @@ export default class Mock {
       return
     }
 
-    const project = await ProjectProxy.findOne({sign: projectSign})
+    const project = await ProjectProxy.findOne({ sign: projectSign })
     if (!project) {
       ctx.throw(404)
       return
@@ -103,14 +103,14 @@ export default class Mock {
     }
 
     if (keywords) {
-      const kw = {[Op.substring]: keywords}
-      query.where = Object.assign(query.where,{
-        [Op.and]:[
+      const kw = { [Op.substring]: keywords }
+      query.where = Object.assign(query.where, {
+        [Op.and]: [
           {
-            [Op.or]:[
-              {url: kw},
-              {description: kw},
-              {rule: kw}
+            [Op.or]: [
+              { url: kw },
+              { description: kw },
+              { rule: kw }
             ]
           }
         ]

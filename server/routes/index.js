@@ -7,12 +7,12 @@ const restc = require('restc').koa2()
 const middleware = require('../middleware')
 
 function initMockRouter (app) {
-  const mockRouter = new Router({prefix: '/mock'})
+  const mockRouter = new Router({ prefix: '/mock' })
   mockRouter.all('*', middleware.mockFilter, restc, MockApi.getApi)
   app.use(mockRouter.routes()).use(mockRouter.allowedMethods())
 }
 
-module.exports = function(app) {
+module.exports = function (app) {
   initMockRouter(app)
 
   fs.readdirSync(path.join(__dirname, '../controllers')).filter(file => {

@@ -1,17 +1,18 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
-import { Method} from '~/utils/enum'
-import { params } from '~/utils'
+import { Method } from '~/server/utils/enum'
+import { params } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
 
 export default class MockApi {
   static async getApi (ctx) {
-    const { query, body } = ctx.request
+    // const { query, body } = ctx.request
     const method = ctx.method.toLowerCase()
-    let { projectSign, mockURL } = ctx.pathNode
+    const projectSign = ctx.pathNode.projectSign
+    let { mockURL } = ctx.pathNode
     mockURL = decodeURIComponent(mockURL)
-    const project = await ProjectProxy.findOne({sign: projectSign})
+    const project = await ProjectProxy.findOne({ sign: projectSign })
     if (!project) {
       ctx.throw(404)
       return

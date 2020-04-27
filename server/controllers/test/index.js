@@ -6,7 +6,7 @@ const testJSON = require('./test.json')
 @Controller('/test')
 class Api {
   @Route('get', '/test', { auth: false })
-  test(ctx) {
+  test (ctx) {
     const api = {
       mode: JSON.stringify(testJSON)
     }

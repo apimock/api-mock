@@ -1,12 +1,12 @@
-import dateTime from '~/utils/dateTime'
+import dateTime from '~/server/utils/dateTime'
 const Model = require('~/server/models')()
 
 module.exports = class User {
   static save (data) {
     if (!data.id) {
-      return Model.User.create({...data, created_at: dateTime()}).catch((e) => {console.info(e, 'sssssssss')})
+      return Model.User.create({ ...data, created_at: dateTime() }).catch((e) => { console.info(e, 'sssssssss') })
     } else {
-      return Model.User.update({...data, updated_at: dateTime()}, {
+      return Model.User.update({ ...data, updated_at: dateTime() }, {
         where: { id: data.id }
       })
     }
@@ -27,7 +27,7 @@ module.exports = class User {
   }
 
   static delete (id) {
-    return this.save({id, status: 0})
+    return this.save({ id, status: 0 })
   }
 
   static remove (id) {

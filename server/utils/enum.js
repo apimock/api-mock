@@ -6,7 +6,7 @@ export const Method = {
   5: 'patch',
   'get': 1,
   'post': 2,
-  'put' : 3,
-  'delete' : 4,
-  'patch' : 5
+  'put': 3,
+  'delete': 4,
+  'patch': 5
 }
