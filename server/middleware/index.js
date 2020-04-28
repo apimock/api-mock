@@ -14,7 +14,7 @@ const utilFn = {
       code: 200,
       success: true,
       message: codeMap['200'],
-      data: data || null
+      bean: data || null
     }
   },
   refail (message, code, data) {
@@ -22,7 +22,7 @@ const utilFn = {
       code: code || -1,
       success: false,
       message: message || codeMap[code],
-      data: data || null
+      bean: data || null
     }
   }
 }

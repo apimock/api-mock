@@ -1,11 +1,12 @@
-const path = require('path')
+// const path = require('path')
 const webpack = require('webpack')
 const createThemeColorReplacerPlugin = require('./src/config/plugin.config')
+const alias = require('./alias')
 
-function resolve (dir) {
-  return path.join(__dirname, dir)
-}
-
+// function resolve (dir) {
+//   return path.join(__dirname, dir)
+// }
+//
 const isProd = process.env.NODE_ENV === 'production'
 
 const assetsCDN = {
@@ -29,6 +30,7 @@ const assetsCDN = {
 // vue.config.js
 const vueConfig = {
   configureWebpack: {
+    resolve: alias.resolve,
     // webpack plugins
     plugins: [
       // Ignore all locale files of moment.js
@@ -39,8 +41,8 @@ const vueConfig = {
   },
 
   chainWebpack: (config) => {
-    config.resolve.alias
-      .set('@$', resolve('src'))
+    // config.resolve.alias
+    //   .set('@$', resolve('src'))
 
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()

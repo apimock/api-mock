@@ -37,10 +37,10 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         ApiUser.login(userInfo).then(response => {
-          const { code, data, message } = response.data
+          const { code, bean, message } = response.data
           if (code === 200) {
-            Vue.ls.set(ACCESS_TOKEN, data.token, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_TOKEN', data.token)
+            Vue.ls.set(ACCESS_TOKEN, bean.token, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', bean.token)
             resolve()
           } else {
             reject(message)
@@ -55,7 +55,7 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         ApiUser.getInfo().then(response => {
-          const { code, data, message } = response.data
+          const { code, bean, message } = response.data
           if (code !== 200) {
             reject(message)
             return
@@ -77,8 +77,8 @@ const user = {
           //   reject(new Error('getInfo: roles must be a non-null array !'))
           // }
 
-          commit('SET_NAME', { name: data.username, welcome: welcome() })
-          commit('SET_AVATAR', data.avatar)
+          commit('SET_NAME', { name: bean.username, welcome: welcome() })
+          commit('SET_AVATAR', bean.avatar)
 
           resolve(response.data)
         }).catch(error => {

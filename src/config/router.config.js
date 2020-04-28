@@ -26,6 +26,13 @@ export const asyncRouterMap = [
             meta: { title: '工作台', keepAlive: true, permission: ['dashboard'] }
           }
         ]
+      },
+      {
+        path: '/project',
+        name: 'project',
+        component: () => import('@/views/Project'),
+        meta: { title: '项目列表', keepAlive: true, icon: 'solution' },
+        permissions: [0]
       }
     ]
   },
