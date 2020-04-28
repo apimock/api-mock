@@ -7,19 +7,19 @@ import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
  * @param route
  * @returns {boolean}
  */
-function hasPermission (permission, route) {
-  if (route.meta && route.meta.permission) {
-    let flag = false
-    for (let i = 0, len = permission.length; i < len; i++) {
-      flag = route.meta.permission.includes(permission[i])
-      if (flag) {
-        return true
-      }
-    }
-    return false
-  }
-  return true
-}
+// function hasPermission (permission, route) {
+//   if (route.meta && route.meta.permission) {
+//     let flag = false
+//     for (let i = 0, len = permission.length; i < len; i++) {
+//       flag = route.meta.permission.includes(permission[i])
+//       if (flag) {
+//         return true
+//       }
+//     }
+//     return false
+//   }
+//   return true
+// }
 
 /**
  * 单账户多角色时，使用该方法可过滤角色不存在的菜单
@@ -29,23 +29,46 @@ function hasPermission (permission, route) {
  * @returns {*}
  */
 // eslint-disable-next-line
-function hasRole(roles, route) {
-  if (route.meta && route.meta.roles) {
-    return route.meta.roles.includes(roles.id)
-  } else {
-    return true
-  }
-}
+// function hasRole(roles, route) {
+//   if (route.meta && route.meta.roles) {
+//     return route.meta.roles.includes(roles.id)
+//   } else {
+//     return true
+//   }
+// }
+
+// function filterAsyncRouter2 (routerMap, roles) {
+//   const accessedRouters = routerMap.filter(route => {
+//     if (hasPermission(roles.permissionList, route)) {
+//       if (route.children && route.children.length) {
+//         route.children = filterAsyncRouter(route.children, roles)
+//       }
+//       return true
+//     }
+//     return false
+//   })
+//   return accessedRouters
+// }
 
 function filterAsyncRouter (routerMap, roles) {
-  const accessedRouters = routerMap.filter(route => {
-    if (hasPermission(roles.permissionList, route)) {
-      if (route.children && route.children.length) {
-        route.children = filterAsyncRouter(route.children, roles)
+  console.info('roles', roles)
+  const accessedRouters = routerMap.filter((o, i) => {
+    // 做了权限设置
+    if (o.permissions) {
+      // 有权限的直接返回
+      if (o.permissions.includes(roles)) {
+        return true
+      } else {
+        if (o.children) {
+          o.children = filterAsyncRouter(o.children, roles)
+          return !!o.children.length
+        } else {
+          return false
+        }
       }
+    } else {
       return true
     }
-    return false
   })
   return accessedRouters
 }

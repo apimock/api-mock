@@ -68,4 +68,15 @@ export default class User {
     })
     ctx.body = ctx.util.resuccess(_.pick(user, ft.user))
   }
+
+  static async userInfo (ctx) {
+    const uid = ctx.state.user.id
+    const user = await UserProxy.findOne({ id: uid })
+    if (user) {
+      user.roles = [0]
+      ctx.body = ctx.util.resuccess(_.pick(user, ft.user))
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
 }

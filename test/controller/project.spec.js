@@ -15,12 +15,12 @@ describe('/server/controllers/project', () => {
   })
 
   describe('create', () => {
-    test('params error',async () => {
+    test('params error', async () => {
       const res = await request('/api/project/create', 'post')
       expect(res.body.message).toBe('params error')
     })
 
-    test('create a project',async () => {
+    test('create a project', async () => {
       const res = await request('/api/project/create', 'post')
         .send({
           name: 'demo',
@@ -33,7 +33,7 @@ describe('/server/controllers/project', () => {
       expect(res.body.success).toBe(true)
     })
 
-    test('project name already exists',async () => {
+    test('project name already exists', async () => {
       const res = await request('/api/project/create', 'post')
         .send({
           name: 'demo',
@@ -43,7 +43,7 @@ describe('/server/controllers/project', () => {
       expect(res.body.message).toBe('项目 demo 已存在')
     })
 
-    test('project base_url already exists',async () => {
+    test('project base_url already exists', async () => {
       const res = await request('/api/project/create', 'post')
         .send({
           name: 'demo2',
@@ -60,7 +60,7 @@ describe('/server/controllers/project', () => {
       expect(res.body.message).toBe('params error')
     })
 
-      test('update a project',async () => {
+      test('update a project', async () => {
         const res = await request('/api/project/update', 'post')
           .send({
             id: 61,

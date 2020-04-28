@@ -4,12 +4,12 @@ export default wraperApi({
     url: '/api/login',
     method: 'post'
   },
-  getInfo: {
-    url: '/api/v2/admin/user-info',
-    method: 'get'
-  },
-  logout: {
-    url: '/api/v2/admin/logout',
+  register: {
+    url: '/api/register',
     method: 'post'
+  },
+  getInfo: {
+    url: '/api/userInfo',
+    method: 'get'
   }
 })

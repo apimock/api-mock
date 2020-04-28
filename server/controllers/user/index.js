@@ -3,6 +3,11 @@ import { Controller, Route } from '~/server/core/decorator'
 
 @Controller('/api')
 class Api {
+  @Route('get', '/userInfo')
+  userInfo (ctx) {
+    return User.userInfo(ctx)
+  }
+
   @Route('post', '/register', { auth: false })
   register (ctx) {
     return User.register(ctx)

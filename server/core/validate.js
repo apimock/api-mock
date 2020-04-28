@@ -17,8 +17,8 @@ const checkToken = (token) => {
 }
 
 export function validate (ctx, option) {
-  // const token = ctx.request.get('Authorization')
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEyLCJ1c2VybmFtZSI6IkB0ZXN0VXNlckAiLCJpYXQiOjE1ODc2MzMxODYsImV4cCI6MTU4ODg0Mjc4Nn0.bzJBidYvlz3rQQ7jTTHsfwDyRaO3eEq_itnK_2gP4UY'
+  const token = ctx.request.get('Authorization')
+  // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEyLCJ1c2VybmFtZSI6IkB0ZXN0VXNlckAiLCJpYXQiOjE1ODc2MzMxODYsImV4cCI6MTU4ODg0Mjc4Nn0.bzJBidYvlz3rQQ7jTTHsfwDyRaO3eEq_itnK_2gP4UY'
   const res = {
     code: 1,
     message: 'success'
