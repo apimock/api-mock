@@ -1,6 +1,5 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
 
 export const asyncRouterMap = [
 
@@ -13,19 +12,10 @@ export const asyncRouterMap = [
     children: [
       // dashboard
       {
-        path: 'dashboard',
-        name: 'dashboard',
-        redirect: '/dashboard/workplace',
-        component: RouteView,
-        meta: { title: '仪表盘', keepAlive: true, icon: bxAnaalyse, permission: ['dashboard'] },
-        children: [
-          {
-            path: 'workplace',
-            name: 'Workplace',
-            component: () => import('@/views/dashboard/Workplace'),
-            meta: { title: '工作台', keepAlive: true, permission: ['dashboard'] }
-          }
-        ]
+        path: 'workplace',
+        name: 'Workplace',
+        component: () => import('@/views/dashboard/Workplace'),
+        meta: { title: '工作台', keepAlive: true, icon: 'solution' }
       },
       {
         path: '/project',
@@ -33,6 +23,13 @@ export const asyncRouterMap = [
         component: () => import('@/views/Project'),
         meta: { title: '项目列表', keepAlive: true, icon: 'solution' },
         permissions: [0]
+      },
+      {
+        path: '/project/:projectSign',
+        name: 'mock',
+        component: () => import('@/views/Mock'),
+        hidden: true,
+        meta: { title: 'Mock列表', permission: [0] }
       }
     ]
   },

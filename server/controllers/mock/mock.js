@@ -65,7 +65,6 @@ export default class Mock {
     }
 
     const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, rule, delay, description })
-    console.info(res, 'aaaaaaaaaa')
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -78,7 +77,7 @@ export default class Mock {
     const keywords = ctx.query.keywords
     const projectSign = ctx.checkQuery('project_sign').notEmpty().value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
-    const pageIndex = ctx.checkQuery('pageIndex').empty().toInt().gt(0).default(1).value
+    const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -95,7 +94,7 @@ export default class Mock {
       where: {
         project_id: project.id
       },
-      offset: pageSize * (pageIndex - 1),
+      offset: pageSize * (pageNo - 1),
       limit: pageSize,
       order: [
         ['created_at']
@@ -118,6 +117,13 @@ export default class Mock {
     }
 
     const mocks = await MockProxy.findAll(query)
-    ctx.body = ctx.util.resuccess(mocks)
+    const bean = {
+      data: mocks,
+      pageSize,
+      pageNo,
+      totalPage: 6,
+      totalCount: 57
+    }
+    ctx.body = ctx.util.resuccess(bean)
   }
 }
