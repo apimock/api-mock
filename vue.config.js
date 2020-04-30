@@ -1,12 +1,10 @@
-// const path = require('path')
 const webpack = require('webpack')
 const createThemeColorReplacerPlugin = require('./src/config/plugin.config')
 const alias = require('./alias')
-
-// function resolve (dir) {
-//   return path.join(__dirname, dir)
-// }
-//
+const config = require('config')
+const port = config.get('port')
+const host = config.get('host')
+const server = `http://${host}:${port}`
 const isProd = process.env.NODE_ENV === 'production'
 
 const assetsCDN = {
@@ -41,9 +39,6 @@ const vueConfig = {
   },
 
   chainWebpack: (config) => {
-    // config.resolve.alias
-    //   .set('@$', resolve('src'))
-
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()
     svgRule
@@ -92,13 +87,18 @@ const vueConfig = {
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     proxy: {
       '^/api': {
-        target: 'http://localhost:8888',
+        target: server,
         ws: false,
         changeOrigin: true,
         secure: false, // 若接口地址为https需要设为true
         logLevel: 'debug',
         cookieDomainRewrite: 'localhost',
         preserveHeaderKeyCase: true
+      },
+      '^/mock': {
+        target: server,
+        hostRewrite: 301,
+        logLevel: 'debug'
       }
     }
   },
