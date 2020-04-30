@@ -119,6 +119,7 @@ export default class Mock {
     const mocks = await MockProxy.findAll(query)
     const bean = {
       data: mocks,
+      project,
       pageSize,
       pageNo,
       totalPage: 6,

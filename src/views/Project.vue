@@ -19,7 +19,7 @@
               <div class="meta-content" slot="description">{{ item.description }}</div>
             </a-card-meta>
             <template class="ant-card-actions" slot="actions">
-              <router-link :to="{name: 'mock', params: { projectSign: item.sign, baseUrl: item.base_url}}">{{ item.sign }}</router-link>
+              <router-link :to="{name: 'mock', params: { projectSign: item.sign }}">{{ item.sign }}</router-link>
               <a>操作二</a>
             </template>
           </a-card>
