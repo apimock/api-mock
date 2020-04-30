@@ -172,7 +172,7 @@
         this.selectedRows = selectedRows
       },
       view (record) {
-        const url = `${this.baseURL}${record.url}`
+        const url = `${this.baseURL}${record.url}#!method=${Method[record.method]}`
         window.open(url)
       },
       edit (record) {
