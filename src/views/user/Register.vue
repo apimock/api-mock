@@ -6,8 +6,8 @@
         <a-input
           size="large"
           type="text"
-          placeholder="邮箱"
-          v-decorator="['email', {rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }], validateTrigger: ['change', 'blur']}]"
+          placeholder="用户名"
+          v-decorator="['username', {rules: [{ required: true, message: '请输入用户名' }], validateTrigger: ['change', 'blur']}]"
         ></a-input>
       </a-form-item>
 
@@ -48,40 +48,6 @@
       </a-form-item>
 
       <a-form-item>
-        <a-input size="large" placeholder="11 位手机号" v-decorator="['mobile', {rules: [{ required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
-          <a-select slot="addonBefore" size="large" defaultValue="+86">
-            <a-select-option value="+86">+86</a-select-option>
-            <a-select-option value="+87">+87</a-select-option>
-          </a-select>
-        </a-input>
-      </a-form-item>
-      <!--<a-input-group size="large" compact>
-            <a-select style="width: 20%" size="large" defaultValue="+86">
-              <a-select-option value="+86">+86</a-select-option>
-              <a-select-option value="+87">+87</a-select-option>
-            </a-select>
-            <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
-          </a-input-group>-->
-
-      <a-row :gutter="16">
-        <a-col class="gutter-row" :span="16">
-          <a-form-item>
-            <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
-          <a-button
-            class="getCaptcha"
-            size="large"
-            :disabled="state.smsSendBtn"
-            @click.stop.prevent="getCaptcha"
-            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>
-        </a-col>
-      </a-row>
-
-      <a-form-item>
         <a-button
           size="large"
           type="primary"
@@ -100,6 +66,7 @@
 
 <script>
 import { mixinDevice } from '@/utils/mixin.js'
+import ApiUser from '@/api/user'
 
 const levelNames = {
   0: '低',
@@ -211,17 +178,23 @@ export default {
 
     handleSubmit () {
       const { form: { validateFields }, state, $router } = this
-      validateFields({ force: true }, (err, values) => {
+      validateFields({ force: true }, async (err, values) => {
         if (!err) {
-          state.passwordLevelChecked = false
-          $router.push({ name: 'registerResult', params: { ...values } })
+          const { data } = await ApiUser.register({ ...values })
+          const { code, message } = data
+          if (code === 200) {
+            state.passwordLevelChecked = false
+            $router.push({ name: 'login', params: { ...values } })
+          } else {
+            this.requestFailed(message)
+          }
         }
       })
     },
     requestFailed (err) {
       this.$notification['error']({
         message: '错误',
-        description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
+        description: (err || '请求出现错误，请稍后再试'),
         duration: 4
       })
       this.registerBtn = false
