@@ -5,7 +5,7 @@ module.exports = function dbConnect () {
   if (!config.has('mysql')) {
     return Promise.reject(new Error('dbConnect: config.mysql is required'))
   }
-  const mysql = config.mysql
+  const mysql = config.get('mysql')
   global.__seq = new Sequelize(
     mysql.database,
     mysql.user,

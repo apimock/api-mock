@@ -7,7 +7,7 @@
     >
       <a-list-item slot="renderItem" slot-scope="item">
         <template v-if="!item || item.id === undefined">
-          <a-button class="new-btn" type="dashed">
+          <a-button @click="showModal" class="new-btn" type="dashed">
             <a-icon type="plus"/>
             新增产品
           </a-button>
@@ -19,13 +19,33 @@
               <div class="meta-content" slot="description">{{ item.description }}</div>
             </a-card-meta>
             <template class="ant-card-actions" slot="actions">
-              <router-link :to="{name: 'mock', params: { projectSign: item.sign }}">{{ item.sign }}</router-link>
-              <a>操作二</a>
+              <router-link :to="{name: 'mock', params: { projectSign: item.sign }}"><a-icon key="eye" type="eye" /></router-link>
+              <a><a-icon key="edit" type="edit" @click="update(item)"/></a>
+              <a><a-icon key="delete" type="delete" @click="remove(item.id)"/></a>
             </template>
           </a-card>
         </template>
       </a-list-item>
     </a-list>
+    <a-modal
+      title="add project"
+      :visible="modal.show"
+      :confirm-loading="modal.confirmLoading"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <a-form-model layout="vertical" :model="projectForm" ref="projectForm" :rules="rules">
+        <a-form-model-item label="Name" prop="name">
+          <a-input v-model="projectForm.name" placeholder="please input name"/>
+        </a-form-model-item>
+        <a-form-model-item label="Base Url" prop="base_url">
+          <a-input v-model="projectForm.base_url" placeholder="please input base url"/>
+        </a-form-model-item>
+        <a-form-model-item label="Description" prop="description">
+          <a-input v-model="projectForm.description" placeholder="please input description"/>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
   </div>
 </template>
 
@@ -36,7 +56,19 @@
     name: 'CardList',
     data () {
       return {
-        dataSource: []
+        dataSource: [],
+        modal: {
+          id: '',
+          show: false,
+          confirmLoading: false
+        },
+        projectForm: {},
+        rules: {
+          name: [
+            { required: true, message: 'Please input Activity name', trigger: 'blur' }
+          ],
+          description: [{ required: true, message: 'Please input activity form', trigger: 'blur' }]
+        }
       }
     },
     methods: {
@@ -44,8 +76,49 @@
         const { data } = await ApiProject.list()
         const { bean, code } = data
         if (code === 200) {
-          this.dataSource = bean
+          this.dataSource = !bean.length ? [{}] : bean
         }
+      },
+      handleOk () {
+        this.$refs.projectForm.validate(async valid => {
+          if (!valid) {
+            console.log('error submit!!')
+            return false
+          }
+          if (!this.modal.id) {
+            const { data } = await ApiProject.create({ ...this.projectForm })
+            const { code, message } = data
+            if (code === 200) {
+              this.$message.success('创建成功')
+              this.modal.show = false
+              this.getList()
+            } else {
+              this.$message.error(message)
+            }
+          } else {
+            const { data } = await ApiProject.update({ ...this.projectForm })
+            const { code, message } = data
+            if (code === 200) {
+              this.$message.success('创建成功')
+              this.modal.show = false
+              this.getList()
+            } else {
+              this.$message.error(message)
+            }
+          }
+        })
+      },
+      handleCancel () {
+        this.modal.show = false
+      },
+      showModal () {
+        this.modal.id = ''
+        this.modal.show = true
+      },
+      update (item) {
+        this.modal.id = item.id
+        this.projectForm = Object.assign(Object.create(null), this.projectForm, item)
+        this.modal.show = true
       }
     },
     created () {

@@ -13,7 +13,7 @@ export default class Project {
     const { description } = ctx.request.body
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    const members = ctx.checkBody('members').empty().type('array').value
+    const members = ctx.checkBody('members').empty().type('array').value || []
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
 
     if (members && members.length) {
@@ -51,7 +51,7 @@ export default class Project {
     const id = ctx.checkBody('id').notEmpty().value
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    const members = ctx.checkBody('members').empty().type('array').value
+    const members = ctx.checkBody('members').empty().type('array').value || []
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
 
     if (ctx.errors) {
@@ -61,7 +61,7 @@ export default class Project {
 
     const project = await ProjectProxy.checkById(id, uid)
     let diffMembers = _.difference(project.members, members)
-    if (diffMembers.length) {
+    if (diffMembers.length > 0) {
       await ProjectUserProxy.remove({
         where: {
           project_id: project.id,
@@ -73,7 +73,7 @@ export default class Project {
     }
 
     diffMembers = _.difference(members, project.members)
-    if (diffMembers.length) {
+    if (diffMembers.length > 0) {
       const userProjectAll = diffMembers.map(uid => ({ uid, project_id: id, created_at: dateTime() }))
       await ProjectUserProxy.bulkCreate(userProjectAll)
     }
@@ -127,7 +127,7 @@ export default class Project {
       offset: pageSize * (pageIndex - 1),
       limit: pageSize,
       order: [
-        ['created_at', 'ASC']
+        ['created_at', 'DESC']
       ],
       include: Model.User
     }
