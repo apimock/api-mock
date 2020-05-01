@@ -12,6 +12,7 @@
             <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
               <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+              <a-button style="margin-left: 8px" @click="createOrUpdate">创建</a-button>
             </span>
           </a-col>
         </a-row>
@@ -34,7 +35,7 @@
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
           <a-button @click="view(record, text)"><a-icon type="eye" /></a-button>
-          <a-button @click="edit(record)"><a-icon type="edit" /></a-button>
+          <a-button @click="createOrUpdate(record)"><a-icon type="edit" /></a-button>
           <a-button><a-icon type="link" /></a-button>
         </a-button-group>
         <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>
@@ -54,34 +55,37 @@
           asdfdf
         </a-col>
         <a-col :span="8" :pull="16">
-          <a-form-model layout="vertical" :model="mockForm" ref="mockForm">
-            <a-form-model-item label="URL">
+          <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="handleSubmit">
+            <a-form-model-item label="URL" prop="url">
               <a-input v-model="mockForm.url" placeholder="please input url" />
             </a-form-model-item>
             <a-form-model-item label="Method">
               <a-select v-model="mockForm.method">
-                <a-select-option value="1">
+                <a-select-option value="get">
                   get
                 </a-select-option>
-                <a-select-option value="2">
+                <a-select-option value="post">
                   post
                 </a-select-option>
-                <a-select-option value="3">
+                <a-select-option value="put">
                   put
                 </a-select-option>
-                <a-select-option value="4">
+                <a-select-option value="delete">
                   delete
                 </a-select-option>
-                <a-select-option value="5">
+                <a-select-option value="patch">
                   patch
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-            <a-form-model-item label="Description">
+            <a-form-model-item label="Description" prop="description">
               <a-input v-model="mockForm.description" placeholder="please input description" />
             </a-form-model-item>
+            <a-form-model-item label="Rule" prop="rule">
+              <a-textarea v-model="mockForm.rule" placeholder="please input rule" />
+            </a-form-model-item>
             <a-form-model-item>
-              <a-button type="primary" block>
+              <a-button type="primary" block htmlType="submit">
                 Submit
               </a-button>
             </a-form-model-item>
@@ -96,6 +100,13 @@
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
   import { Method, MethodTagColor } from '@/utils/enum'
+  const mockForm = {
+    id: '',
+    url: '',
+    method: 'get',
+    description: '',
+    rule: '{}'
+  }
 
   export default {
     name: 'Mock',
@@ -151,13 +162,17 @@
         selectedRowKeys: [],
         selectedRows: [],
         drawer: {
+          id: '',
           show: false
         },
-        mockForm: {
-          url: '',
-          method: '1',
-          description: ''
-        }
+        rules: {
+          url: [
+            { required: true, message: 'Please input url', trigger: 'blur' }
+          ],
+          description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
+          rule: [{ required: true, message: 'Please input rule', trigger: 'blur' }]
+        },
+        mockForm
       }
     },
     methods: {
@@ -175,16 +190,50 @@
         const url = `${this.baseURL}${record.url}#!method=${Method[record.method]}`
         window.open(url)
       },
-      edit (record) {
+      createOrUpdate (record) {
         this.drawer.show = true
         if (record.id) {
-          this.mockForm.url = record.url
-          this.mockForm.method = record.method.toString()
-          this.mockForm.description = record.description
+          this.drawer.id = record.id
+          this.mockForm = Object.assign(Object.create(null), this.mockForm, record)
+          this.mockForm.method = Method[record.method]
+        } else {
+          this.drawer.id = ''
+          this.mockForm = mockForm
+          this.mockForm.project_id = this.project.id
         }
       },
       onDrawClose () {
         this.drawer.show = false
+      },
+      handleSubmit (e) {
+        e.preventDefault()
+        this.$refs.mockForm.validate(async valid => {
+          if (!valid) {
+            console.log('error submit!!')
+            return false
+          }
+          if (!this.drawer.id) {
+            const { data } = await ApiMock.create({ ...this.mockForm })
+            const { code, message } = data
+            if (code === 200) {
+              this.$message.success('创建成功')
+              this.drawer.show = false
+              this.$refs['table'].refresh()
+            } else {
+              this.$message.error(message)
+            }
+          } else {
+            const { data } = await ApiMock.update({ ...this.mockForm })
+            const { code, message } = data
+            if (code === 200) {
+              this.$message.success('创建成功')
+              this.drawer.show = false
+              this.$refs['table'].refresh()
+            } else {
+              this.$message.error(message)
+            }
+          }
+        })
       }
     }
   }

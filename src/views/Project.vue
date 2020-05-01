@@ -99,7 +99,7 @@
             const { data } = await ApiProject.update({ ...this.projectForm })
             const { code, message } = data
             if (code === 200) {
-              this.$message.success('创建成功')
+              this.$message.success('更新成功')
               this.modal.show = false
               this.getList()
             } else {
