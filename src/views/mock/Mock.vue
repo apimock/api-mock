@@ -30,7 +30,7 @@
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
       <span slot="method" slot-scope="text">
-        <a-tag style="width:70px" :color="methodTagColor(text)">{{methodToString(text)}}</a-tag>
+        <a-tag style="width:70px" :color="methodTagColor(text)">{{ methodToString(text) }}</a-tag>
       </span>
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
@@ -46,14 +46,14 @@
       title="Basic Drawer"
       placement="right"
       :closable="true"
-      :width="1000"
+      :width="drawer.width"
       @close="onDrawClose"
       :maskClosable="true"
       :visible="drawer.show"
     >
       <div class="mock-editor-wrap">
         <div class="mock-form">
-          <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="handleSubmit">
+          <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
             <a-form-model-item label="URL" prop="url">
               <a-input v-model="mockForm.url" placeholder="please input url" />
             </a-form-model-item>
@@ -81,15 +81,12 @@
               </a-col>
               <a-col :span="12">
                 <a-form-model-item label="Timeout" prop="delay">
-                  <a-input-number v-model="mockForm.delay" :min="0" :precision="0"  :step="100" style="width: 100%"/>
+                  <a-input-number v-model="mockForm.delay" :min="0" :precision="0" :step="100" style="width: 100%"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
             <a-form-model-item label="Description" prop="description">
               <a-input v-model="mockForm.description" placeholder="please input description" />
-            </a-form-model-item>
-            <a-form-model-item label="Rule" prop="rule">
-              <a-textarea v-model="mockForm.rule" placeholder="please input rule" />
             </a-form-model-item>
             <a-form-model-item>
               <a-button type="primary" block htmlType="submit">
@@ -110,11 +107,13 @@
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
   import { Method, MethodTagColor } from '@/utils/enum'
+  import jsBeautify from 'js-beautify/js/lib/beautify'
   const ace = require('brace')
   require('brace/mode/javascript')
   require('brace/theme/monokai')
   require('brace/ext/language_tools')
   require('brace/ext/searchbox')
+  require('./snippets')
 
   const mockForm = {
     id: '',
@@ -182,7 +181,8 @@
         editorSetup: false,
         drawer: {
           id: '',
-          show: false
+          show: false,
+          width: document.body.clientWidth - 200
         },
         rules: {
           url: [
@@ -226,12 +226,18 @@
           this.mockForm = mockForm
           this.mockForm.project_id = this.project.id
         }
+        this.$nextTick(() => {
+          this.editor.setValue(this.mockForm.rule)
+          this.format()
+        })
       },
       onDrawClose () {
         this.drawer.show = false
       },
-      handleSubmit (e) {
-        e.preventDefault()
+      submit (e) {
+        if (e) {
+          e.preventDefault()
+        }
         this.$refs.mockForm.validate(async valid => {
           if (!valid) {
             console.log('error submit!!')
@@ -261,7 +267,14 @@
         })
       },
       onChange () {
-        // this.temp.mode = this.editor.getValue()
+        this.mockForm.rule = this.editor.getValue()
+      },
+      format () {
+        const value = this.editor.getValue()
+        const code = /^http(s)?/.test(value)
+          ? value
+          : jsBeautify.js_beautify(value, { indent_size: 2 })
+        this.editor.setValue(code)
       },
       setEditor () {
         this.editor = ace.edit(this.$refs.editor)
@@ -269,6 +282,7 @@
         this.editor.setTheme('ace/theme/monokai')
         this.editor.setOption('tabSize', 2)
         this.editor.setOption('fontSize', 15)
+        // this.editor.setOption('enableBasicAutocompletion', true)
         this.editor.setOption('enableLiveAutocompletion', true)
         this.editor.setOption('enableSnippets', true)
         this.editor.clearSelection()
@@ -287,10 +301,14 @@
 </script>
 <style lang="less">
   .mock-draw{
+    .ant-drawer-header{
+      display: none;
+    }
     .ant-drawer-wrapper-body{
       display: flex;
       flex-direction: column;
       .ant-drawer-body{
+        padding: 10px;
         flex: 1;
       }
     }
@@ -303,6 +321,7 @@
       display: flex;
       /*justify-content: center;*/
       align-items: center;
+      margin-left: 10px;
       margin-right: 20px;
       form{
         flex: 1;

@@ -97,7 +97,7 @@ export default class Mock {
       offset: pageSize * (pageNo - 1),
       limit: pageSize,
       order: [
-        ['created_at']
+        ['created_at', 'DESC']
       ]
     }
 
