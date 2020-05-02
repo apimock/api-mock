@@ -55,6 +55,10 @@ const vueConfig = {
         name: 'assets/[name].[hash:8].[ext]'
       })
 
+    const snippets = config.module.rule('snippets')
+    snippets.uses.clear()
+    snippets.test(/\.snippets/).use('raw-loader').loader('raw-loader')
+
     // if prod is on
     // assets require on cdn
     if (isProd) {

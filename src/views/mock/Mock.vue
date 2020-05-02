@@ -42,6 +42,7 @@
       </span>
     </s-table>
     <a-drawer
+      wrapClassName="mock-draw"
       title="Basic Drawer"
       placement="right"
       :closable="true"
@@ -50,34 +51,40 @@
       :maskClosable="true"
       :visible="drawer.show"
     >
-      <a-row>
-        <a-col style="background: black" :span="16" :push="8">
-          asdfdf
-        </a-col>
-        <a-col :span="8" :pull="16">
+      <div class="mock-editor-wrap">
+        <div class="mock-form">
           <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="handleSubmit">
             <a-form-model-item label="URL" prop="url">
               <a-input v-model="mockForm.url" placeholder="please input url" />
             </a-form-model-item>
-            <a-form-model-item label="Method">
-              <a-select v-model="mockForm.method">
-                <a-select-option value="get">
-                  get
-                </a-select-option>
-                <a-select-option value="post">
-                  post
-                </a-select-option>
-                <a-select-option value="put">
-                  put
-                </a-select-option>
-                <a-select-option value="delete">
-                  delete
-                </a-select-option>
-                <a-select-option value="patch">
-                  patch
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
+            <a-row :gutter="20">
+              <a-col :span="12">
+                <a-form-model-item label="Method">
+                  <a-select v-model="mockForm.method">
+                    <a-select-option value="get">
+                      get
+                    </a-select-option>
+                    <a-select-option value="post">
+                      post
+                    </a-select-option>
+                    <a-select-option value="put">
+                      put
+                    </a-select-option>
+                    <a-select-option value="delete">
+                      delete
+                    </a-select-option>
+                    <a-select-option value="patch">
+                      patch
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-model-item label="Timeout" prop="delay">
+                  <a-input-number v-model="mockForm.delay" :min="0" :precision="0"  :step="100" style="width: 100%"/>
+                </a-form-model-item>
+              </a-col>
+            </a-row>
             <a-form-model-item label="Description" prop="description">
               <a-input v-model="mockForm.description" placeholder="please input description" />
             </a-form-model-item>
@@ -90,8 +97,11 @@
               </a-button>
             </a-form-model-item>
           </a-form-model>
-        </a-col>
-      </a-row>
+        </div>
+        <div class="mock-editor">
+          <div ref="editor"></div>
+        </div>
+      </div>
     </a-drawer>
   </a-card>
 </template>
@@ -100,10 +110,17 @@
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
   import { Method, MethodTagColor } from '@/utils/enum'
+  const ace = require('brace')
+  require('brace/mode/javascript')
+  require('brace/theme/monokai')
+  require('brace/ext/language_tools')
+  require('brace/ext/searchbox')
+
   const mockForm = {
     id: '',
     url: '',
     method: 'get',
+    delay: 0,
     description: '',
     rule: '{}'
   }
@@ -161,6 +178,8 @@
         },
         selectedRowKeys: [],
         selectedRows: [],
+        editor: null,
+        editorSetup: false,
         drawer: {
           id: '',
           show: false
@@ -192,6 +211,12 @@
       },
       createOrUpdate (record) {
         this.drawer.show = true
+        if (!this.editorSetup) {
+          this.$nextTick(() => {
+            this.setEditor()
+            this.editorSetup = true
+          })
+        }
         if (record.id) {
           this.drawer.id = record.id
           this.mockForm = Object.assign(Object.create(null), this.mockForm, record)
@@ -234,7 +259,63 @@
             }
           }
         })
+      },
+      onChange () {
+        // this.temp.mode = this.editor.getValue()
+      },
+      setEditor () {
+        this.editor = ace.edit(this.$refs.editor)
+        this.editor.getSession().setMode('ace/mode/javascript')
+        this.editor.setTheme('ace/theme/monokai')
+        this.editor.setOption('tabSize', 2)
+        this.editor.setOption('fontSize', 15)
+        this.editor.setOption('enableLiveAutocompletion', true)
+        this.editor.setOption('enableSnippets', true)
+        this.editor.clearSelection()
+        this.editor.getSession().setUseWorker(false)
+        this.editor.on('change', this.onChange)
+        this.editor.commands.addCommand({
+          name: 'save',
+          bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+          exec: () => {
+            this.submit()
+          }
+        })
       }
     }
   }
 </script>
+<style lang="less">
+  .mock-draw{
+    .ant-drawer-wrapper-body{
+      display: flex;
+      flex-direction: column;
+      .ant-drawer-body{
+        flex: 1;
+      }
+    }
+  }
+  .mock-editor-wrap{
+    display: flex;
+    height: 100%;
+    .mock-form{
+      width: 400px;
+      display: flex;
+      /*justify-content: center;*/
+      align-items: center;
+      margin-right: 20px;
+      form{
+        flex: 1;
+      }
+    }
+
+    .mock-editor{
+      width: 100%;
+      height: 100%;
+      .ace_editor{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+</style>
