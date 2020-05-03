@@ -11,7 +11,7 @@
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
-                  <a-button @click="toProjectList" style="margin-left: 10px" icon="unordered-list" ></a-button>
+                  <a-button @click="toProjectList" style="margin-left: 10px" icon="form" ></a-button>
                 </a-menu-item>
                 <a-menu-item v-for="(item, index) in projectList" :key="index">
                   <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
@@ -45,6 +45,9 @@
     >
       <span slot="method" slot-scope="text">
         <a-tag style="width:70px" :color="methodTagColor(text)">{{ methodToString(text) }}</a-tag>
+      </span>
+      <span slot="avatar" slot-scope="text">
+        <a-avatar :src="text.avatar" :title="text.username" :size="28" />
       </span>
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
@@ -175,6 +178,13 @@
           {
             title: '描述',
             dataIndex: 'description'
+          },
+          {
+            title: '创建者',
+            dataIndex: 'user',
+            align: 'center',
+            width: 66,
+            scopedSlots: { customRender: 'avatar' }
           },
           {
             title: '操作',

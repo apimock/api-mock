@@ -2,7 +2,10 @@ import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
 const Op = require('sequelize').Op
+const _ = require('lodash')
 const defaultPageSize = require('config').get('pageSize')
+const Model = require('~/server/models')()
+const ft = require('../../models/fields_table')
 
 export default class Mock {
   static async create (ctx) {
@@ -98,7 +101,8 @@ export default class Mock {
       limit: pageSize,
       order: [
         ['created_at', 'DESC']
-      ]
+      ],
+      include: Model.User
     }
 
     if (keywords) {
@@ -116,7 +120,11 @@ export default class Mock {
       })
     }
 
-    const mocks = await MockProxy.findAll(query)
+    let mocks = await MockProxy.findAll(query)
+    mocks = mocks.map((item) => {
+      item.user = _.pick(item.user, ft.user)
+      return _.pick(item, ft.mock.concat(['user']))
+    })
     const bean = {
       data: mocks,
       project,
