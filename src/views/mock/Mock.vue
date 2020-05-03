@@ -2,17 +2,31 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
-        <a-row :gutter="48">
+        <a-row :gutter="10">
           <a-col :md="6" :sm="24">
+            <a-dropdown v-if="project" :trigger="['click']">
+              <a class="ant-dropdown-link" @click="onProjectDropdown">
+                {{ project.name }} <a-icon type="down" />
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
+                  <a-button @click="toProjectList" style="margin-left: 10px" icon="unordered-list" ></a-button>
+                </a-menu-item>
+                <a-menu-item v-for="(item, index) in projectList" :key="index">
+                  <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </a-col>
+          <a-col :md="8" :sm="24">
             <a-form-item>
-              <a-input v-model="queryParam.keywords" placeholder=""/>
+              <a-input-search v-model="queryParam.keywords" placeholder="input search text" enter-button @search="$refs.table.refresh(true)" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-              <a-button style="margin-left: 8px" @click="createOrUpdate">创建</a-button>
+              <a-button type="primary" style="margin-left: 8px" @click="createOrUpdate">创建</a-button>
             </span>
           </a-col>
         </a-row>
@@ -106,6 +120,7 @@
 <script>
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
+  import ApiProject from '@/api/project'
   import { Method, MethodTagColor } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
   const ace = require('brace')
@@ -132,7 +147,10 @@
     data () {
       return {
         queryParam: {},
+        projectSign: this.$route.params.projectSign,
         project: null,
+        projectList: [],
+        projectSearch: '',
         baseURL: '',
         columns: [
           {
@@ -152,7 +170,7 @@
           {
             title: 'URL',
             dataIndex: 'url',
-            width: 400
+            width: 300
           },
           {
             title: '描述',
@@ -168,7 +186,7 @@
         ],
         loadData: async parameter => {
           const { data } = await ApiMock.list(
-            Object.assign(parameter, this.queryParam, { project_sign: this.$route.params.projectSign })
+            Object.assign(parameter, this.queryParam, { project_sign: this.projectSign })
           )
           this.project = data.bean.project
           const { sign, base_url: baseUrl } = data.bean.project
@@ -195,6 +213,13 @@
       }
     },
     methods: {
+      async getProjectList (params) {
+        const { data } = await ApiProject.list(params)
+        const { bean, code } = data
+        if (code === 200) {
+          this.projectList = bean
+        }
+      },
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -295,7 +320,26 @@
             this.submit()
           }
         })
+      },
+      onProjectDropdown (e) {
+        e.preventDefault()
+        this.projectSearch = ''
+        this.getProjectList()
+      },
+      onProjectSearch (value) {
+        this.getProjectList({ keywords: value })
+      },
+      toProjectList () {
+        this.$router.push({ name: 'project' })
       }
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.projectSign = to.params.projectSign
+      this.$refs.table.refresh(true)
+      next()
+    },
+    created () {
+      this.getProjectList()
     }
   }
 </script>
