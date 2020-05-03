@@ -1,32 +1,39 @@
 <template>
   <a-card :bordered="false">
+    <div style="margin-bottom: 20px">
+      <a-dropdown v-if="project" :trigger="['click']">
+        <a class="ant-dropdown-link" @click="onProjectDropdown">
+          {{ project.name }} <a-icon type="down" />
+        </a>
+        <a-menu slot="overlay">
+          <a-menu-item>
+            <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
+            <a-button @click="toProjectList" style="margin-left: 10px" icon="form" ></a-button>
+          </a-menu-item>
+          <a-menu-item v-for="(item, index) in projectList" :key="index">
+            <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
+          </a-menu-item>
+        </a-menu>
+      </a-dropdown>
+      <a-button
+        style="margin-left: 20px"
+        type="link"
+        icon="link"
+        v-clipboard:copy="baseURL"
+        v-clipboard:success="onCopySuccess"
+        v-clipboard:error="onCopyError" >Base URL<span style="color: #dadada; margin: 0 5px">|</span>{{ baseURL }}</a-button>
+    </div>
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="10">
           <a-col :md="6" :sm="24">
-            <a-dropdown v-if="project" :trigger="['click']">
-              <a class="ant-dropdown-link" @click="onProjectDropdown">
-                {{ project.name }} <a-icon type="down" />
-              </a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
-                  <a-button @click="toProjectList" style="margin-left: 10px" icon="form" ></a-button>
-                </a-menu-item>
-                <a-menu-item v-for="(item, index) in projectList" :key="index">
-                  <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
-          </a-col>
-          <a-col :md="8" :sm="24">
             <a-form-item>
-              <a-input-search v-model="queryParam.keywords" placeholder="input search text" enter-button @search="$refs.table.refresh(true)" />
+              <a-input-search v-model="queryParam.keywords" placeholder="input URL or Description" enter-button @search="$refs.table.refresh(true)" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" style="margin-left: 8px" @click="createOrUpdate">创建</a-button>
+              <a-button type="primary" style="margin-left: 8px; background: #1890ff; border-color:#1890ff" @click="createOrUpdate">创建接口</a-button>
             </span>
           </a-col>
         </a-row>
@@ -46,14 +53,28 @@
       <span slot="method" slot-scope="text">
         <a-tag style="width:70px" :color="methodTagColor(text)">{{ methodToString(text) }}</a-tag>
       </span>
+      <span slot="url" slot-scope="text">
+        <a
+          v-clipboard:copy="text"
+          v-clipboard:success="onCopySuccess"
+          v-clipboard:error="onCopyError">{{ text }}</a>
+      </span>
       <span slot="avatar" slot-scope="text">
-        <a-avatar :src="text.avatar" :title="text.username" :size="28" />
+        <a-tooltip>
+          <template slot="title">
+            {{ text.username }}
+          </template>
+          <a-avatar :src="text.avatar" :title="text.username" :size="28" />
+        </a-tooltip>
       </span>
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
           <a-button @click="view(record, text)"><a-icon type="eye" /></a-button>
           <a-button @click="createOrUpdate(record)"><a-icon type="edit" /></a-button>
-          <a-button><a-icon type="link" /></a-button>
+          <a-button
+            v-clipboard:copy="baseURL+record.url"
+            v-clipboard:success="onCopySuccess"
+            v-clipboard:error="onCopyError"><a-icon type="link" /></a-button>
         </a-button-group>
         <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>
       </span>
@@ -173,7 +194,8 @@
           {
             title: 'URL',
             dataIndex: 'url',
-            width: 300
+            width: 300,
+            scopedSlots: { customRender: 'url' }
           },
           {
             title: '描述',
@@ -341,6 +363,12 @@
       },
       toProjectList () {
         this.$router.push({ name: 'project' })
+      },
+      onCopySuccess: function (e) {
+        this.$message.success('You just copied: ' + e.text)
+      },
+      onCopyError: function (e) {
+        this.$message.error('Failed to copy texts')
       }
     },
     beforeRouteUpdate (to, from, next) {

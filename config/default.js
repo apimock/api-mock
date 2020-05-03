@@ -4,8 +4,8 @@ module.exports = {
   pageSize: 30,
   mysql: {
     database: 'apimock',
-    user: 'root',
-    password: 'root',
+    user: 'test',
+    password: '123456789',
     option: {
       host: '127.0.0.1',
       port: 3306,
@@ -38,7 +38,7 @@ module.exports = {
   mysql: {
     database: 'apimock',
     user: 'root',
-    password: 'root',
+    password: '123456789',
     option: {
       host: '127.0.0.1',
       port: 3306,
