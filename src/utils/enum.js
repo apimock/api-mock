@@ -19,6 +19,14 @@ export const MethodTagColor = {
   5: '#f90'
 }
 
+export const MethodArray = [
+  { code: 1, method: 'get' },
+  { code: 2, method: 'post' },
+  { code: 3, method: 'put' },
+  { code: 4, method: 'delete' },
+  { code: 5, method: 'patch' }
+]
+
 const CodeColor = {
   100: '#ccc',
   200: '#52c41a',

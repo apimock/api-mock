@@ -98,21 +98,9 @@
           <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
             <a-form-model-item label="URL" prop="url">
               <a-input v-model="mockForm.url" placeholder="please input url">
-                <a-select v-model="mockForm.method" slot="addonBefore" style="width: 80px">
-                  <a-select-option value="get">
-                    get
-                  </a-select-option>
-                  <a-select-option value="post">
-                    post
-                  </a-select-option>
-                  <a-select-option value="put">
-                    put
-                  </a-select-option>
-                  <a-select-option value="delete">
-                    delete
-                  </a-select-option>
-                  <a-select-option value="patch">
-                    patch
+                <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
+                  <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
+                    <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{item.method}}</a-tag>
                   </a-select-option>
                 </a-select>
               </a-input>
@@ -168,7 +156,7 @@
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
   import ApiProject from '@/api/project'
-  import { Method, MethodTagColor, ResponseStatus } from '@/utils/enum'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
   const ace = require('brace')
   require('brace/mode/javascript')
@@ -266,6 +254,7 @@
           rule: [{ required: true, message: 'Please input rule', trigger: 'blur' }]
         },
         mockForm,
+        MethodArray,
         ResponseStatus
       }
     },
