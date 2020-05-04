@@ -6,10 +6,14 @@
           {{ project.name }} <a-icon type="down" />
         </a>
         <a-menu slot="overlay">
-          <a-menu-item>
+          <a-menu-item :disabled="true">
             <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
             <a-button @click="toProjectList" style="margin-left: 10px" icon="form" ></a-button>
           </a-menu-item>
+          <a-menu-item :disabled="true">
+            项目列表
+          </a-menu-item>
+          <a-menu-divider />
           <a-menu-item v-for="(item, index) in projectList" :key="index">
             <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
           </a-menu-item>
