@@ -14,7 +14,7 @@ export default class Mock {
     const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch']).value
     const rule = ctx.checkBody('rule').notEmpty().value
-    const delay = ctx.checkBody('delay').empty().toInt().default(0).value
+    const delay = ctx.checkBody('delay').empty().toInt().gt(180000, 'delay must between (0, 180000)').lt(0, 'delay must between (0, 180000)').default(0).value
     const description = ctx.checkBody('description').notEmpty().value
     const mockURL = decodeURIComponent(url)
     const methodCode = Method[method]

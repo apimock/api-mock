@@ -1,7 +1,7 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
-import { params } from '~/server/utils'
+import { params, delay } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
 
@@ -46,6 +46,11 @@ export default class MockApi {
     vm.run('Mock.mock(new Function("return " + rule)())') // 数据验证，检测 setTimeout 等方法
     const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
 
-    ctx.body = apiData
+    if (mock.delay > 0) {
+      await delay(mock.delay)
+      ctx.body = apiData
+    } else {
+      ctx.body = apiData
+    }
   }
 }

@@ -119,7 +119,13 @@
               </a-col>
               <a-col :span="12">
                 <a-form-model-item label="Timeout" prop="delay">
-                  <a-input-number v-model="mockForm.delay" :min="0" :precision="0" :step="100" style="width: 100%"/>
+                  <a-input-number
+                    v-model="mockForm.delay"
+                    :min="0"
+                    :max="180000"
+                    :precision="0"
+                    :step="100"
+                    style="width: 100%"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
