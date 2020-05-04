@@ -37,7 +37,7 @@
           </a-col>
           <a-col :md="6" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" style="margin-left: 8px; background: #1890ff; border-color:#1890ff" @click="createOrUpdate">创建接口</a-button>
+              <a-button type="primary" icon="plus" style="margin-left: 8px; background: #1890ff; border-color:#1890ff" @click="createOrUpdate">创建接口</a-button>
             </span>
           </a-col>
         </a-row>
@@ -97,32 +97,48 @@
         <div class="mock-form">
           <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
             <a-form-model-item label="URL" prop="url">
-              <a-input v-model="mockForm.url" placeholder="please input url" />
+              <a-input v-model="mockForm.url" placeholder="please input url">
+                <a-select v-model="mockForm.method" slot="addonBefore" style="width: 80px">
+                  <a-select-option value="get">
+                    get
+                  </a-select-option>
+                  <a-select-option value="post">
+                    post
+                  </a-select-option>
+                  <a-select-option value="put">
+                    put
+                  </a-select-option>
+                  <a-select-option value="delete">
+                    delete
+                  </a-select-option>
+                  <a-select-option value="patch">
+                    patch
+                  </a-select-option>
+                </a-select>
+              </a-input>
+            </a-form-model-item>
+            <a-form-model-item label="Description" prop="description">
+              <a-input v-model="mockForm.description" placeholder="please input description" />
             </a-form-model-item>
             <a-row :gutter="20">
               <a-col :span="12">
-                <a-form-model-item label="Method">
-                  <a-select v-model="mockForm.method">
-                    <a-select-option value="get">
-                      get
-                    </a-select-option>
-                    <a-select-option value="post">
-                      post
-                    </a-select-option>
-                    <a-select-option value="put">
-                      put
-                    </a-select-option>
-                    <a-select-option value="delete">
-                      delete
-                    </a-select-option>
-                    <a-select-option value="patch">
-                      patch
+                <a-form-model-item label="Response Status">
+                  <a-select
+                    v-model="mockForm.code"
+                    show-search
+                    :dropdownMatchSelectWidth="false"
+                  >
+                    <a-select-option v-for="(item, index) in ResponseStatus" :key="index" :value="item.code">
+                      <template v-if="item.code !== 0">
+                        <a-tag :color="item.color">{{ item.code }}</a-tag> {{ item.desc }}
+                      </template>
+                      <a-divider v-if="item.code === 0" style="margin: 4px 0;" />
                     </a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
               <a-col :span="12">
-                <a-form-model-item label="Timeout" prop="delay">
+                <a-form-model-item label="Response Delay" prop="delay">
                   <a-input-number
                     v-model="mockForm.delay"
                     :min="0"
@@ -133,9 +149,6 @@
                 </a-form-model-item>
               </a-col>
             </a-row>
-            <a-form-model-item label="Description" prop="description">
-              <a-input v-model="mockForm.description" placeholder="please input description" />
-            </a-form-model-item>
             <a-form-model-item>
               <a-button type="primary" block htmlType="submit">
                 Submit
@@ -155,7 +168,7 @@
   import { STable } from '@/components'
   import ApiMock from '@/api/mock'
   import ApiProject from '@/api/project'
-  import { Method, MethodTagColor } from '@/utils/enum'
+  import { Method, MethodTagColor, ResponseStatus } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
   const ace = require('brace')
   require('brace/mode/javascript')
@@ -169,6 +182,7 @@
     url: '',
     method: 'get',
     delay: 0,
+    code: 200,
     description: '',
     rule: '{}'
   }
@@ -251,7 +265,8 @@
           description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
           rule: [{ required: true, message: 'Please input rule', trigger: 'blur' }]
         },
-        mockForm
+        mockForm,
+        ResponseStatus
       }
     },
     methods: {
@@ -409,7 +424,7 @@
     display: flex;
     height: 100%;
     .mock-form{
-      width: 400px;
+      width: 450px;
       display: flex;
       /*justify-content: center;*/
       align-items: center;
