@@ -219,7 +219,14 @@
             title: '创建者',
             dataIndex: 'user',
             align: 'center',
-            width: 66,
+            width: 88,
+            filters: [
+              { text: 'get', value: 1 },
+              { text: 'post', value: 2 },
+              { text: 'put', value: 3 },
+              { text: 'delete', value: 4 },
+              { text: 'patch', value: 5 }
+            ],
             scopedSlots: { customRender: 'avatar' }
           },
           {
