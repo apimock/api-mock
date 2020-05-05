@@ -207,10 +207,12 @@
             title: 'URL',
             dataIndex: 'url',
             width: 300,
+            sorter: true,
             scopedSlots: { customRender: 'url' }
           },
           {
             title: '描述',
+            sorter: true,
             dataIndex: 'description'
           },
           {

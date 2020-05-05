@@ -83,6 +83,8 @@ export default class Mock {
     const projectSign = ctx.checkQuery('project_sign').notEmpty().value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
     const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
+    const sortField = ctx.checkQuery('sortField').empty().value
+    const sortOrder = ctx.checkQuery('sortOrder').empty().value
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -105,6 +107,11 @@ export default class Mock {
         ['created_at', 'DESC']
       ],
       include: Model.User
+    }
+
+    if (sortField && sortOrder) {
+      const order = sortOrder.replace(/end$/, '')
+      query.order.unshift([sortField, order])
     }
 
     if (keywords) {
