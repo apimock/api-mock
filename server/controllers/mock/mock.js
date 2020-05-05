@@ -85,6 +85,7 @@ export default class Mock {
     const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
     const sortField = ctx.checkQuery('sortField').empty().value
     const sortOrder = ctx.checkQuery('sortOrder').empty().value
+    const methods = ctx.query['method[]']
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -112,6 +113,17 @@ export default class Mock {
     if (sortField && sortOrder) {
       const order = sortOrder.replace(/end$/, '')
       query.order.unshift([sortField, order])
+    }
+    if (methods && methods.length > 0) {
+      Object.assign(query.where, {
+        [Op.and]: [
+          {
+            method: {
+              [Op.or]: [methods]
+            }
+          }
+        ]
+      })
     }
 
     if (keywords) {

@@ -195,11 +195,11 @@
             width: 100,
             align: 'center',
             filters: [
-              { text: 'get', value: 1 },
-              { text: 'post', value: 2 },
-              { text: 'put', value: 3 },
-              { text: 'delete', value: 4 },
-              { text: 'patch', value: 5 }
+              { text: 'get', value: '1' },
+              { text: 'post', value: '2' },
+              { text: 'put', value: '3' },
+              { text: 'delete', value: '4' },
+              { text: 'patch', value: '5' }
             ],
             scopedSlots: { customRender: 'method' }
           },
