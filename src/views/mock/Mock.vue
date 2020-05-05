@@ -112,7 +112,7 @@
               <a-col :span="12">
                 <a-form-model-item label="Response Status">
                   <a-select
-                    v-model="mockForm.code"
+                    v-model="mockForm.status"
                     show-search
                     :dropdownMatchSelectWidth="false"
                   >
@@ -170,7 +170,7 @@
     url: '',
     method: 'get',
     delay: 0,
-    code: 200,
+    status: 200,
     description: '',
     rule: '{}'
   }

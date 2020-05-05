@@ -3,17 +3,17 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock', {
     'id': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
     'project_id': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
     'uid': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
     'url': {
@@ -22,14 +22,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: ''
     },
     'method': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       defaultValue: '1'
     },
     'delay': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       defaultValue: '0'
+    },
+    'status': {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      defaultValue: '200'
     },
     'rule': {
       type: DataTypes.TEXT,

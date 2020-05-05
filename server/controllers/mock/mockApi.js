@@ -48,9 +48,8 @@ export default class MockApi {
 
     if (mock.delay > 0) {
       await delay(mock.delay)
-      ctx.body = apiData
-    } else {
-      ctx.body = apiData
     }
+    ctx.body = apiData
+    ctx.status = mock.status
   }
 }
