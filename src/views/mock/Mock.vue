@@ -253,7 +253,7 @@
         drawer: {
           id: '',
           show: false,
-          width: document.body.clientWidth - 200
+          width: this.getDrawWidth()
         },
         rules: {
           url: [
@@ -275,6 +275,9 @@
           this.projectList = bean
         }
       },
+      getDrawWidth () {
+        return document.body.clientWidth - 200
+      },
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -290,6 +293,7 @@
         window.open(url)
       },
       createOrUpdate (record) {
+        this.drawer.width = this.getDrawWidth()
         this.drawer.show = true
         if (!this.editorSetup) {
           this.$nextTick(() => {
