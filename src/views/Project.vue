@@ -76,7 +76,7 @@
         const { data } = await ApiProject.list()
         const { bean, code } = data
         if (code === 200) {
-          this.dataSource = !bean.length ? [{}] : bean
+          this.dataSource = !bean.data.length ? [{}] : bean.data
         }
       },
       handleOk () {

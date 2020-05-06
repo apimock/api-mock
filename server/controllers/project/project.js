@@ -1,6 +1,7 @@
 import ProjectProxy from '~/server/provider/project'
 import ProjectUserProxy from '~/server/provider/userProject'
 import dateTime from '~/server/utils/dateTime'
+import { getPage } from '~/server/utils'
 const _ = require('lodash')
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
@@ -111,8 +112,8 @@ export default class Project {
   static async list (ctx) {
     const uid = ctx.state.user.id
     const { keywords } = ctx.query
-    const pageIndex = ctx.checkQuery('pageIndex').empty().toInt().gt(0).default(1).value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
+    const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
     const source = ctx.checkQuery('source').empty().toInt().default(0).value // 0：全部、1：我创建的、2：我加入的
 
     if (ctx.errors) {
@@ -124,7 +125,7 @@ export default class Project {
       where: {
         uid
       },
-      offset: pageSize * (pageIndex - 1),
+      offset: pageSize * (pageNo - 1),
       limit: pageSize,
       order: [
         ['created_at', 'DESC']
@@ -166,12 +167,18 @@ export default class Project {
       }
     }
 
-    let projects = await ProjectProxy.findAll(query)
+    const projectResult = await ProjectProxy.findAndCountAll(query)
+    const page = getPage(projectResult, pageSize, pageNo)
+    let projects = projectResult.rows
     projects = projects.map((item) => {
       item.user = _.pick(item.user, ft.user)
       return _.pick(item, ft.project.concat(['user']))
     })
 
-    ctx.body = ctx.util.resuccess(projects)
+    const bean = {
+      data: projects,
+      ...page
+    }
+    ctx.body = ctx.util.resuccess(bean)
   }
 }

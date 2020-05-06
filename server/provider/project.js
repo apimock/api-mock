@@ -32,8 +32,8 @@ module.exports = class Project {
     })
   }
 
-  static findAll (query) {
-    return Model.Project.findAll(query)
+  static findAndCountAll (query) {
+    return Model.Project.findAndCountAll(query)
   }
 
   static async checkById (id, uid, creater) {
