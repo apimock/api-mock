@@ -64,3 +64,14 @@ export function delay (time) {
     }, time)
   })
 }
+
+export function getPage (countAll, pageSize, pageNo) {
+  const totalCount = countAll.count || countAll
+  const totalPage = pageSize === 0 ? 1 : Math.ceil(totalCount / pageSize)
+  return {
+    pageSize,
+    pageNo,
+    totalPage,
+    totalCount
+  }
+}

@@ -17,8 +17,8 @@ module.exports = class Mock {
     }
   }
 
-  static findAll (query) {
-    return Model.Mock.findAll(query)
+  static findAndCountAll (query) {
+    return Model.Mock.findAndCountAll(query)
   }
 
   static findOne (where) {

@@ -1,6 +1,7 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
+import { getPage } from '~/server/utils'
 const Op = require('sequelize').Op
 const _ = require('lodash')
 const defaultPageSize = require('config').get('pageSize')
@@ -141,7 +142,9 @@ export default class Mock {
       })
     }
 
-    let mocks = await MockProxy.findAll(query)
+    const mockResult = await MockProxy.findAndCountAll(query)
+    const page = getPage(mockResult, pageSize, pageNo)
+    let mocks = mockResult.rows
     mocks = mocks.map((item) => {
       item.user = _.pick(item.user, ft.user)
       return _.pick(item, ft.mock.concat(['user']))
@@ -149,10 +152,7 @@ export default class Mock {
     const bean = {
       data: mocks,
       project,
-      pageSize,
-      pageNo,
-      totalPage: 6,
-      totalCount: 57
+      ...page
     }
     ctx.body = ctx.util.resuccess(bean)
   }
