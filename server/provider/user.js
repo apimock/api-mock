@@ -4,7 +4,7 @@ const Model = require('~/server/models')()
 module.exports = class User {
   static save (data) {
     if (!data.id) {
-      return Model.User.create({ ...data, created_at: dateTime() }).catch((e) => { console.info(e, 'sssssssss') })
+      return Model.User.create({ ...data, created_at: dateTime() })
     } else {
       return Model.User.update({ ...data, updated_at: dateTime() }, {
         where: { id: data.id }
@@ -12,9 +12,10 @@ module.exports = class User {
     }
   }
 
-  static findOne (where) {
+  static findOne (where, attributes = { exclude: ['password'] }) {
     return Model.User.findOne({
-      where
+      where,
+      attributes
     })
   }
 

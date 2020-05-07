@@ -5,7 +5,6 @@ import { getPage } from '~/server/utils'
 const _ = require('lodash')
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
-const ft = require('../../models/fields_table')
 const Model = require('~/server/models')()
 
 export default class Project {
@@ -130,7 +129,10 @@ export default class Project {
       order: [
         ['created_at', 'DESC']
       ],
-      include: Model.User
+      include: {
+        model: Model.User,
+        attributes: { exclude: ['password'] }
+      }
     }
 
     if (source === 0) {
@@ -169,12 +171,7 @@ export default class Project {
 
     const projectResult = await ProjectProxy.findAndCountAll(query)
     const page = getPage(projectResult, pageSize, pageNo)
-    let projects = projectResult.rows
-    projects = projects.map((item) => {
-      item.user = _.pick(item.user, ft.user)
-      return _.pick(item, ft.project.concat(['user']))
-    })
-
+    const projects = projectResult.rows
     const bean = {
       data: projects,
       ...page

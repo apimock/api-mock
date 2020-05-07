@@ -3,10 +3,8 @@ import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
 import { getPage } from '~/server/utils'
 const Op = require('sequelize').Op
-const _ = require('lodash')
 const defaultPageSize = require('config').get('pageSize')
 const Model = require('~/server/models')()
-const ft = require('../../models/fields_table')
 
 export default class Mock {
   static async create (ctx) {
@@ -108,7 +106,10 @@ export default class Mock {
       order: [
         ['created_at', 'DESC']
       ],
-      include: Model.User
+      include: {
+        model: Model.User,
+        attributes: { exclude: ['password'] }
+      }
     }
 
     if (sortField && sortOrder) {
@@ -144,11 +145,7 @@ export default class Mock {
 
     const mockResult = await MockProxy.findAndCountAll(query)
     const page = getPage(mockResult, pageSize, pageNo)
-    let mocks = mockResult.rows
-    mocks = mocks.map((item) => {
-      item.user = _.pick(item.user, ft.user)
-      return _.pick(item, ft.mock.concat(['user']))
-    })
+    const mocks = mockResult.rows
     const bean = {
       data: mocks,
       project,

@@ -3,8 +3,6 @@ import { bhash, bcompare } from '~/server/utils'
 
 const jwt = require('jsonwebtoken')
 const config = require('config')
-const _ = require('lodash')
-const ft = require('../../models/fields_table')
 
 const jwtSecret = config.get('jwt.secret')
 const jwtExpire = config.get('jwt.expire')
@@ -66,7 +64,7 @@ export default class User {
     user.token = jwt.sign({ id: user.id, username }, jwtSecret, {
       expiresIn: jwtExpire
     })
-    ctx.body = ctx.util.resuccess(_.pick(user, ft.user))
+    ctx.body = ctx.util.resuccess(user)
   }
 
   static async userInfo (ctx) {
@@ -74,7 +72,7 @@ export default class User {
     const user = await UserProxy.findOne({ id: uid })
     if (user) {
       user.roles = [0]
-      ctx.body = ctx.util.resuccess(_.pick(user, ft.user))
+      ctx.body = ctx.util.resuccess(user)
     } else {
       ctx.body = ctx.util.refail()
     }
