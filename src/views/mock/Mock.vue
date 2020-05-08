@@ -37,7 +37,7 @@
           </a-col>
           <a-col :md="6" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" icon="plus" style="margin-left: 8px; background: #1890ff; border-color:#1890ff" @click="createOrUpdate">创建接口</a-button>
+              <a-button type="primary" icon="plus" style="margin-left: 8px; background: #1890ff; border-color:#1890ff" @click="createApi">创建接口</a-button>
             </span>
           </a-col>
         </a-row>
@@ -74,7 +74,7 @@
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
           <a-button @click="view(record, text)"><a-icon type="eye" /></a-button>
-          <a-button @click="createOrUpdate(record)"><a-icon type="edit" /></a-button>
+          <a-button @click="createOrUpdate(record)"><a-icon type="left-circle" /></a-button>
           <a-button
             v-clipboard:copy="baseURL+record.url"
             v-clipboard:success="onCopySuccess"
@@ -83,6 +83,56 @@
         <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>
       </span>
     </s-table>
+    <a-modal
+      title="创建接口"
+      :visible="modalCreateApi.show"
+      @ok="createApiOk"
+      @cancel="createApiCancel"
+    >
+      <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
+        <a-form-model-item label="URL" prop="url">
+          <a-input v-model="mockForm.url" placeholder="please input url">
+            <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
+              <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
+                <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{item.method}}</a-tag>
+              </a-select-option>
+            </a-select>
+          </a-input>
+        </a-form-model-item>
+        <a-form-model-item label="Description" prop="description">
+          <a-input v-model="mockForm.description" placeholder="please input description" />
+        </a-form-model-item>
+        <a-row :gutter="20">
+          <a-col :span="12">
+            <a-form-model-item label="Response Status">
+              <a-select
+                v-model="mockForm.status"
+                show-search
+                :dropdownMatchSelectWidth="false"
+              >
+                <a-select-option v-for="(item, index) in ResponseStatus" :key="index" :value="item.code">
+                  <template v-if="item.code !== 0">
+                    <a-tag :color="item.color">{{ item.code }}</a-tag> {{ item.desc }}
+                  </template>
+                  <a-divider v-if="item.code === 0" style="margin: 4px 0;" />
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-model-item label="Response Delay" prop="delay">
+              <a-input-number
+                v-model="mockForm.delay"
+                :min="0"
+                :max="180000"
+                :precision="0"
+                :step="100"
+                style="width: 100%"/>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-form-model>
+    </a-modal>
     <a-drawer
       wrapClassName="mock-draw"
       title="Basic Drawer"
@@ -144,7 +194,31 @@
             </a-form-model-item>
           </a-form-model>
         </div>
+        <div class="request">
+          <a-tabs type="card" @change="changeRequestTab">
+            <a-tab-pane key="1" tab="Headers">
+              <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
+                <a slot="extra" href="#">more</a>
+                <p>card content</p>
+                <p>card content</p>
+                <p>card content</p>
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="Query Params">
+              Content of Tab Pane 2
+            </a-tab-pane>
+            <a-tab-pane key="3" tab="Body Params">
+              Content of Tab Pane 3
+            </a-tab-pane>
+          </a-tabs>
+        </div>
         <div class="mock-editor">
+          <a-card size="small" title="响应内容" :bordered="false" style="width: 100%">
+            <a slot="extra" href="#">more</a>
+            <p>card content</p>
+            <p>card content</p>
+            <p>card content</p>
+          </a-card>
           <div ref="editor"></div>
         </div>
       </div>
@@ -250,6 +324,9 @@
         selectedRows: [],
         editor: null,
         editorSetup: false,
+        modalCreateApi: {
+          show: false
+        },
         drawer: {
           id: '',
           show: false,
@@ -291,6 +368,31 @@
       view (record) {
         const url = `${this.baseURL}${record.url}#!method=${Method[record.method]}`
         window.open(url)
+      },
+      createApi () {
+        this.mockForm = mockForm
+        this.mockForm.project_id = this.project.id
+        this.modalCreateApi.show = true
+      },
+      async createApiOk () {
+        this.$refs.mockForm.validate(async valid => {
+          if (!valid) {
+            console.log('error submit!!')
+            return false
+          }
+          const { data } = await ApiMock.create({ ...this.mockForm })
+          const { code, message } = data
+          if (code === 200) {
+            this.$message.success('创建成功')
+            this.modalCreateApi.show = false
+            this.$refs['table'].refresh()
+          } else {
+            this.$message.error(message)
+          }
+        })
+      },
+      createApiCancel () {
+        this.modalCreateApi.show = false
       },
       createOrUpdate (record) {
         this.drawer.width = this.getDrawWidth()
@@ -396,6 +498,9 @@
       },
       onCopyError: function (e) {
         this.$message.error('Failed to copy texts')
+      },
+      changeRequestTab (key) {
+        console.info(key)
       }
     },
     beforeRouteUpdate (to, from, next) {
@@ -411,22 +516,20 @@
 <style lang="less">
   .mock-draw{
     .ant-drawer-header{
-      display: none;
+      /*display: none;*/
     }
-    .ant-drawer-wrapper-body{
-      display: flex;
-      flex-direction: column;
-      .ant-drawer-body{
-        padding: 10px;
-        flex: 1;
-      }
-    }
+    /*.ant-drawer-wrapper-body{*/
+    /*  display: flex;*/
+    /*  flex-direction: column;*/
+    /*  .ant-drawer-body{*/
+    /*    padding: 10px;*/
+    /*    flex: 1;*/
+    /*  }*/
+    /*}*/
   }
   .mock-editor-wrap{
-    display: flex;
-    height: 100%;
     .mock-form{
-      width: 450px;
+      width: 100%;
       display: flex;
       /*justify-content: center;*/
       align-items: center;
@@ -439,7 +542,7 @@
 
     .mock-editor{
       width: 100%;
-      height: 100%;
+      height: 10000px;
       .ace_editor{
         width: 100%;
         height: 100%;
