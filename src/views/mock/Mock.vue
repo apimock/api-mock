@@ -199,9 +199,7 @@
             <a-tab-pane key="1" tab="Headers">
               <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
                 <a slot="extra" href="#">more</a>
-                <p>card content</p>
-                <p>card content</p>
-                <p>card content</p>
+                <tree-table :dataSource="mockForm.headers"></tree-table>
               </a-card>
             </a-tab-pane>
             <a-tab-pane key="2" tab="Query Params">
@@ -232,6 +230,7 @@
   import ApiProject from '@/api/project'
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
+  import TreeTable from '@/views/components/TreeTable'
   const ace = require('brace')
   require('brace/mode/javascript')
   require('brace/theme/monokai')
@@ -246,13 +245,15 @@
     delay: 0,
     status: 200,
     description: '',
+    headers: [],
     body: '{}'
   }
 
   export default {
     name: 'Mock',
     components: {
-      STable
+      STable,
+      TreeTable
     },
     data () {
       return {
@@ -406,6 +407,7 @@
         if (record.id) {
           this.drawer.id = record.id
           this.mockForm = Object.assign(Object.create(null), this.mockForm, record)
+          this.mockForm.headers = JSON.parse(this.mockForm.headers)
           this.mockForm.method = Method[record.method]
         } else {
           this.drawer.id = ''
