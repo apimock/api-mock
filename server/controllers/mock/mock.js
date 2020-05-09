@@ -12,7 +12,7 @@ export default class Mock {
     const projectId = ctx.checkBody('project_id').notEmpty().value
     const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch']).value
-    const rule = ctx.checkBody('rule').notEmpty().value
+    const body = ctx.checkBody('body').notEmpty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
     const description = ctx.checkBody('description').notEmpty().value
@@ -41,7 +41,7 @@ export default class Mock {
       return
     }
 
-    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, rule, delay, status, description })
+    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, body, delay, status, description })
     ctx.body = ctx.util.resuccess()
   }
 
@@ -50,7 +50,7 @@ export default class Mock {
     const id = ctx.checkBody('id').notEmpty().value
     const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch']).value
-    const rule = ctx.checkBody('rule').notEmpty().value
+    const body = ctx.checkBody('body').notEmpty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
     const description = ctx.checkBody('description').notEmpty().value
@@ -68,7 +68,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, rule, delay, status, description })
+    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, body, delay, status, description })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -136,7 +136,7 @@ export default class Mock {
             [Op.or]: [
               { url: kw },
               { description: kw },
-              { rule: kw }
+              { body: kw }
             ]
           }
         ]

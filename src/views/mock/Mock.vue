@@ -246,7 +246,7 @@
     delay: 0,
     status: 200,
     description: '',
-    rule: '{}'
+    body: '{}'
   }
 
   export default {
@@ -337,7 +337,7 @@
             { required: true, message: 'Please input url', trigger: 'blur' }
           ],
           description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
-          rule: [{ required: true, message: 'Please input rule', trigger: 'blur' }]
+          body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
         },
         mockForm,
         MethodArray,
@@ -413,7 +413,7 @@
           this.mockForm.project_id = this.project.id
         }
         this.$nextTick(() => {
-          this.editor.setValue(this.mockForm.rule)
+          this.editor.setValue(this.mockForm.body)
           this.format()
         })
       },
@@ -453,7 +453,7 @@
         })
       },
       onChange () {
-        this.mockForm.rule = this.editor.getValue()
+        this.mockForm.body = this.editor.getValue()
       },
       format () {
         const value = this.editor.getValue()

@@ -27,7 +27,7 @@ describe('/server/controllers/mock', () => {
         project_id: project.id,
         url: '/aa/%E6%88%91%E6%98%AF%E4%B8%AD%E5%9B%BD%E4%BA%BA/cc',
         method: 'post',
-        rule: '{code: 1}',
+        body: '{code: 1}',
         description: 'mock test'
       })
       expect(res.body.success).toBe(true)
@@ -39,7 +39,7 @@ describe('/server/controllers/mock', () => {
           project_id: project.id,
           url: '/aa/bb/cc',
           method: 'delete',
-          rule: '{}',
+          body: '{}',
           description: 'mock'
         })
 
@@ -52,7 +52,7 @@ describe('/server/controllers/mock', () => {
           project_id: project.id,
           url: '/aa/%E6%88%91%E6%98%AF%E4%B8%AD%E5%9B%BD%E4%BA%BA/cc',
           method: 'post',
-          rule: '{}',
+          body: '{}',
           description: 'mock'
         })
 
@@ -71,7 +71,7 @@ describe('/server/controllers/mock', () => {
         .send({
           id: '111111111111111111111111',
           url: '/demo',
-          rule: '{}',
+          body: '{}',
           method: 'get',
           description: 'demo'
         })
@@ -85,7 +85,7 @@ describe('/server/controllers/mock', () => {
         .send({
           id: res.body.data[0].id,
           url: '/update/mock',
-          rule: '{update: 1}',
+          body: '{update: 1}',
           method: 'post',
           description: 'mock update'
         })
