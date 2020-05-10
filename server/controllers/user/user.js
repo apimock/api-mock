@@ -61,10 +61,12 @@ export default class User {
       return
     }
 
-    user.token = jwt.sign({ id: user.id, username }, jwtSecret, {
+    const token = jwt.sign({ id: user.id, username }, jwtSecret, {
       expiresIn: jwtExpire
     })
-    ctx.body = ctx.util.resuccess(user)
+
+    // user.setDataValue('token', token)
+    ctx.body = ctx.util.resuccess({ token })
   }
 
   static async userInfo (ctx) {

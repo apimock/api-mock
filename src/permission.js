@@ -16,6 +16,7 @@ const defaultRoutePath = '/dashboard/workplace'
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
+  console.info(Vue.ls.get(ACCESS_TOKEN), 'aaaaaaa')
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {
