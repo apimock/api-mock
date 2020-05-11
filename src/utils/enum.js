@@ -4,11 +4,15 @@ export const Method = {
   3: 'put',
   4: 'delete',
   5: 'patch',
+  6: 'options',
+  7: 'head',
   'get': 1,
   'post': 2,
   'put': 3,
   'delete': 4,
-  'patch': 5
+  'patch': 5,
+  'options': 6,
+  'head': 7
 }
 
 export const MethodTagColor = {
@@ -16,7 +20,9 @@ export const MethodTagColor = {
   2: '#19be6b',
   3: '#f90',
   4: '#ed3f14',
-  5: '#f90'
+  5: '#f90',
+  6: '#ffbf00',
+  7: '#ffbf00'
 }
 
 export const MethodArray = [
@@ -24,7 +30,9 @@ export const MethodArray = [
   { code: 2, method: 'post' },
   { code: 3, method: 'put' },
   { code: 4, method: 'delete' },
-  { code: 5, method: 'patch' }
+  { code: 5, method: 'patch' },
+  { code: 6, method: 'options' },
+  { code: 7, method: 'head' }
 ]
 
 const CodeColor = {

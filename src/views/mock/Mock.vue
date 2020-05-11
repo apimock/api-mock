@@ -94,7 +94,7 @@
           <a-input v-model="mockForm.url" placeholder="please input url">
             <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
               <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
-                <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{item.method}}</a-tag>
+                <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
               </a-select-option>
             </a-select>
           </a-input>
@@ -150,7 +150,7 @@
               <a-input v-model="mockForm.url" placeholder="please input url">
                 <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
                   <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
-                    <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{item.method}}</a-tag>
+                    <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
                   </a-select-option>
                 </a-select>
               </a-input>
@@ -195,18 +195,19 @@
           </a-form-model>
         </div>
         <div class="request">
-          <a-tabs type="card" @change="changeRequestTab">
-            <a-tab-pane key="1" tab="Headers">
+          <a-tabs type="card" v-model="requestTabActiveKey" @change="changeRequestTab">
+            <a-tab-pane v-if="showBodyQueryTab" key="body" tab="Body Params">
+              <a slot="extra" href="#">批量添加</a>
+              <tree-table v-model="mockForm.body_params"></tree-table>
+            </a-tab-pane>
+            <a-tab-pane key="query" tab="Query Params">
+              <a slot="extra" href="#">批量添加</a>
+              <tree-table v-model="mockForm.query_params"></tree-table>
+            </a-tab-pane>
+            <a-tab-pane key="header" tab="Headers">
               <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
-                <a slot="extra" href="#">more</a>
-                <tree-table :dataSource="mockForm.headers"></tree-table>
+                <tree-table v-model="mockForm.headers"></tree-table>
               </a-card>
-            </a-tab-pane>
-            <a-tab-pane key="2" tab="Query Params">
-              Content of Tab Pane 2
-            </a-tab-pane>
-            <a-tab-pane key="3" tab="Body Params">
-              Content of Tab Pane 3
             </a-tab-pane>
           </a-tabs>
         </div>
@@ -231,6 +232,7 @@
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
   import TreeTable from '@/views/components/TreeTable'
+  import { jsonParse } from '@/utils'
   const ace = require('brace')
   require('brace/mode/javascript')
   require('brace/theme/monokai')
@@ -246,6 +248,8 @@
     status: 200,
     description: '',
     headers: [],
+    query_params: [],
+    body_params: [],
     body: '{}'
   }
 
@@ -342,7 +346,20 @@
         },
         mockForm,
         MethodArray,
-        ResponseStatus
+        ResponseStatus,
+        showBodyQueryTab: false,
+        requestTabActiveKey: 'query'
+      }
+    },
+    watch: {
+      'mockForm.method' (val) {
+        if (['post', 'put', 'delete', 'patch'].includes(val)) {
+          this.showBodyQueryTab = true
+          this.requestTabActiveKey = 'body'
+        } else {
+          this.showBodyQueryTab = false
+          this.requestTabActiveKey = 'query'
+        }
       }
     },
     methods: {
@@ -407,7 +424,9 @@
         if (record.id) {
           this.drawer.id = record.id
           this.mockForm = Object.assign(Object.create(null), this.mockForm, record)
-          this.mockForm.headers = JSON.parse(this.mockForm.headers)
+          this.mockForm.headers = jsonParse(this.mockForm.headers) || []
+          this.mockForm.query_params = jsonParse(this.mockForm.query_params) || []
+          this.mockForm.body_params = jsonParse(this.mockForm.body_params) || []
           this.mockForm.method = Method[record.method]
         } else {
           this.drawer.id = ''
