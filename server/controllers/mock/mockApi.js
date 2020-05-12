@@ -1,13 +1,38 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
-import { params, delay } from '~/server/utils'
+import { params, delay, json5Parse } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
 
+function checkRequest (lists, ctx, method) {
+  const errorParams = []
+  const { query, body, headers } = ctx.request
+  let errMsg = ''
+  lists.map((list) => {
+    const data = json5Parse(list.data)
+    data.filter((item) => {
+      return !!item.required
+    }).map((item) => {
+      if (list.name === 'query' && !query[item.name]) {
+        errorParams.push(item)
+      }
+      if (list.name === 'body' && !body[item.name] && method !== 'get') {
+        errorParams.push(item)
+      }
+      if (list.name === 'headers' && !headers[item.name.toLowerCase()]) {
+        errorParams.push(item)
+      }
+    })
+    if (errorParams.length) {
+      errMsg = `必选参数${errorParams[0].name}未传值。 Required parameter ${errorParams[0].name} has no value. `
+    }
+  })
+  return errMsg
+}
+
 export default class MockApi {
   static async getApi (ctx) {
-    // const { query, body } = ctx.request
     const method = ctx.method.toLowerCase()
     const projectSign = ctx.pathNode.projectSign
     let { mockURL } = ctx.pathNode
@@ -24,6 +49,12 @@ export default class MockApi {
       method: methodCode
     })
     if (!mock) ctx.throw(404)
+
+    const errMsg = checkRequest([{ name: 'query', data: mock.query_params }, { name: 'body', data: mock.body_params }, { name: 'headers', data: mock.headers }], ctx, method)
+    if (errMsg) {
+      ctx.body = ctx.util.refail(errMsg, 10001)
+      return
+    }
 
     Mock.Handler.function = function (options) {
       const mockUrl = mock.url.replace(/{/g, ':').replace(/}/g, '') // /api/{user}/{id} => /api/:user/:id
