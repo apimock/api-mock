@@ -92,9 +92,9 @@
       <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
         <a-form-model-item label="URL" prop="url">
           <a-input v-model="mockForm.url" placeholder="please input url">
-            <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
+            <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
               <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
-                <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
+                <a-tag style="width: 80px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
               </a-select-option>
             </a-select>
           </a-input>
@@ -148,9 +148,9 @@
           <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
             <a-form-model-item label="URL" prop="url">
               <a-input v-model="mockForm.url" placeholder="please input url">
-                <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
+                <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
                   <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
-                    <a-tag style="width: 50px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
+                    <a-tag style="width: 80px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
                   </a-select-option>
                 </a-select>
               </a-input>
@@ -198,15 +198,15 @@
           <a-tabs type="card" v-model="requestTabActiveKey" @change="changeRequestTab">
             <a-tab-pane v-if="showBodyQueryTab" key="body" tab="Body Params">
               <a slot="extra" href="#">批量添加</a>
-              <tree-table v-model="mockForm.body_params"></tree-table>
+              <tree-table v-model="mockForm.body_params" name="body_params"></tree-table>
             </a-tab-pane>
             <a-tab-pane key="query" tab="Query Params">
               <a slot="extra" href="#">批量添加</a>
-              <tree-table v-model="mockForm.query_params"></tree-table>
+              <tree-table v-model="mockForm.query_params" name="query_params"></tree-table>
             </a-tab-pane>
             <a-tab-pane key="header" tab="Headers">
               <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
-                <tree-table v-model="mockForm.headers"></tree-table>
+                <tree-table v-model="mockForm.headers" name="headers"></tree-table>
               </a-card>
             </a-tab-pane>
           </a-tabs>
@@ -214,7 +214,6 @@
         <div class="mock-editor">
           <a-card size="small" title="响应内容" :bordered="false" style="width: 100%">
             <a slot="extra" href="#">more</a>
-            <p>card content</p>
             <p>card content</p>
             <p>card content</p>
           </a-card>
@@ -450,8 +449,12 @@
             console.log('error submit!!')
             return false
           }
+          const mockData = { ...this.mockForm }
+          mockData.headers = this.filterEmptyName(mockData.headers)
+          mockData.query_params = this.filterEmptyName(mockData.query_params)
+          mockData.body_params = this.filterEmptyName(mockData.body_params)
           if (!this.drawer.id) {
-            const { data } = await ApiMock.create({ ...this.mockForm })
+            const { data } = await ApiMock.create(mockData)
             const { code, message } = data
             if (code === 200) {
               this.$message.success('创建成功')
@@ -461,7 +464,7 @@
               this.$message.error(message)
             }
           } else {
-            const { data } = await ApiMock.update({ ...this.mockForm })
+            const { data } = await ApiMock.update(mockData)
             const { code, message } = data
             if (code === 200) {
               this.$message.success('创建成功')
@@ -514,14 +517,19 @@
       toProjectList () {
         this.$router.push({ name: 'project' })
       },
-      onCopySuccess: function (e) {
+      onCopySuccess (e) {
         this.$message.success('You just copied: ' + e.text)
       },
-      onCopyError: function (e) {
+      onCopyError (e) {
         this.$message.error('Failed to copy texts')
       },
       changeRequestTab (key) {
         console.info(key)
+      },
+      filterEmptyName (items) {
+        return items.filter((item) => {
+          return item.name !== ''
+        })
       }
     },
     beforeRouteUpdate (to, from, next) {

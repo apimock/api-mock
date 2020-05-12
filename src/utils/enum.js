@@ -6,13 +6,13 @@ export const Method = {
   5: 'patch',
   6: 'options',
   7: 'head',
-  'get': 1,
-  'post': 2,
-  'put': 3,
-  'delete': 4,
-  'patch': 5,
-  'options': 6,
-  'head': 7
+  get: 1,
+  post: 2,
+  put: 3,
+  delete: 4,
+  patch: 5,
+  options: 6,
+  head: 7
 }
 
 export const MethodTagColor = {
@@ -22,7 +22,7 @@ export const MethodTagColor = {
   4: '#ed3f14',
   5: '#f90',
   6: '#ffbf00',
-  7: '#ffbf00'
+  7: '#aaa'
 }
 
 export const MethodArray = [
@@ -103,4 +103,52 @@ export const ResponseStatus = [
   { code: 508, desc: 'Loop Detected', color: CodeColor['500'] },
   { code: 510, desc: 'Not Extended', color: CodeColor['500'] },
   { code: 511, desc: 'Network Authentication Required', color: CodeColor['500'] }
+]
+
+export const Headers = [
+  'Accept',
+  'Accept-Charset',
+  'Accept-Encoding',
+  'Accept-Language',
+  'Accept-Datetime',
+  'Authorization',
+  'Cache-Control',
+  'Connection',
+  'Cookie',
+  'Content-Disposition',
+  'Content-Length',
+  'Content-MD5',
+  'Content-Type',
+  'Date',
+  'Expect',
+  'From',
+  'Host',
+  'If-Match',
+  'If-Modified-Since',
+  'If-None-Match',
+  'If-Range',
+  'If-Unmodified-Since',
+  'Max-Forwards',
+  'Origin',
+  'Pragma',
+  'Proxy-Authorization',
+  'Range',
+  'Referer',
+  'TE',
+  'User-Agent',
+  'Upgrade',
+  'Via',
+  'Warning',
+  'X-Requested-With',
+  'DNT',
+  'X-Forwarded-For',
+  'X-Forwarded-Host',
+  'X-Forwarded-Proto',
+  'Front-End-Https',
+  'X-Http-Method-Override',
+  'X-ATT-DeviceId',
+  'X-Wap-Profile',
+  'Proxy-Connection',
+  'X-UIDH',
+  'X-Csrf-Token'
 ]

@@ -5,16 +5,21 @@
       <a-col class="th name">名称</a-col>
       <a-col class="th value">值</a-col>
       <a-col class="th required">必选</a-col>
-<!--      <a-col class="th rule">生成规则</a-col>-->
+      <!--      <a-col class="th rule">生成规则</a-col>-->
       <a-col class="th desc">描述</a-col>
     </a-row>
     <draggable v-model="currentValue" draggable=".table-row">
       <a-row type="flex" class="table-row table-body" v-for="(item, index) in currentValue" :key="index">
         <a-col class="td action"><a-icon type="delete" @click="removeItem(index)"/></a-col>
-        <a-col class="td name">  <a-input v-model="item.name" /></a-col>
+        <a-col class="td name" v-if="name === 'headers'"><a-auto-complete
+          v-model="item.name"
+          :filter-option="filterOption"
+          :data-source="Headers"
+          style="width: 100%"/></a-col>
+        <a-col class="td name" v-else>  <a-input v-model="item.name" /></a-col>
         <a-col class="td value"><a-input v-model="item.value" /></a-col>
         <a-col class="td required"><a-checkbox v-model="item.required"></a-checkbox></a-col>
-<!--        <a-col class="td rule"><a-input v-model="item.rule" /></a-col>-->
+        <!--        <a-col class="td rule"><a-input v-model="item.rule" /></a-col>-->
         <a-col class="td desc"><a-input v-model="item.desc" /></a-col>
       </a-row>
     </draggable>
@@ -23,12 +28,20 @@
 
 <script>
   import draggable from 'vuedraggable'
+  import { Headers } from '@/utils/enum'
+  import { AutoComplete } from 'ant-design-vue'
+
   export default {
     name: 'TreeTable',
     components: {
-      draggable
+      draggable,
+      'AAutoComplete': AutoComplete
     },
     props: {
+      name: {
+        type: String,
+        default: ''
+      },
       columns: {
         type: Array,
         default: () => []
@@ -40,7 +53,8 @@
     },
     data () {
       return {
-        currentValue: []
+        currentValue: [],
+        Headers
       }
     },
     watch: {
@@ -62,6 +76,11 @@
       },
       removeItem (index) {
         this.currentValue.splice(index, 1)
+      },
+      filterOption (input, option) {
+        return (
+          option.componentOptions.children[0].text.toUpperCase().indexOf(input.toUpperCase()) >= 0
+        )
       }
     },
     mounted () {
