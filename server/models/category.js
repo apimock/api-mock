@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('user_project', {
+  return sequelize.define('category', {
     'id': {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
@@ -16,6 +16,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false
     },
+    'name': {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      defaultValue: ''
+    },
+    'description': {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     'created_at': {
       type: DataTypes.DATE,
       allowNull: true
@@ -25,6 +34,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     }
   }, {
-    tableName: 'user_project'
+    tableName: 'category'
   });
 };

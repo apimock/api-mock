@@ -3,30 +3,30 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock', {
     'id': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    'project_id': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
-      allowNull: true
-    },
     'uid': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
-      allowNull: true,
-      references: {
-        model: 'user',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false
+    },
+    'project_id': {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false
+    },
+    'category_id': {
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false
     },
     'url': {
-      type: DataTypes.CHAR(255),
+      type: DataTypes.STRING(255),
       allowNull: false,
       defaultValue: ''
     },
     'method': {
-      type: DataTypes.INTEGER(10).UNSIGNED,
+      type: DataTypes.INTEGER(1).UNSIGNED,
       allowNull: true,
       defaultValue: '1'
     },
