@@ -19,6 +19,7 @@ export default class Mock {
     let headers = ctx.checkBody('headers').empty().value
     let queryParams = ctx.checkBody('query_params').empty().value
     let bodyParams = ctx.checkBody('body_params').empty().value
+    const bodyParamsType = ctx.checkBody('body_params_type').empty().value
     const mockURL = decodeURIComponent(url)
     const methodCode = Method[method]
 
@@ -56,7 +57,7 @@ export default class Mock {
       return
     }
 
-    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body, delay, status, description })
+    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
     ctx.body = ctx.util.resuccess()
   }
 
@@ -72,6 +73,7 @@ export default class Mock {
     let headers = ctx.checkBody('headers').empty().value
     let queryParams = ctx.checkBody('query_params').empty().value
     let bodyParams = ctx.checkBody('body_params').empty().value
+    const bodyParamsType = ctx.checkBody('body_params_type').empty().value
     const mockURL = decodeURIComponent(url)
     const methodCode = Method[method]
 
@@ -98,7 +100,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body, delay, status, description })
+    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {

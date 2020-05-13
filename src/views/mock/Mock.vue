@@ -195,9 +195,24 @@
           </a-form-model>
         </div>
         <div class="request">
-          <a-tabs type="card" v-model="requestTabActiveKey" @change="changeRequestTab">
+          <div class="edit-title">请求参数</div>
+          <a-tabs v-model="requestTabActiveKey" @change="changeRequestTab">
             <a-tab-pane v-if="showBodyQueryTab" key="body" tab="Body Params">
               <a slot="extra" href="#">批量添加</a>
+              <a-radio-group v-model="mockForm.body_params_type" style="margin-bottom: 20px">
+                <a-radio :value="1">
+                  form
+                </a-radio>
+                <a-radio :value="2">
+                  json
+                </a-radio>
+                <a-radio :value="3">
+                  raw
+                </a-radio>
+                <a-radio :value="4">
+                  binary
+                </a-radio>
+              </a-radio-group>
               <tree-table v-model="mockForm.body_params" name="body_params"></tree-table>
             </a-tab-pane>
             <a-tab-pane key="query" tab="Query Params">
@@ -249,6 +264,7 @@
     headers: [],
     query_params: [],
     body_params: [],
+    body_params_type: 1,
     body: '{}'
   }
 

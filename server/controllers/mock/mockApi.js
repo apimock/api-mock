@@ -17,7 +17,7 @@ function checkRequest (lists, ctx, method) {
       if (list.name === 'query' && !query[item.name]) {
         errorParams.push(item)
       }
-      if (list.name === 'body' && !body[item.name] && method !== 'get') {
+      if (!['get', 'head', 'options'].includes(method) && list.name === 'body' && !body[item.name]) {
         errorParams.push(item)
       }
       if (list.name === 'headers' && !headers[item.name.toLowerCase()]) {
@@ -33,6 +33,7 @@ function checkRequest (lists, ctx, method) {
 
 export default class MockApi {
   static async getApi (ctx) {
+    console.info(ctx.request.type, 'rest type')
     const method = ctx.method.toLowerCase()
     const projectSign = ctx.pathNode.projectSign
     let { mockURL } = ctx.pathNode
