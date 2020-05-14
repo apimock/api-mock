@@ -6,6 +6,7 @@ module.exports = function () {
   const Model = Object.assign(Object.create(null), {
     User: require('./user')(_seq, DataTypes),
     Project: require('./project')(_seq, DataTypes),
+    Category: require('./category')(_seq, DataTypes),
     UserProject: require('./user_project')(_seq, DataTypes),
     Mock: require('./mock')(_seq, DataTypes)
   })
@@ -22,6 +23,11 @@ module.exports = function () {
 
   Model.Mock.belongsTo(Model.User, {
     foreignKey: 'uid',
+    sourceKey: 'id'
+  })
+
+  Model.Category.hasMany(Model.Mock, {
+    foreignKey: 'category_id',
     sourceKey: 'id'
   })
 

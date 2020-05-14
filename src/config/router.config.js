@@ -27,6 +27,13 @@ export const asyncRouterMap = [
       {
         path: '/project/:projectSign',
         name: 'mock',
+        component: () => import('@/views/mock/Index'),
+        hidden: true,
+        meta: { title: 'Mock列表', permission: [0] }
+      },
+      {
+        path: '/project2/:projectSign',
+        name: 'mock2',
         component: () => import('@/views/mock/Mock'),
         hidden: true,
         meta: { title: 'Mock列表', permission: [0] }
