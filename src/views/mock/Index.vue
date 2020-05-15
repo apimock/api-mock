@@ -12,7 +12,7 @@
             :tree-data="treeData">
             <a-icon slot="folder" type="folder" />
             <template slot="parent" slot-scope="item">
-              <span class="tree-parent-item" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
+              <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                 <strong>{{ item.title }}</strong>
                 <a-button-group v-show="item.showRightButton" size="small" style="float:right">
                   <a-tooltip title="添加接口">
@@ -54,9 +54,12 @@
 <script>
   import { Tree } from 'ant-design-vue'
   import ApiCategory from '@/api/category'
+  import { RouteView } from '@/layouts'
   import { MethodTagColor, Method } from '@/utils/enum'
+  const KeyAll = '0-0-0-0-0'
   export default {
     components: {
+      RouteView,
       'a-tree': Tree
     },
     data () {
@@ -89,11 +92,19 @@
               child.scopedSlots = { title: 'child' }
             })
           })
+          bean.unshift({
+            key: KeyAll,
+            title: '全部分类',
+            slots: { icon: 'folder' },
+            scopedSlots: { title: 'parent' }
+          })
           this.treeData = bean
         }
       },
       mouseover (e) {
-        e.dataRef.showRightButton = true
+        if (e.eventKey !== KeyAll) {
+          e.dataRef.showRightButton = true
+        }
       },
       mouseout (e) {
         e.dataRef.showRightButton = false
@@ -106,6 +117,10 @@
       },
       deleteApi (id) {
         console.info(id)
+      },
+      toList (item) {
+        console.info(item)
+        this.$router.push({ name: 'mockList' })
       }
     },
     created () {

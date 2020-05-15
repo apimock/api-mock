@@ -29,7 +29,14 @@ export const asyncRouterMap = [
         name: 'mock',
         component: () => import('@/views/mock/Index'),
         hidden: true,
-        meta: { title: 'Mock列表', permission: [0] }
+        meta: { title: 'Mock列表', permission: [0] },
+        children: [
+          {
+            path: '/project/:projectSign/list',
+            name: 'mockList',
+            component: () => import('@/views/mock/List')
+          }
+        ]
       },
       {
         path: '/project2/:projectSign',
