@@ -26,7 +26,8 @@ export default class Category {
         project_id: project.id
       },
       include: {
-        model: Model.Mock
+        model: Model.Mock,
+        as: 'children'
       }
     }
     const categoryResult = await CategoryProxy.findAll(query)

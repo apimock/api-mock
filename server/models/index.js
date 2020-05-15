@@ -28,7 +28,8 @@ module.exports = function () {
 
   Model.Category.hasMany(Model.Mock, {
     foreignKey: 'category_id',
-    sourceKey: 'id'
+    sourceKey: 'id',
+    as: 'children'
   })
 
   return Model
