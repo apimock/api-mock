@@ -112,6 +112,7 @@ export default class Mock {
     // const uid = ctx.state.user.id
     const keywords = ctx.query.keywords
     const projectSign = ctx.checkQuery('project_sign').notEmpty().value
+    const categoryId = ctx.checkQuery('category_id').empty().value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
     const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
     const sortField = ctx.checkQuery('sortField').empty().value
@@ -142,6 +143,14 @@ export default class Mock {
         model: Model.User,
         attributes: { exclude: ['password'] }
       }
+    }
+
+    if (categoryId && categoryId !== 'all') {
+      Object.assign(query.where, {
+        [Op.and]: {
+          category_id: categoryId
+        }
+      })
     }
 
     if (sortField && sortOrder) {

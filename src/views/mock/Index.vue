@@ -28,7 +28,7 @@
               </span>
             </template>
             <template slot="child" slot-scope="item">
-              <span class="tree-child-item" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
+              <span class="tree-child-item" @click="toDetail(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                 <strong :style="{color: methodTagColor(item.dataRef.method)}">{{ methodToString(item.dataRef.method) }}</strong>
                 <span>{{ item.dataRef.url }}</span>
                 <em v-show="item.showRightButton">
@@ -119,8 +119,14 @@
         console.info(id)
       },
       toList (item) {
-        console.info(item)
-        this.$router.push({ name: 'mockList' })
+        let categoryId = item.id
+        if (item.eventKey === KeyAll) {
+          categoryId = 'all'
+        }
+        this.$router.push({ name: 'mockList', params: { categoryId } })
+      },
+      toDetail (item) {
+        this.$router.push({ name: 'mockDetail', params: { mockId: item.id } })
       }
     },
     created () {

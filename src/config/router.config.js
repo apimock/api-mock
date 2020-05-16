@@ -28,13 +28,19 @@ export const asyncRouterMap = [
         path: '/project/:projectSign',
         name: 'mock',
         component: () => import('@/views/mock/Index'),
+        redirect: '/project/:projectSign/list/all',
         hidden: true,
         meta: { title: 'Mock列表', permission: [0] },
         children: [
           {
-            path: '/project/:projectSign/list',
+            path: '/project/:projectSign/list/:categoryId',
             name: 'mockList',
             component: () => import('@/views/mock/List')
+          },
+          {
+            path: '/project/:projectSign/:mockId',
+            name: 'mockDetail',
+            component: () => import('@/views/mock/Detail')
           }
         ]
       },
