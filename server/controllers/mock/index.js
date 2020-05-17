@@ -8,6 +8,11 @@ class Api {
     return Mock.list(ctx)
   }
 
+  @Route('get', '/mock/detail')
+  detail (ctx) {
+    return Mock.detail(ctx)
+  }
+
   @Route('post', '/mock/create')
   create (ctx) {
     return Mock.create(ctx)

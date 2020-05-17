@@ -194,4 +194,16 @@ export default class Mock {
     }
     ctx.body = ctx.util.resuccess(bean)
   }
+
+  static async detail (ctx) {
+    // const projectSign = ctx.checkQuery('project_sign').notEmpty().value
+    const id = ctx.checkQuery('id').notEmpty().value
+
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+    }
+
+    const mock = await MockProxy.findOne({ id })
+    ctx.body = ctx.util.resuccess(mock)
+  }
 }
