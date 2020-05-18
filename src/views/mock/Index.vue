@@ -3,6 +3,7 @@
     <a-card :bordered="false" :bodyStyle="{ padding: '16px 0', height: '100%' }" :style="{ height: '100%' }">
       <div class="mock-main">
         <div class="mock-left">
+          <a-button type="primary" @click="createCategory">添加分类</a-button>
           <a-tree
             class="mock-tree"
             show-icon
@@ -47,6 +48,28 @@
         </div>
         <div class="mock-right"><route-view></route-view></div>
       </div>
+      <a-modal
+        title="添加分类"
+        :width="400"
+        :visible="modalCreateCategory.show"
+        @ok="createCategoryOk"
+        @cancel="createCategoryCancel"
+      >
+        <a-form-model
+          :model="formCategory"
+          ref="formCategory"
+          :label-col="modalCreateCategory.labelCol"
+          :wrapper-col="modalCreateCategory.wrapperCol"
+          :rules="modalCreateCategory.rules"
+        >
+          <a-form-model-item label="分类名" prop="name">
+            <a-input v-model="formCategory.name" placeholder="please input name"/>
+          </a-form-model-item>
+          <a-form-model-item label="备注" prop="description">
+            <a-input v-model="formCategory.description" placeholder="please input description" />
+          </a-form-model-item>
+        </a-form-model>
+      </a-modal>
     </a-card>
   </div>
 </template>
@@ -65,7 +88,21 @@
     data () {
       return {
         treeData: [],
-        projectSign: this.$route.params.projectSign
+        modalCreateCategory: {
+          show: false,
+          labelCol: { span: 6 },
+          wrapperCol: { span: 18 },
+          rules: {
+            name: [
+              { required: true, message: 'Please input name', trigger: 'blur' }
+            ]
+          }
+        },
+        formCategory: {
+          name: '',
+          description: ''
+        },
+        projectId: this.$route.params.projectId
       }
     },
     methods: {
@@ -76,7 +113,7 @@
         return MethodTagColor[num]
       },
       async getCateList () {
-        const { data } = await ApiCategory.list({ project_sign: this.projectSign })
+        const { data } = await ApiCategory.list({ project_id: this.projectId })
         const { bean, code } = data
         if (code === 200) {
           bean.forEach((parent, m) => {
@@ -108,6 +145,24 @@
       },
       mouseout (e) {
         e.dataRef.showRightButton = false
+      },
+      createCategory () {
+        this.modalCreateCategory.show = true
+      },
+      createCategoryOk () {
+        this.$refs.formCategory.validate(async valid => {
+            if (!valid) {
+              console.log('error submit!!')
+              return false
+            }
+            const { data } = await ApiCategory.create({ ...this.formCategory, project_id: this.projectId })
+            const { code, bean } = data
+            console.info(code, bean)
+          }
+        )
+      },
+      createCategoryCancel () {
+        this.modalCreateCategory.show = false
       },
       addApi (id) {
         console.info(id)
