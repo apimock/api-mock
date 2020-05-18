@@ -1,4 +1,3 @@
-import { genProjectId } from '~/server/utils/index'
 import dateTime from '~/server/utils/dateTime'
 import ProjectUserProxy from '~/server/provider/userProject'
 const Model = require('~/server/models')()
@@ -13,7 +12,6 @@ module.exports = class Project {
     const members = data.members
     delete data.members
     if (!data.id) {
-      data.id = genProjectId()
       const project = await Model.Project.create({ ...data, created_at: dateTime() })
       const { id, uid } = project
       const userProjectAll = members.concat(uid).map(uid => ({ uid, project_id: id, created_at: dateTime() }))
