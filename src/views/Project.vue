@@ -19,7 +19,7 @@
               <div class="meta-content" slot="description">{{ item.description }}</div>
             </a-card-meta>
             <template class="ant-card-actions" slot="actions">
-              <router-link :to="{name: 'mock', params: { projectSign: item.sign }}"><a-icon key="eye" type="eye" /></router-link>
+              <router-link :to="{name: 'mock', params: { projectId: item.sign }}"><a-icon key="eye" type="eye" /></router-link>
               <a><a-icon key="edit" type="edit" @click="update(item)"/></a>
               <a><a-icon key="delete" type="delete" @click="remove(item.id)"/></a>
             </template>

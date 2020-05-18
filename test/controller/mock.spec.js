@@ -80,7 +80,7 @@ describe('/server/controllers/mock', () => {
     })
 
     test('update mock', async () => {
-      let res = await request('/api/mock').query({ project_sign: project.sign })
+      let res = await request('/api/mock').query({ project_id: project.id })
       res = await request('/api/mock/update', 'post')
         .send({
           id: res.body.data[0].id,

@@ -55,7 +55,7 @@
     data () {
       return {
         queryParam: {},
-        projectSign: this.$route.params.projectSign,
+        projectId: this.$route.params.projectId,
         categoryId: this.$route.params.categoryId,
         project: null,
         baseURL: '',
@@ -110,11 +110,11 @@
         ],
         loadData: async parameter => {
           const { data } = await ApiMock.list(
-            Object.assign(parameter, this.queryParam, { project_sign: this.projectSign, category_id: this.categoryId })
+            Object.assign(parameter, this.queryParam, { project_id: this.projectId, category_id: this.categoryId })
           )
           this.project = data.bean.project
-          const { sign, base_url: baseUrl } = data.bean.project
-          this.baseURL = `${location.origin}/mock/${sign}${baseUrl}`
+          const { id, base_url: baseUrl } = data.bean.project
+          this.baseURL = `${location.origin}/mock/${id}${baseUrl}`
           return data.bean
         },
         selectedRowKeys: [],
@@ -134,7 +134,7 @@
       }
     },
     beforeRouteUpdate (to, from, next) {
-      this.project_sign = to.params.projectSign
+      this.project_id = to.params.projectId
       this.categoryId = to.params.categoryId
       this.$refs.table.refresh(true)
       next()

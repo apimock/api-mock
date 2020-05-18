@@ -111,7 +111,7 @@ export default class Mock {
   static async list (ctx) {
     // const uid = ctx.state.user.id
     const keywords = ctx.query.keywords
-    const projectSign = ctx.checkQuery('project_sign').notEmpty().value
+    const projectId = ctx.checkQuery('project_id').notEmpty().value
     const categoryId = ctx.checkQuery('category_id').empty().value
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
     const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
@@ -124,7 +124,7 @@ export default class Mock {
       return
     }
 
-    const project = await ProjectProxy.findOne({ sign: projectSign })
+    const project = await ProjectProxy.findOne({ id: projectId })
     if (!project) {
       ctx.throw(404)
       return
@@ -196,7 +196,7 @@ export default class Mock {
   }
 
   static async detail (ctx) {
-    // const projectSign = ctx.checkQuery('project_sign').notEmpty().value
+    // const projectId = ctx.checkQuery('project_id').notEmpty().value
     const id = ctx.checkQuery('id').notEmpty().value
 
     if (ctx.errors) {

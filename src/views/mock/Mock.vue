@@ -15,7 +15,7 @@
           </a-menu-item>
           <a-menu-divider />
           <a-menu-item v-for="(item, index) in projectList" :key="index">
-            <router-link :to="{name: 'mock', params: { projectSign: item.sign }}" replace>{{ item.name }}</router-link>
+            <router-link :to="{name: 'mock', params: { projectId: item.id }}" replace>{{ item.name }}</router-link>
           </a-menu-item>
         </a-menu>
       </a-dropdown>
@@ -277,7 +277,7 @@
     data () {
       return {
         queryParam: {},
-        projectSign: this.$route.params.projectSign,
+        projectId: this.$route.params.projectId,
         project: null,
         projectList: [],
         projectSearch: '',
@@ -333,11 +333,11 @@
         ],
         loadData: async parameter => {
           const { data } = await ApiMock.list(
-            Object.assign(parameter, this.queryParam, { project_sign: this.projectSign })
+            Object.assign(parameter, this.queryParam, { project_id: this.projectId })
           )
           this.project = data.bean.project
-          const { sign, base_url: baseUrl } = data.bean.project
-          this.baseURL = `${location.origin}/mock/${sign}${baseUrl}`
+          const { id, base_url: baseUrl } = data.bean.project
+          this.baseURL = `${location.origin}/mock/${id}${baseUrl}`
           return data.bean
         },
         selectedRowKeys: [],
@@ -549,7 +549,7 @@
       }
     },
     beforeRouteUpdate (to, from, next) {
-      this.projectSign = to.params.projectSign
+      this.projectId = to.params.projectId
       this.$refs.table.refresh(true)
       next()
     },

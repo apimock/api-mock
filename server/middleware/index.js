@@ -35,12 +35,12 @@ module.exports = class Middleware {
   }
 
   static mockFilter (ctx, next) {
-    const pathNode = pathToRegexp('/mock/:projectId([a-zA-Z0-9]{5,24})/:mockURL*').exec(ctx.path)
+    const pathNode = pathToRegexp('/mock/:projectId([0-9]{1,})/:mockURL*').exec(ctx.path)
 
     if (!pathNode) ctx.throw(404)
 
     ctx.pathNode = {
-      projectSign: pathNode[1],
+      projectId: pathNode[1],
       mockURL: '/' + (pathNode[2] || '')
     }
 

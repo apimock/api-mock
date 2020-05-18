@@ -10,6 +10,9 @@ function checkRequest (lists, ctx, method) {
   const { query, body, headers } = ctx.request
   let errMsg = ''
   lists.map((list) => {
+    if (!list.data || !list.data.length) {
+      return
+    }
     const data = json5Parse(list.data)
     data.filter((item) => {
       return !!item.required
@@ -35,10 +38,10 @@ export default class MockApi {
   static async getApi (ctx) {
     console.info(ctx.request.type, 'rest type')
     const method = ctx.method.toLowerCase()
-    const projectSign = ctx.pathNode.projectSign
+    const projectId = ctx.pathNode.projectId
     let { mockURL } = ctx.pathNode
     mockURL = decodeURIComponent(mockURL)
-    const project = await ProjectProxy.findOne({ sign: projectSign })
+    const project = await ProjectProxy.findOne({ id: projectId })
     if (!project) {
       ctx.throw(404)
       return

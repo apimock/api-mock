@@ -8,11 +8,6 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    'sign': {
-      type: DataTypes.CHAR(32),
-      allowNull: false,
-      unique: true
-    },
     'uid': {
       type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false

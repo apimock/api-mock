@@ -13,7 +13,7 @@ module.exports = class Project {
     const members = data.members
     delete data.members
     if (!data.id) {
-      data.sign = genProjectId()
+      data.id = genProjectId()
       const project = await Model.Project.create({ ...data, created_at: dateTime() })
       const { id, uid } = project
       const userProjectAll = members.concat(uid).map(uid => ({ uid, project_id: id, created_at: dateTime() }))

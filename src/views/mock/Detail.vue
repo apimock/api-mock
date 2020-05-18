@@ -7,7 +7,7 @@
   export default {
     data () {
       return {
-        projectSign: this.$route.params.projectSign,
+        projectId: this.$route.params.projectId,
         mockId: this.$route.params.mockId
       }
     },
@@ -19,7 +19,7 @@
       }
     },
     beforeRouteUpdate (to, from, next) {
-      this.project_sign = to.params.projectSign
+      this.project_id = to.params.projectId
       this.mockId = to.params.mockId
       this.getDetail()
       next()
