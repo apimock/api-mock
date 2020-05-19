@@ -10,6 +10,7 @@ export default class Mock {
   static async create (ctx) {
     const uid = ctx.state.user.id
     const projectId = ctx.checkBody('project_id').notEmpty().value
+    const categoryId = ctx.checkBody('category_id').notEmpty().value
     const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
     const body = ctx.checkBody('body').notEmpty().value
@@ -57,7 +58,7 @@ export default class Mock {
       return
     }
 
-    await MockProxy.save({ uid, project_id: projectId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
+    await MockProxy.save({ uid, project_id: projectId, category_id: categoryId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
     ctx.body = ctx.util.resuccess()
   }
 

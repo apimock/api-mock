@@ -70,6 +70,7 @@
           </a-form-model-item>
         </a-form-model>
       </a-modal>
+      <CreateMockDialog :projectId="projectId" :categoryId="categoryId" v-model="showCreateMockDialog"></CreateMockDialog>
     </a-card>
   </div>
 </template>
@@ -79,15 +80,18 @@
   import ApiCategory from '@/api/category'
   import { RouteView } from '@/layouts'
   import { MethodTagColor, Method } from '@/utils/enum'
+  import CreateMockDialog from '@/views/components/CreateMockDialog'
   const KeyAll = '0-0-0-0-0'
   export default {
     components: {
       RouteView,
+      CreateMockDialog,
       'a-tree': Tree
     },
     data () {
       return {
         treeData: [],
+        showCreateMockDialog: false,
         modalCreateCategory: {
           show: false,
           labelCol: { span: 6 },
@@ -102,6 +106,7 @@
           name: '',
           description: ''
         },
+        categoryId: '',
         projectId: this.$route.params.projectId
       }
     },
@@ -156,8 +161,14 @@
               return false
             }
             const { data } = await ApiCategory.create({ ...this.formCategory, project_id: this.projectId })
-            const { code, bean } = data
-            console.info(code, bean)
+            const { code, message } = data
+            if (code === 200) {
+              this.getCateList()
+              this.$message.success('创建成功')
+            } else {
+              this.$message.error(message)
+            }
+            this.modalCreateCategory.show = false
           }
         )
       },
@@ -165,7 +176,8 @@
         this.modalCreateCategory.show = false
       },
       addApi (id) {
-        console.info(id)
+        this.categoryId = id
+        this.showCreateMockDialog = true
       },
       copyApi (id) {
         console.info(id)
