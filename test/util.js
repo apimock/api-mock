@@ -36,7 +36,7 @@ class Util {
     return function (url, method = 'get', ctoken = token) {
       console.info(ctoken)
       return request(server)[method](url)
-        .set('Authorization', ctoken)
+        .set('Authorization', `Bearer ${ctoken}`)
     }
   }
 }
