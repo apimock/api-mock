@@ -28,7 +28,7 @@
   "dependencies": {
     "@antv/data-set": "^0.10.2",
     "@tkay/sequelize-auto": "^0.4.31",
-    "ant-design-vue": "1.5.5",
+    "ant-design-vue": "1.6.0",
     "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
     "brace": "^0.11.1",
