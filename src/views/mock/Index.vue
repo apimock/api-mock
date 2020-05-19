@@ -5,11 +5,12 @@
         <div class="mock-left">
           <a-button type="primary" @click="createCategory">添加分类</a-button>
           <a-tree
+            v-if="treeData.length"
             class="mock-tree"
             show-icon
             draggable
             :blockNode="true"
-            default-expand-all
+            :expanded-keys.sync="expandedKey"
             :tree-data="treeData">
             <a-icon slot="folder" type="folder" />
             <template slot="parent" slot-scope="item">
@@ -107,7 +108,8 @@
           description: ''
         },
         categoryId: '',
-        projectId: this.$route.params.projectId
+        projectId: this.$route.params.projectId,
+        expandedKey: [this.$route.params.categoryId]
       }
     },
     methods: {
@@ -122,17 +124,20 @@
         const { bean, code } = data
         if (code === 200) {
           bean.forEach((parent, m) => {
-            parent.key = `${m}-${parent.id}`
+            parent.key = `${parent.id}`
             parent.title = parent.name
             parent.slots = { icon: 'folder' }
             parent.scopedSlots = { title: 'parent' }
             parent.showRightButton = false
+            // this.expandedKey.push(parent.key)
             parent.children.forEach((child, n) => {
-              child.key = `${m}-${parent.id}-${n}-${child.id}`
+              child.key = `${parent.id}-${child.id}`
               child.title = child.url
               child.showRightButton = false
               child.scopedSlots = { title: 'child' }
+              child.parentId = parent.id
             })
+            console.info(this.expandedKey)
           })
           bean.unshift({
             key: KeyAll,
@@ -193,8 +198,19 @@
         this.$router.push({ name: 'mockList', params: { categoryId } })
       },
       toDetail (item) {
-        this.$router.push({ name: 'mockDetail', params: { mockId: item.id } })
+        let categoryId = item.parentId
+        if (item.eventKey === KeyAll) {
+          categoryId = 'all'
+        }
+        this.$router.push({ name: 'mockDetail', params: { categoryId, mockId: item.id } })
       }
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.projectId = to.params.projectId
+      this.categoryId = to.params.categoryId
+      this.expandedKey.splice(0, this.expandedKey.length)
+      this.expandedKey.push(String(this.categoryId))
+      next()
     },
     created () {
       this.getCateList()
