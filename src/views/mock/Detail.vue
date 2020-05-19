@@ -1,14 +1,149 @@
 <template>
-  <div>detail</div>
+  <div>
+    <div class="mock-editor-wrap">
+      <div class="mock-form">
+        <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
+          <a-form-model-item label="URL" prop="url">
+            <a-input v-model="mockForm.url" placeholder="please input url">
+              <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
+                <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
+                  <a-tag style="width: 80px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
+                </a-select-option>
+              </a-select>
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item label="Description" prop="description">
+            <a-input v-model="mockForm.description" placeholder="please input description" />
+          </a-form-model-item>
+          <a-row :gutter="20">
+            <a-col :span="12">
+              <a-form-model-item label="Response Status">
+                <a-select
+                  v-model="mockForm.status"
+                  show-search
+                  :dropdownMatchSelectWidth="false"
+                >
+                  <a-select-option v-for="(item, index) in ResponseStatus" :key="index" :value="item.code">
+                    <template v-if="item.code !== 0">
+                      <a-tag :color="item.color">{{ item.code }}</a-tag> {{ item.desc }}
+                    </template>
+                    <a-divider v-if="item.code === 0" style="margin: 4px 0;" />
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-model-item label="Response Delay" prop="delay">
+                <a-input-number
+                  v-model="mockForm.delay"
+                  :min="0"
+                  :max="180000"
+                  :precision="0"
+                  :step="100"
+                  style="width: 100%"/>
+              </a-form-model-item>
+            </a-col>
+          </a-row>
+          <a-form-model-item>
+            <a-button type="primary" block htmlType="submit">
+              Submit
+            </a-button>
+          </a-form-model-item>
+        </a-form-model>
+      </div>
+      <div class="request">
+        <div class="edit-title">请求参数</div>
+        <a-tabs v-model="requestTabActiveKey" @change="changeRequestTab">
+          <a-tab-pane v-if="showBodyQueryTab" key="body" tab="Body Params">
+            <a slot="extra" href="#">批量添加</a>
+            <a-radio-group v-model="mockForm.body_params_type" style="margin-bottom: 20px">
+              <a-radio :value="1">
+                form
+              </a-radio>
+              <a-radio :value="2">
+                json
+              </a-radio>
+              <a-radio :value="3">
+                raw
+              </a-radio>
+              <a-radio :value="4">
+                binary
+              </a-radio>
+            </a-radio-group>
+            <tree-table v-model="mockForm.body_params" name="body_params"></tree-table>
+          </a-tab-pane>
+          <a-tab-pane key="query" tab="Query Params">
+            <a slot="extra" href="#">批量添加</a>
+            <tree-table v-model="mockForm.query_params" name="query_params"></tree-table>
+          </a-tab-pane>
+          <a-tab-pane key="header" tab="Headers">
+            <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
+              <tree-table v-model="mockForm.headers" name="headers"></tree-table>
+            </a-card>
+          </a-tab-pane>
+        </a-tabs>
+      </div>
+      <div class="mock-editor">
+        <a-card size="small" title="响应内容" :bordered="false" style="width: 100%">
+          <a slot="extra" href="#">more</a>
+          <p>card content</p>
+          <p>card content</p>
+        </a-card>
+        <div ref="editor"></div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
   import ApiMock from '@/api/mock'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
+  import { jsonParse } from '@/utils'
+  import TreeTable from '@/views/components/TreeTable'
+  const mockForm = {
+    id: '',
+    url: '',
+    method: 'get',
+    delay: 0,
+    status: 200,
+    description: '',
+    headers: [],
+    query_params: [],
+    body_params: [],
+    body_params_type: 1,
+    body: '{}'
+  }
   export default {
+    components: {
+      TreeTable
+    },
     data () {
       return {
         projectId: this.$route.params.projectId,
-        mockId: this.$route.params.mockId
+        mockId: this.$route.params.mockId,
+        mockForm,
+        MethodArray,
+        ResponseStatus,
+        showBodyQueryTab: false,
+        requestTabActiveKey: 'query',
+        rules: {
+          url: [
+            { required: true, message: 'Please input url', trigger: 'blur' }
+          ],
+          description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
+          body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
+        }
+      }
+    },
+    watch: {
+      'mockForm.method' (val) {
+        if (['post', 'put', 'delete', 'patch'].includes(val)) {
+          this.showBodyQueryTab = true
+          this.requestTabActiveKey = 'body'
+        } else {
+          this.showBodyQueryTab = false
+          this.requestTabActiveKey = 'query'
+        }
       }
     },
     methods: {
@@ -16,6 +151,49 @@
         const { data } = await ApiMock.detail({ id: this.mockId })
         const { code, bean } = data
         console.info(code, bean)
+        this.mockForm = Object.assign(Object.create(null), this.mockForm, bean)
+        this.mockForm.headers = jsonParse(this.mockForm.headers) || []
+        this.mockForm.query_params = jsonParse(this.mockForm.query_params) || []
+        this.mockForm.body_params = jsonParse(this.mockForm.body_params) || []
+        this.mockForm.method = Method[bean.method]
+      },
+      methodToString (num) {
+        return Method[num].toUpperCase()
+      },
+      methodTagColor (num) {
+        return MethodTagColor[num]
+      },
+      filterEmptyName (items) {
+        return items.filter((item) => {
+          return item.name !== ''
+        })
+      },
+      submit (e) {
+        if (e) {
+          e.preventDefault()
+        }
+        this.$refs.mockForm.validate(async valid => {
+          if (!valid) {
+            console.log('error submit!!')
+            return false
+          }
+          const mockData = { ...this.mockForm }
+          mockData.headers = this.filterEmptyName(mockData.headers)
+          mockData.query_params = this.filterEmptyName(mockData.query_params)
+          mockData.body_params = this.filterEmptyName(mockData.body_params)
+          if (!mockData.body) mockData.body = mockForm.body
+
+          const { data } = await ApiMock.update(mockData)
+          const { code, message } = data
+          if (code === 200) {
+            this.$message.success('更新成功')
+          } else {
+            this.$message.error(message)
+          }
+        })
+      },
+      changeRequestTab (key) {
+        console.info(key)
       }
     },
     beforeRouteUpdate (to, from, next) {
