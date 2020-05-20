@@ -2,7 +2,13 @@
   <div>
     <div class="mock-editor-wrap">
       <div class="mock-form">
-        <a-form-model layout="vertical" :model="mockForm" ref="mockForm" :rules="rules" @submit="submit">
+        <a-form-model
+          :model="mockForm"
+          ref="mockForm"
+          :rules="rules"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+          @submit="submit">
           <a-form-model-item label="URL" prop="url">
             <a-input v-model="mockForm.url" placeholder="please input url">
               <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
@@ -89,7 +95,7 @@
           <p>card content</p>
           <p>card content</p>
         </a-card>
-        <div ref="editor"></div>
+        <ace-editor value="abc"></ace-editor>
       </div>
     </div>
   </div>
@@ -100,6 +106,7 @@
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import { jsonParse } from '@/utils'
   import TreeTable from '@/views/components/TreeTable'
+  import AceEditor from '@/views/components/AceEditor'
   const mockForm = {
     id: '',
     url: '',
@@ -115,7 +122,8 @@
   }
   export default {
     components: {
-      TreeTable
+      TreeTable,
+      AceEditor
     },
     data () {
       return {
@@ -126,6 +134,8 @@
         ResponseStatus,
         showBodyQueryTab: false,
         requestTabActiveKey: 'query',
+        labelCol: { span: 5 },
+        wrapperCol: { span: 19 },
         rules: {
           url: [
             { required: true, message: 'Please input url', trigger: 'blur' }
