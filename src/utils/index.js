@@ -15,3 +15,12 @@ export function jsonParse (json) {
     return json
   }
 }
+
+export function isJson (json) {
+  try {
+    json5.parse(json)
+    return true
+  } catch (e) {
+    return false
+  }
+}

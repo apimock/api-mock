@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="mock-editor-wrap">
+      <div @click="view">mock地址</div>
       <div class="mock-form">
         <a-form-model
           :model="mockForm"
@@ -59,7 +60,7 @@
       </div>
       <div class="request">
         <div class="edit-title">请求参数</div>
-        <a-tabs v-model="requestTabActiveKey" @change="changeRequestTab">
+        <a-tabs v-model="reqTabActiveKey" :animated="false">
           <a-tab-pane v-if="showBodyQueryTab" key="body" tab="Body Params">
             <a slot="extra" href="#">批量添加</a>
             <a-radio-group v-model="mockForm.body_params_type" style="margin-bottom: 20px">
@@ -95,7 +96,14 @@
           <p>card content</p>
           <p>card content</p>
         </a-card>
-        <ace-editor value="abc"></ace-editor>
+        <a-tabs v-model="resTabActiveKey" :animated="false" @change="changeResTab">
+          <a-tab-pane key="code" tab="模板">
+            <ace-editor ref="codeEditor" v-model="mockForm.body"></ace-editor>
+          </a-tab-pane>
+          <a-tab-pane key="preview" tab="预览">
+            <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
+          </a-tab-pane>
+        </a-tabs>
       </div>
     </div>
   </div>
@@ -104,9 +112,10 @@
 <script>
   import ApiMock from '@/api/mock'
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
-  import { jsonParse } from '@/utils'
+  import json5 from 'json5'
+  import { jsonParse, json5Parse, isJson } from '@/utils'
   import TreeTable from '@/views/components/TreeTable'
-  import AceEditor from '@/views/components/AceEditor'
+  import AceEditor from '@/views/components/editor/AceEditor'
   const mockForm = {
     id: '',
     url: '',
@@ -133,7 +142,8 @@
         MethodArray,
         ResponseStatus,
         showBodyQueryTab: false,
-        requestTabActiveKey: 'query',
+        reqTabActiveKey: 'query',
+        resTabActiveKey: 'code',
         labelCol: { span: 5 },
         wrapperCol: { span: 19 },
         rules: {
@@ -142,17 +152,19 @@
           ],
           description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
           body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
-        }
+        },
+        codeEditorValue: 'abc',
+        previewEditorValue: ''
       }
     },
     watch: {
       'mockForm.method' (val) {
         if (['post', 'put', 'delete', 'patch'].includes(val)) {
           this.showBodyQueryTab = true
-          this.requestTabActiveKey = 'body'
+          this.reqTabActiveKey = 'body'
         } else {
           this.showBodyQueryTab = false
-          this.requestTabActiveKey = 'query'
+          this.reqTabActiveKey = 'query'
         }
       }
     },
@@ -165,7 +177,10 @@
         this.mockForm.headers = jsonParse(this.mockForm.headers) || []
         this.mockForm.query_params = jsonParse(this.mockForm.query_params) || []
         this.mockForm.body_params = jsonParse(this.mockForm.body_params) || []
+        console.info(json5Parse)
+        // this.mockForm.body = JSON.stringify(json5Parse(bean.body), null, 2)
         this.mockForm.method = Method[bean.method]
+        this.$refs.codeEditor.setValue(this.mockForm.body)
       },
       methodToString (num) {
         return Method[num].toUpperCase()
@@ -187,11 +202,22 @@
             console.log('error submit!!')
             return false
           }
+          if (!isJson(this.mockForm.body)) {
+            this.$message.error('返回Body json格式有问题，请检查！')
+            return
+          }
           const mockData = { ...this.mockForm }
           mockData.headers = this.filterEmptyName(mockData.headers)
           mockData.query_params = this.filterEmptyName(mockData.query_params)
           mockData.body_params = this.filterEmptyName(mockData.body_params)
-          if (!mockData.body) mockData.body = mockForm.body
+          console.info(json5)
+          // try {
+          //   mockData.body = JSON.stringify(this.mockForm.body, null, 20)
+          //   console.info(mockData.body)
+          // } catch (e) {
+          //   console.info(e, 'asdfdfdfd')
+          //   // mockData.body = this.mockForm.body
+          // }
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data
@@ -202,8 +228,20 @@
           }
         })
       },
-      changeRequestTab (key) {
-        console.info(key)
+      changeResTab (key) {
+        if (key === 'preview') {
+          const val = this.$refs.codeEditor.getMockValue()
+          this.$nextTick(() => {
+            this.$refs.previewEditor.setValue(val)
+            console.info(this.codeEditorValue)
+          })
+        }
+      },
+      view () {
+        const baseUrl = '/pro'
+        this.baseURL = `${location.origin}/mock/${this.projectId}${baseUrl}`
+        const url = `${this.baseURL}${this.mockForm.url}#!method=${this.mockForm.method}`
+        window.open(url)
       }
     },
     beforeRouteUpdate (to, from, next) {
