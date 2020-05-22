@@ -4,6 +4,7 @@
 
 <script>
   import { MockSnippets } from '@/views/components/editor/snippets'
+  import jsBeautify from 'js-beautify/js/lib/beautify'
   const Mock = require('mockjs')
   const json5 = require('json5')
   const ace = require('brace')
@@ -11,11 +12,20 @@
   require('brace/theme/xcode')
   require('brace/ext/language_tools')
   require('brace/ext/searchbox')
+  const Dom = ace.acequire('ace/lib/dom')
   const langTools = ace.acequire('ace/ext/language_tools')
+  Mock.Random.extend({
+    timestamp: function () {
+      const time = new Date().getTime() + ''
+      return +time.substr(0, time.length - 3)
+    }
+  })
+
   export default {
     name: 'AceEditor',
     props: {
       value: {
+        type: String,
         default: ''
       },
       readOnly: {
@@ -40,6 +50,7 @@
     methods: {
       install () {
         this.editor = ace.edit(this.$refs.editor)
+        this.editor.$blockScrolling = Infinity
         this.editor.getSession().setMode('ace/mode/javascript')
         this.editor.setTheme('ace/theme/xcode')
         if (this.readOnly) {
@@ -47,9 +58,11 @@
           this.editor.renderer.$cursorLayer.element.style.display = 'none'
         }
         this.editor.setOptions({
+          tabSize: 2,
+          fontSize: 15,
           enableBasicAutocompletion: true,
-          enableSnippets: false,
-          enableLiveAutocompletion: true,
+          enableSnippets: false, // 启用代码段
+          enableLiveAutocompletion: true, // 智能补全
           useWorker: true
         })
         langTools.addCompleter({
@@ -63,25 +76,50 @@
         })
         this.setValue(this.currentValue)
         this.editor.on('change', this.onChange)
+        this.editor.commands.addCommand({
+          name: 'save',
+          bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+          exec: () => {
+            this.$emit('save')
+          }
+        })
+        this.editor.commands.addCommand({
+          name: 'Toggle Fullscreen',
+          bindKey: 'F9',
+          exec: () => {
+            const fullScreen = Dom.toggleCssClass(document.body, 'fullscreen')
+            Dom.setCssClass(this.editor.container, 'fullscreen', fullScreen)
+            this.editor.setAutoScrollEditorIntoView(!fullScreen)
+            this.editor.resize()
+          }
+        })
       },
       onChange () {
         this.currentValue = this.editor.getValue()
+        this.$emit('change', this.currentValue)
       },
       formatJson (json) {
         try {
-          return json5.stringify(json5.parse(json), null, 2)
+          return JSON.stringify(json5.parse(json), null, 2)
         } catch (err) {
           return json
         }
       },
-      format (data) {
+      jsonToStr (data) {
         if (typeof data === 'string') {
           return this.formatJson(data)
         } else if (typeof data === 'object') {
-          return JSON.stringify(data, null, '  ')
+          return JSON.stringify(data, null, 2)
         } else {
           return data.toString()
         }
+      },
+      format (value) {
+        return jsBeautify.js_beautify(value, { indent_size: 2 })
+      },
+      insert (code) {
+        const pos = this.editor.selection.getCursor()
+        this.editor.session.insert(pos, code)
       },
       setValue (val) {
         if (val) {
@@ -97,8 +135,7 @@
         try {
           const val = json5.parse(this.currentValue)
           const mockValueFun = () => Mock.mock(val)
-          mockValue = this.format(mockValueFun())
-          console.info(mockValue)
+          mockValue = this.jsonToStr(mockValueFun())
         } catch (e) {
           mockValue = `解析出错：${e.message}`
         }
@@ -116,5 +153,17 @@
 .ace-editor{
   width: 100%;
   height: 300px;
+  &.fullscreen{
+    height: auto;
+    width: auto;
+    border: 0;
+    margin: 0;
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000000;
+  }
 }
 </style>

@@ -69,22 +69,24 @@ export default class MockApi {
       return options.template.call(options.context.currentContext, options)
     }
 
-    const vm = new VM({
-      timeout: 1000,
-      sandbox: {
-        Mock,
-        body: mock.body,
-        template: new Function(`return ${mock.body}`) // eslint-disable-line
+    try {
+      const vm = new VM({
+        timeout: 1000,
+        sandbox: {
+          Mock,
+          body: mock.body,
+          template: new Function(`return ${mock.body}`) // eslint-disable-line
+        }
+      })
+      vm.run('Mock.mock(new Function("return " + body)())') // 数据验证，检测 setTimeout 等方法
+      const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
+      if (mock.delay > 0) {
+        await delay(mock.delay)
       }
-    })
-
-    vm.run('Mock.mock(new Function("return " + body)())') // 数据验证，检测 setTimeout 等方法
-    const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
-
-    if (mock.delay > 0) {
-      await delay(mock.delay)
+      ctx.body = apiData
+      ctx.status = mock.status
+    } catch (e) {
+      ctx.body = ctx.util.refail('数据解析出错！')
     }
-    ctx.body = apiData
-    ctx.status = mock.status
   }
 }

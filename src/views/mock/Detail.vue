@@ -98,7 +98,7 @@
         </a-card>
         <a-tabs v-model="resTabActiveKey" :animated="false" @change="changeResTab">
           <a-tab-pane key="code" tab="模板">
-            <ace-editor ref="codeEditor" v-model="mockForm.body"></ace-editor>
+            <ace-editor ref="codeEditor" v-model="mockForm.body" @save="submit"></ace-editor>
           </a-tab-pane>
           <a-tab-pane key="preview" tab="预览">
             <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
@@ -112,8 +112,7 @@
 <script>
   import ApiMock from '@/api/mock'
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
-  import json5 from 'json5'
-  import { jsonParse, json5Parse, isJson } from '@/utils'
+  import { jsonParse, checkJson5 } from '@/utils'
   import TreeTable from '@/views/components/TreeTable'
   import AceEditor from '@/views/components/editor/AceEditor'
   const mockForm = {
@@ -172,13 +171,14 @@
       async getDetail () {
         const { data } = await ApiMock.detail({ id: this.mockId })
         const { code, bean } = data
-        console.info(code, bean)
+        if (code !== 200) {
+          this.$message.error('加载失败！')
+          return
+        }
         this.mockForm = Object.assign(Object.create(null), this.mockForm, bean)
         this.mockForm.headers = jsonParse(this.mockForm.headers) || []
         this.mockForm.query_params = jsonParse(this.mockForm.query_params) || []
         this.mockForm.body_params = jsonParse(this.mockForm.body_params) || []
-        console.info(json5Parse)
-        // this.mockForm.body = JSON.stringify(json5Parse(bean.body), null, 2)
         this.mockForm.method = Method[bean.method]
         this.$refs.codeEditor.setValue(this.mockForm.body)
       },
@@ -202,7 +202,7 @@
             console.log('error submit!!')
             return false
           }
-          if (!isJson(this.mockForm.body)) {
+          if (!checkJson5(this.mockForm.body)) {
             this.$message.error('返回Body json格式有问题，请检查！')
             return
           }
@@ -210,14 +210,6 @@
           mockData.headers = this.filterEmptyName(mockData.headers)
           mockData.query_params = this.filterEmptyName(mockData.query_params)
           mockData.body_params = this.filterEmptyName(mockData.body_params)
-          console.info(json5)
-          // try {
-          //   mockData.body = JSON.stringify(this.mockForm.body, null, 20)
-          //   console.info(mockData.body)
-          // } catch (e) {
-          //   console.info(e, 'asdfdfdfd')
-          //   // mockData.body = this.mockForm.body
-          // }
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data
@@ -233,7 +225,6 @@
           const val = this.$refs.codeEditor.getMockValue()
           this.$nextTick(() => {
             this.$refs.previewEditor.setValue(val)
-            console.info(this.codeEditorValue)
           })
         }
       },

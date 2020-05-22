@@ -1,5 +1,5 @@
 export const MockSnippets = [
-  { name: '字符串', value: '@string(1,2)' },
+  { name: '字符串', value: '@string' },
   { name: '自然数', value: '@natural' },
   { name: '浮点数', value: '@float' },
   { name: '字符', value: '@character' },
@@ -15,7 +15,7 @@ export const MockSnippets = [
   { name: '时间', value: '@time' },
   { name: '日期时间', value: '@datetime' },
   { name: '图片URL', value: `@image('200x100', '#50B347', '#FFF', 'ApiMock')` },
-  { name: '图片data', value: '@imageData' },
+  { name: '图片Base64', value: `@dataImage(200x100, 'ApiMock)` },
   { name: '颜色', value: '@color' },
   { name: '颜色hex', value: '@hex' },
   { name: '颜色rgba', value: '@rgba' },

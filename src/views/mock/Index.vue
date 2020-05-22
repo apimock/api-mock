@@ -137,7 +137,6 @@
               child.scopedSlots = { title: 'child' }
               child.parentId = parent.id
             })
-            console.info(this.expandedKey)
           })
           bean.unshift({
             key: KeyAll,

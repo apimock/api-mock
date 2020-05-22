@@ -16,7 +16,7 @@ export function jsonParse (json) {
   }
 }
 
-export function isJson (json) {
+export function checkJson5 (json) {
   try {
     json5.parse(json)
     return true
