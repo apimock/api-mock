@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import { MockSnippets } from '@/views/components/editor/snippets'
+  import { MockSnippets } from '@/views/components/editor/mockSnippets'
   import jsBeautify from 'js-beautify/js/lib/beautify'
   const Mock = require('mockjs')
   const json5 = require('json5')
@@ -12,6 +12,7 @@
   require('brace/theme/xcode')
   require('brace/ext/language_tools')
   require('brace/ext/searchbox')
+  require('./snippets')
   const Dom = ace.acequire('ace/lib/dom')
   const langTools = ace.acequire('ace/ext/language_tools')
   Mock.Random.extend({
@@ -20,6 +21,7 @@
       return +time.substr(0, time.length - 3)
     }
   })
+  let dataType = 'json'
 
   export default {
     name: 'AceEditor',
@@ -31,6 +33,12 @@
       readOnly: {
         type: Boolean,
         default: false
+      },
+      type: {
+        default: 'json',
+        validator: function (value) {
+          return ['json', 'script'].indexOf(value) !== -1
+        }
       }
     },
     data () {
@@ -45,6 +53,14 @@
       },
       value (val) {
         this.currentValue = val
+      },
+      type (val) {
+        if (val === 'json') {
+          this.editor.setOption('enableSnippets', false)
+        } else {
+          this.editor.setOption('enableSnippets', true)
+        }
+        dataType = this.type
       }
     },
     methods: {
@@ -59,7 +75,7 @@
         }
         this.editor.setOptions({
           tabSize: 2,
-          fontSize: 15,
+          fontSize: 14,
           enableBasicAutocompletion: true,
           enableSnippets: false, // 启用代码段
           enableLiveAutocompletion: true, // 智能补全
@@ -68,7 +84,7 @@
         langTools.addCompleter({
           identifierRegexps: [/[@]/],
           getCompletions (editor, session, pos, prefix, callback) {
-            if (prefix.length === 0) { callback(null, []); return }
+            if (prefix.length === 0 || dataType === 'script') { callback(null, []); return }
             callback(null, MockSnippets.map((item) => {
              return { name: item.value, value: item.value, score: item.value, meta: item.name }
             }))

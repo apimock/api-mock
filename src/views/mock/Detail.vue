@@ -98,7 +98,7 @@
         </a-card>
         <a-tabs v-model="resTabActiveKey" :animated="false" @change="changeResTab">
           <a-tab-pane key="code" tab="模板">
-            <ace-editor ref="codeEditor" v-model="mockForm.body" @save="submit"></ace-editor>
+            <ace-editor ref="codeEditor" v-model="mockForm.body" :type="type" @save="submit"></ace-editor>
           </a-tab-pane>
           <a-tab-pane key="preview" tab="预览">
             <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
@@ -153,7 +153,8 @@
           body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
         },
         codeEditorValue: 'abc',
-        previewEditorValue: ''
+        previewEditorValue: '',
+        type: 'json'
       }
     },
     watch: {

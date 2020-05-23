@@ -1,0 +1,119 @@
+# Api
+snippet Api.json
+	Api.json
+snippet Api.params
+	Api.params
+snippet Api.header
+	Api.header
+# Base
+snippet Random.boolean
+	@boolean
+snippet Random.natural
+	@natural(${1:60}, ${2:100})
+snippet Random.integer
+	@integer(${1:60}, ${2:100})
+snippet Random.float
+	@float(${1:60}, ${2:100})
+snippet Random.character
+	@character(${1:'abcde'})
+snippet Random.string
+	@string(${1:7}, ${2:20})
+snippet Random.range
+	@range(${1:3}, ${2:7})
+# Date
+snippet Random.date
+	@date
+snippet Random.time
+	@time
+snippet Random.datetime
+	@datetime
+snippet Random.now
+	@now
+# Image
+snippet Random.image
+  @image(${1:'200x100'}, ${2:'#50B347'}, ${3:'#FFF'}, ${4:'ApiMock'})
+snippet Random.dataImage
+	@dataImage(${1:'200x100'}, ${2:'ApiMock'})
+# Color
+snippet Random.color
+	@color
+snippet Random.hex
+	@hex
+snippet Random.rgb
+	@rgb
+snippet Random.rgba
+	@rgba
+snippet Random.hsl
+	@hsl
+# Text
+snippet Random.paragraph
+	@paragraph(${1:1}, ${2:3})
+snippet Random.sentence
+	@sentence(${1:3}, ${2:5})
+snippet Random.word
+	@word(${1:3}, ${2:5})
+snippet Random.title
+	@title(${1:3}, ${2:5})
+snippet Random.cparagraph
+	@cparagraph(${1:1}, ${2:3})
+snippet Random.csentence
+	@csentence(${1:3}, ${2:5})
+snippet Random.cword
+	@cword(${1:'零一二三四五六七八九十'}, ${2:5}, ${3:7})
+snippet Random.ctitle
+	@ctitle(${1:3}, ${2:5})
+# Name
+snippet Random.first
+	@first
+snippet Random.last
+	@last
+snippet Random.name
+	@name
+snippet Random.cfirst
+	@cfirst
+snippet Random.clast
+	@clast
+snippet Random.cname
+	@cname
+# Web
+snippet Random.url
+	@url
+snippet Random.domain
+	@domain
+snippet Random.protocol
+	@protocol
+snippet Random.tld
+	@tld
+snippet Random.email
+	@email
+snippet Random.ip
+	@ip
+# Address
+snippet Random.region
+	@region
+snippet Random.province
+	@province
+snippet Random.city
+	@city(${1:true})
+snippet Random.county
+	@county(${1:true})
+snippet Random.zip
+	@zip
+# Helper
+snippet Random.capitalize
+	@capitalize(${1:'hello'})
+snippet Random.upper
+	@upper(${1:'hello'})
+snippet Random.lower
+	@lower(${1:'HELLO'})
+snippet Random.pick
+	@pick(['a', 'e', 'i', 'o', 'u'])
+snippet Random.shuffle
+	@shuffle(['a', 'e', 'i', 'o', 'u'])
+# Miscellaneous
+snippet Random.guid
+	@guid
+snippet Random.id
+	@id
+snippet Random.increment
+	@increment(${1:1000})
