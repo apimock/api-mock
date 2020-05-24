@@ -104,11 +104,11 @@ snippet /**
 	 * ${1:description}
 	 *
 	 */
-snippet @par
-regex /^\s*\*\s*/@(para?m?)?/
-	@param {${1:type}} ${2:name} ${3:description}
-snippet @ret
-	@return {${1:type}} ${2:description}
+#snippet @par
+#regex /^\s*\*\s*/@(para?m?)?/
+#	@param {${1:type}} ${2:name} ${3:description}
+#snippet @ret
+#	@return {${1:type}} ${2:description}
 # JSON.parse
 snippet jsonp
 	JSON.parse(${1:jstr});

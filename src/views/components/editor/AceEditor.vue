@@ -21,7 +21,6 @@
       return +time.substr(0, time.length - 3)
     }
   })
-  let dataType = 'json'
 
   export default {
     name: 'AceEditor',
@@ -34,11 +33,9 @@
         type: Boolean,
         default: false
       },
-      type: {
-        default: 'json',
-        validator: function (value) {
-          return ['json', 'script'].indexOf(value) !== -1
-        }
+      isJson: {
+        type: Boolean,
+        default: true
       }
     },
     data () {
@@ -54,16 +51,18 @@
       value (val) {
         this.currentValue = val
       },
-      type (val) {
-        if (val === 'json') {
-          this.editor.setOption('enableSnippets', false)
-        } else {
-          this.editor.setOption('enableSnippets', true)
-        }
-        dataType = this.type
+      isJson (val) {
+        console.info(val)
+        // this.enableSnippets(val)
       }
     },
     methods: {
+      getCompletions (editor, session, pos, prefix, callback) {
+        if (prefix.length === 0) { callback(null, []); return }
+        callback(null, MockSnippets.map((item) => {
+          return { name: item.value, value: item.value, score: item.value, meta: item.name }
+        }))
+      },
       install () {
         this.editor = ace.edit(this.$refs.editor)
         this.editor.$blockScrolling = Infinity
@@ -77,18 +76,13 @@
           tabSize: 2,
           fontSize: 14,
           enableBasicAutocompletion: true,
-          enableSnippets: false, // 启用代码段
           enableLiveAutocompletion: true, // 智能补全
           useWorker: true
         })
+        this.enableSnippets(false)
         langTools.addCompleter({
           identifierRegexps: [/[@]/],
-          getCompletions (editor, session, pos, prefix, callback) {
-            if (prefix.length === 0 || dataType === 'script') { callback(null, []); return }
-            callback(null, MockSnippets.map((item) => {
-             return { name: item.value, value: item.value, score: item.value, meta: item.name }
-            }))
-          }
+          getCompletions: this.getCompletions
         })
         this.setValue(this.currentValue)
         this.editor.on('change', this.onChange)
@@ -137,6 +131,13 @@
         const pos = this.editor.selection.getCursor()
         this.editor.session.insert(pos, code)
       },
+      enableSnippets (isJson) {
+        if (isJson) {
+          this.editor.setOption('enableSnippets', false)
+        } else {
+          this.editor.setOption('enableSnippets', true)
+        }
+      },
       setValue (val) {
         if (val) {
           this.editor.setValue(this.format(val))
@@ -148,12 +149,16 @@
       },
       getMockValue () {
         let mockValue = ''
-        try {
-          const val = json5.parse(this.currentValue)
-          const mockValueFun = () => Mock.mock(val)
-          mockValue = this.jsonToStr(mockValueFun())
-        } catch (e) {
-          mockValue = `解析出错：${e.message}`
+        if (this.isJson) {
+          try {
+            const val = json5.parse(this.currentValue)
+            const mockValueFun = () => Mock.mock(val)
+            mockValue = this.jsonToStr(mockValueFun())
+          } catch (e) {
+            mockValue = `解析出错：${e.message}`
+          }
+        } else {
+          mockValue = this.currentValue
         }
         return mockValue
       }

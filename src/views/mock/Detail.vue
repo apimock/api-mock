@@ -98,7 +98,8 @@
         </a-card>
         <a-tabs v-model="resTabActiveKey" :animated="false" @change="changeResTab">
           <a-tab-pane key="code" tab="模板">
-            <ace-editor ref="codeEditor" v-model="mockForm.body" :type="type" @save="submit"></ace-editor>
+            <a-switch checked-children="json" un-checked-children="script" default-checked v-model="mockForm.is_json" />
+            <ace-editor ref="codeEditor" v-model="mockForm.body" :is-json="mockForm.is_json" @save="submit"></ace-editor>
           </a-tab-pane>
           <a-tab-pane key="preview" tab="预览">
             <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
@@ -126,7 +127,8 @@
     query_params: [],
     body_params: [],
     body_params_type: 1,
-    body: '{}'
+    body: '{}',
+    is_json: true
   }
   export default {
     components: {
@@ -181,6 +183,7 @@
         this.mockForm.query_params = jsonParse(this.mockForm.query_params) || []
         this.mockForm.body_params = jsonParse(this.mockForm.body_params) || []
         this.mockForm.method = Method[bean.method]
+        this.mockForm.is_json = !!this.mockForm.is_json
         this.$refs.codeEditor.setValue(this.mockForm.body)
       },
       methodToString (num) {
@@ -203,7 +206,7 @@
             console.log('error submit!!')
             return false
           }
-          if (!checkJson5(this.mockForm.body)) {
+          if (this.mockForm.is_json && !checkJson5(this.mockForm.body)) {
             this.$message.error('返回Body json格式有问题，请检查！')
             return
           }
@@ -211,6 +214,7 @@
           mockData.headers = this.filterEmptyName(mockData.headers)
           mockData.query_params = this.filterEmptyName(mockData.query_params)
           mockData.body_params = this.filterEmptyName(mockData.body_params)
+          mockData.is_json = this.mockForm.is_json === true ? 1 : 0
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data

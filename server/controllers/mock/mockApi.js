@@ -4,6 +4,7 @@ import { Method } from '~/server/utils/enum'
 import { params, delay, json5Parse } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
+const json5 = require('json5')
 
 function checkRequest (lists, ctx, method) {
   const errorParams = []
@@ -60,6 +61,16 @@ export default class MockApi {
       return
     }
 
+    try {
+      const val = json5.parse(mock.body)
+      const mockValueFun = () => Mock.mock(val)
+      const mockValue = mockValueFun()
+      ctx.body = mockValue
+      return
+    } catch (e) {
+      ctx.body = ctx.util.refail('数据解析出错！')
+    }
+
     Mock.Handler.function = function (options) {
       const mockUrl = mock.url.replace(/{/g, ':').replace(/}/g, '') // /api/{user}/{id} => /api/:user/:id
       options.Mock = Mock
@@ -68,22 +79,30 @@ export default class MockApi {
       options._req.cookies = ctx.cookies.get.bind(ctx)
       return options.template.call(options.context.currentContext, options)
     }
-
+    const Api = {
+      json: {},
+      req: ctx.request
+    }
     try {
+      // const script = ` a.bb = 6;console.info(a)`
+      const sandbox = {
+        Api
+        // Mock,
+          // body: mock.body,
+          // template: new Function(`return ${mock.body}`) // eslint-disable-line
+      }
       const vm = new VM({
         timeout: 1000,
-        sandbox: {
-          Mock,
-          body: mock.body,
-          template: new Function(`return ${mock.body}`) // eslint-disable-line
-        }
+        sandbox
       })
-      vm.run('Mock.mock(new Function("return " + body)())') // 数据验证，检测 setTimeout 等方法
-      const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
+      vm.run(mock.body)
+      console.info(sandbox)
+      // vm.run('Mock.mock(new Function("return " + body)())') // 数据验证，检测 setTimeout 等方法
+      // const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
       if (mock.delay > 0) {
         await delay(mock.delay)
       }
-      ctx.body = apiData
+      ctx.body = sandbox.Api.json
       ctx.status = mock.status
     } catch (e) {
       ctx.body = ctx.util.refail('数据解析出错！')

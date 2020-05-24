@@ -68,6 +68,7 @@ export default class Mock {
     const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
     const body = ctx.checkBody('body').notEmpty().value
+    const isJson = ctx.checkBody('is_json').notEmpty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
     const description = ctx.checkBody('description').notEmpty().value
@@ -101,7 +102,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
+    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, is_json: isJson, delay, status, description })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
