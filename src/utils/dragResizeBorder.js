@@ -1,21 +1,27 @@
 export class DragResizeBorder {
-  constructor (selectorName, min = 200, max = 500) {
+  constructor (selectorName, option) {
     this.sensitivityZone = 10
-    this.min = min
-    this.max = max
+    this.option = Object.assign(Object.create(null), {
+      min: 200,
+      max: 500,
+      change: () => {}
+    }, option)
+    this.min = Math.min(this.option.min, this.option.max)
+    this.max = Math.max(this.option.min, this.option.max)
     this.panel = document.querySelector(selectorName)
     this.hand = this.panel.querySelector('.resize-hand')
     this.m_pos = 0
     this.onResize = e => {
       const dx = this.m_pos - e.x
       this.m_pos = e.x
-      let width = (parseInt(getComputedStyle(this.panel, '').width) - dx)
-      if (width >= max) {
-        width = max
-      } else if (width <= min) {
-        width = min
+      this.width = (parseInt(getComputedStyle(this.panel, '').width) - dx)
+      if (this.width >= this.max) {
+        this.width = this.max
       }
-      this.panel.style.width = width + 'px'
+      if (this.width <= this.min) {
+        this.width = this.min
+      }
+      this.panel.style.width = this.width + 'px'
     }
 
     this.onResizeOn = () => {
@@ -54,6 +60,9 @@ export class DragResizeBorder {
       'mouseup',
       () => {
         document.removeEventListener('mousemove', this.onResize, true)
+        setTimeout(() => {
+          this.option.change(this.width)
+        }, 500)
       },
       true
     )

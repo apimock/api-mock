@@ -2,7 +2,7 @@
   <div class="page-mock">
     <a-card :bordered="false" :bodyStyle="{ padding: '0', height: '100%' }" :style="{ height: '100%' }">
       <div class="mock-main">
-        <div class="mock-left" ref="mockLeft">
+        <div class="mock-left" ref="mockLeft" :style="{width: mockLeftWidth + 'px'}">
           <div class="content">
             <a-button type="primary" @click="createCategory">添加分类</a-button>
             <a-tree
@@ -86,6 +86,8 @@
   import { MethodTagColor, Method } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
   import { DragResizeBorder } from '@/utils/dragResizeBorder'
+  import Vue from 'vue'
+  import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
   const KeyAll = '0-0-0-0-0'
   export default {
     components: {
@@ -95,6 +97,7 @@
     },
     data () {
       return {
+        mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || 300,
         treeData: [],
         showCreateMockDialog: false,
         modalCreateCategory: {
@@ -219,9 +222,14 @@
       this.getCateList()
     },
     mounted () {
-      const el = this.$refs.mockLeft
-      const d = new DragResizeBorder('.mock-left')
-      console.info(el, d)
+      // eslint-disable-next-line no-new
+      new DragResizeBorder('.mock-left', {
+        change (width) {
+          if (!isNaN(width)) {
+            Vue.ls.set(MOCK_LEFT_WIDTH, width)
+          }
+        }
+      })
     }
   }
 </script>
@@ -236,7 +244,6 @@
       .mock-left{
         border-right: 1px solid #ddd;
         box-shadow: -1px 0 5px 2px #d2d2d2;
-        width: 300px;
         display: flex;
         .content{
           flex: 1;
