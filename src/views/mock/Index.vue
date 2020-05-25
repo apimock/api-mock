@@ -1,19 +1,20 @@
 <template>
   <div class="page-mock">
-    <a-card :bordered="false" :bodyStyle="{ padding: '16px 0', height: '100%' }" :style="{ height: '100%' }">
+    <a-card :bordered="false" :bodyStyle="{ padding: '0', height: '100%' }" :style="{ height: '100%' }">
       <div class="mock-main">
-        <div class="mock-left">
-          <a-button type="primary" @click="createCategory">添加分类</a-button>
-          <a-tree
-            v-if="treeData.length"
-            class="mock-tree"
-            show-icon
-            draggable
-            :blockNode="true"
-            :expanded-keys.sync="expandedKey"
-            :tree-data="treeData">
-            <a-icon slot="folder" type="folder" />
-            <template slot="parent" slot-scope="item">
+        <div class="mock-left" ref="mockLeft">
+          <div class="content">
+            <a-button type="primary" @click="createCategory">添加分类</a-button>
+            <a-tree
+              v-if="treeData.length"
+              class="mock-tree"
+              show-icon
+              draggable
+              :blockNode="true"
+              :expanded-keys.sync="expandedKey"
+              :tree-data="treeData">
+              <a-icon slot="folder" type="folder" />
+              <template slot="parent" slot-scope="item">
               <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                 <strong>{{ item.title }}</strong>
                 <a-button-group v-show="item.showRightButton" size="small" style="float:right">
@@ -28,8 +29,8 @@
                   </a-tooltip>
                 </a-button-group>
               </span>
-            </template>
-            <template slot="child" slot-scope="item">
+              </template>
+              <template slot="child" slot-scope="item">
               <span class="tree-child-item" @click="toDetail(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                 <strong :style="{color: methodTagColor(item.dataRef.method)}">{{ methodToString(item.dataRef.method) }}</strong>
                 <span>{{ item.dataRef.url }}</span>
@@ -44,8 +45,10 @@
                   </a-button-group>
                 </em>
               </span>
-            </template>
-          </a-tree>
+              </template>
+            </a-tree>
+          </div>
+          <div class="resize-hand"></div>
         </div>
         <div class="mock-right"><route-view></route-view></div>
       </div>
@@ -82,6 +85,7 @@
   import { RouteView } from '@/layouts'
   import { MethodTagColor, Method } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
+  import { DragResizeBorder } from '@/utils/dragResizeBorder'
   const KeyAll = '0-0-0-0-0'
   export default {
     components: {
@@ -213,6 +217,11 @@
     },
     created () {
       this.getCateList()
+    },
+    mounted () {
+      const el = this.$refs.mockLeft
+      const d = new DragResizeBorder('.mock-left')
+      console.info(el, d)
     }
   }
 </script>
@@ -225,8 +234,18 @@
       height: 100%;
       overflow: auto;
       .mock-left{
-        border-right: 1px solid #e8e8e8;
+        border-right: 1px solid #ddd;
+        box-shadow: -1px 0 5px 2px #d2d2d2;
         width: 300px;
+        display: flex;
+        .content{
+          flex: 1;
+          overflow: hidden;
+        }
+        .resize-hand{
+          width: 5px;
+          height: 100%;
+        }
         .mock-tree{
           margin-left: 20px;
           li{
@@ -261,6 +280,7 @@
 
       .mock-right{
         flex: 1;
+        padding-left: 20px;
       }
     }
   }
