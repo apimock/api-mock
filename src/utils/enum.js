@@ -1,3 +1,4 @@
+export const CateKeyAll = '0-0-0-0-0'
 export const Method = {
   1: 'get',
   2: 'post',

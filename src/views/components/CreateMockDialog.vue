@@ -13,8 +13,8 @@
       :rules="rules">
       <a-form-model-item label="接口分类" prop="category">
         <a-select v-model="mockForm.category_id">
-          <a-select-option v-for="(item, index) in categorys" :key="index" :value="item.id">
-            {{item.name}}
+          <a-select-option v-for="(item, index) in categoryTree" :key="index" :value="item.id">
+            {{ item.name }}
           </a-select-option>
         </a-select>
       </a-form-model-item>
@@ -28,7 +28,7 @@
         </a-input>
       </a-form-model-item>
       <a-form-model-item label="Description" prop="description">
-        <a-input v-model="mockForm.description" placeholder="please input description" />
+        <a-input v-model="mockForm.description" placeholder="please input description"/>
       </a-form-model-item>
     </a-form-model>
   </a-modal>
@@ -38,7 +38,8 @@
 <script>
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import ApiMock from '@/api/mock'
-  import ApiCategory from '@/api/category'
+  import { mapState, mapActions } from 'vuex'
+
   const mockForm = {
     id: '',
     url: '',
@@ -61,12 +62,12 @@
         type: Boolean,
         default: false
       },
-      projectId: {
-        type: [Number, String]
-      },
       categoryId: {
         type: [Number, String]
       }
+    },
+    computed: {
+      ...mapState('mock', ['projectId', 'categoryTree'])
     },
     data () {
       return {
@@ -81,8 +82,7 @@
             { required: true, message: 'Please input url', trigger: 'blur' }
           ],
           description: [{ required: true, message: 'Please input description', trigger: 'blur' }]
-        },
-        categorys: []
+        }
       }
     },
     watch: {
@@ -92,10 +92,12 @@
       value (val) {
         this.currentValue = val
         this.mockForm.category_id = this.categoryId
-        this.getCateList()
+        this.mockForm.description = ''
+        this.mockForm.url = ''
       }
     },
     methods: {
+      ...mapActions('mock', ['getCategoryList']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -112,6 +114,7 @@
           const { data } = await ApiMock.create({ ...this.mockForm })
           const { code, message } = data
           if (code === 200) {
+            this.getCategoryList()
             this.$message.success('创建成功')
             this.currentValue = false
           } else {
@@ -121,13 +124,6 @@
       },
       createApiCancel () {
         this.currentValue = false
-      },
-      async getCateList () {
-        const { data } = await ApiCategory.list({ project_id: this.projectId })
-        const { bean, code } = data
-        if (code === 200) {
-          this.categorys = bean
-        }
       }
     },
     mounted () {

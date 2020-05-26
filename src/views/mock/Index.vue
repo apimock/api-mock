@@ -6,45 +6,45 @@
           <div class="content">
             <a-button type="primary" @click="createCategory">添加分类</a-button>
             <a-tree
-              v-if="treeData.length"
+              v-if="categoryTree.length"
               class="mock-tree"
               show-icon
               draggable
               :blockNode="true"
               :expanded-keys.sync="expandedKey"
-              :tree-data="treeData">
+              :tree-data="categoryTree">
               <a-icon slot="folder" type="folder" />
               <template slot="parent" slot-scope="item">
-              <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
-                <strong>{{ item.title }}</strong>
-                <a-button-group v-show="item.showRightButton" size="small" style="float:right">
-                  <a-tooltip title="添加接口">
-                    <a-button @click="addApi(item.dataRef.id)" icon="plus"></a-button>
-                  </a-tooltip>
-                  <a-tooltip title="修改分类">
-                    <a-button @click="copyApi(item.dataRef.id)" icon="edit"></a-button>
-                  </a-tooltip>
-                  <a-tooltip title="删除分类">
-                    <a-button @click="deleteApi(item.dataRef.id)" icon="delete"></a-button>
-                  </a-tooltip>
-                </a-button-group>
-              </span>
-              </template>
-              <template slot="child" slot-scope="item">
-              <span class="tree-child-item" @click="toDetail(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
-                <strong :style="{color: methodTagColor(item.dataRef.method)}">{{ methodToString(item.dataRef.method) }}</strong>
-                <span>{{ item.dataRef.url }}</span>
-                <em v-show="item.showRightButton">
-                  <a-button-group size="small">
-                    <a-tooltip title="复制接口">
-                      <a-button @click="copyApi(item.dataRef.id)" icon="copy"></a-button>
+                <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
+                  <strong>{{ item.title }}</strong>
+                  <a-button-group v-show="item.showRightButton" size="small" style="float:right">
+                    <a-tooltip title="添加接口">
+                      <a-button @click="addApi(item.dataRef.id)" icon="plus"></a-button>
                     </a-tooltip>
-                    <a-tooltip title="删除接口">
+                    <a-tooltip title="修改分类">
+                      <a-button @click="copyApi(item.dataRef.id)" icon="edit"></a-button>
+                    </a-tooltip>
+                    <a-tooltip title="删除分类">
                       <a-button @click="deleteApi(item.dataRef.id)" icon="delete"></a-button>
                     </a-tooltip>
                   </a-button-group>
-                </em>
-              </span>
+                </span>
+              </template>
+              <template slot="child" slot-scope="item">
+                <span class="tree-child-item" @click="toDetail(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
+                  <strong :style="{color: methodTagColor(item.dataRef.method)}">{{ methodToString(item.dataRef.method) }}</strong>
+                  <span>{{ item.dataRef.url }}</span>
+                  <em v-show="item.showRightButton">
+                    <a-button-group size="small">
+                      <a-tooltip title="复制接口">
+                        <a-button @click="copyApi(item.dataRef.id)" icon="copy"></a-button>
+                      </a-tooltip>
+                      <a-tooltip title="删除接口">
+                        <a-button @click="deleteApi(item.dataRef.id)" icon="delete"></a-button>
+                      </a-tooltip>
+                    </a-button-group>
+                  </em>
+                </span>
               </template>
             </a-tree>
           </div>
@@ -74,7 +74,7 @@
           </a-form-model-item>
         </a-form-model>
       </a-modal>
-      <CreateMockDialog :projectId="projectId" :categoryId="categoryId" v-model="showCreateMockDialog"></CreateMockDialog>
+      <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog"></CreateMockDialog>
     </a-card>
   </div>
 </template>
@@ -83,12 +83,12 @@
   import { Tree } from 'ant-design-vue'
   import ApiCategory from '@/api/category'
   import { RouteView } from '@/layouts'
-  import { MethodTagColor, Method } from '@/utils/enum'
+  import { MethodTagColor, Method, CateKeyAll } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
   import { DragResizeBorder } from '@/utils/dragResizeBorder'
   import Vue from 'vue'
+  import { mapState, mapMutations, mapActions } from 'vuex'
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
-  const KeyAll = '0-0-0-0-0'
   export default {
     components: {
       RouteView,
@@ -98,7 +98,6 @@
     data () {
       return {
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || 300,
-        treeData: [],
         showCreateMockDialog: false,
         modalCreateCategory: {
           show: false,
@@ -115,47 +114,23 @@
           description: ''
         },
         categoryId: '',
-        projectId: this.$route.params.projectId,
         expandedKey: [this.$route.params.categoryId]
       }
     },
+    computed: {
+      ...mapState('mock', ['projectId', 'categoryTree'])
+    },
     methods: {
+      ...mapMutations('mock', ['SET_PROJECT_ID', 'SET_CATEGORY_ID', 'SET_MOCK_ID']),
+      ...mapActions('mock', ['getCategoryList']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
       methodTagColor (num) {
         return MethodTagColor[num]
       },
-      async getCateList () {
-        const { data } = await ApiCategory.list({ project_id: this.projectId })
-        const { bean, code } = data
-        if (code === 200) {
-          bean.forEach((parent, m) => {
-            parent.key = `${parent.id}`
-            parent.title = parent.name
-            parent.slots = { icon: 'folder' }
-            parent.scopedSlots = { title: 'parent' }
-            parent.showRightButton = false
-            // this.expandedKey.push(parent.key)
-            parent.children.forEach((child, n) => {
-              child.key = `${parent.id}-${child.id}`
-              child.title = child.url
-              child.showRightButton = false
-              child.scopedSlots = { title: 'child' }
-              child.parentId = parent.id
-            })
-          })
-          bean.unshift({
-            key: KeyAll,
-            title: '全部分类',
-            slots: { icon: 'folder' },
-            scopedSlots: { title: 'parent' }
-          })
-          this.treeData = bean
-        }
-      },
       mouseover (e) {
-        if (e.eventKey !== KeyAll) {
+        if (e.eventKey !== CateKeyAll) {
           e.dataRef.showRightButton = true
         }
       },
@@ -174,7 +149,7 @@
             const { data } = await ApiCategory.create({ ...this.formCategory, project_id: this.projectId })
             const { code, message } = data
             if (code === 200) {
-              this.getCateList()
+              this.getCategoryList()
               this.$message.success('创建成功')
             } else {
               this.$message.error(message)
@@ -198,28 +173,33 @@
       },
       toList (item) {
         let categoryId = item.id
-        if (item.eventKey === KeyAll) {
+        if (item.eventKey === CateKeyAll) {
           categoryId = 'all'
         }
         this.$router.push({ name: 'mockList', params: { categoryId } })
       },
       toDetail (item) {
         let categoryId = item.parentId
-        if (item.eventKey === KeyAll) {
+        if (item.eventKey === CateKeyAll) {
           categoryId = 'all'
         }
+        this.SET_MOCK_ID(item.id)
         this.$router.push({ name: 'mockDetail', params: { categoryId, mockId: item.id } })
       }
     },
     beforeRouteUpdate (to, from, next) {
-      this.projectId = to.params.projectId
-      this.categoryId = to.params.categoryId
+      const { projectId, categoryId } = to.params
+      this.SET_PROJECT_ID(projectId)
+      this.SET_CATEGORY_ID(categoryId)
       this.expandedKey.splice(0, this.expandedKey.length)
-      this.expandedKey.push(String(this.categoryId))
+      this.expandedKey.push(String(categoryId))
       next()
     },
     created () {
-      this.getCateList()
+      const { projectId, categoryId } = this.$route.params
+      this.SET_PROJECT_ID(projectId)
+      this.SET_CATEGORY_ID(categoryId)
+      this.getCategoryList()
     },
     mounted () {
       // eslint-disable-next-line no-new
