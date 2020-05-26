@@ -22,3 +22,17 @@ export default {
   }
 }
 </script>
+
+<style lang="less">
+  .ant-layout{
+    background: #f0f4f8;
+
+    .header-animat{
+      box-shadow: 0 0px 5px 2px #8e8e8e;
+    }
+
+    .ant-layout-header, .ant-menu-dark, .ant-menu-dark .ant-menu-sub{
+      background: #252525;
+    }
+  }
+</style>
