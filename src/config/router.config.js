@@ -40,7 +40,7 @@ export const asyncRouterMap = [
           {
             path: '/project/:projectId/:categoryId/:mockId',
             name: 'mockDetail',
-            component: () => import('@/views/mock/Detail')
+            component: () => import('@/views/mock/detail/Index')
           }
         ]
       },

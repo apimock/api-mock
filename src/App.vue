@@ -34,5 +34,9 @@ export default {
     .ant-layout-header, .ant-menu-dark, .ant-menu-dark .ant-menu-sub{
       background: #252525;
     }
+
+    .ant-card{
+      background: none;
+    }
   }
 </style>

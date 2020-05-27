@@ -222,6 +222,7 @@
       height: 100%;
       overflow: auto;
       .mock-left{
+        background: #fff;
         border-right: 1px solid #ddd;
         box-shadow: -1px 0 5px 2px #d2d2d2;
         display: flex;
