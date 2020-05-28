@@ -224,7 +224,7 @@
       .mock-left{
         background: #fff;
         border-right: 1px solid #ddd;
-        box-shadow: -1px 0 5px 2px #d2d2d2;
+        box-shadow: -1px 0 2px 1px #d2d2d2;
         display: flex;
         .content{
           flex: 1;

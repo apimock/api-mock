@@ -95,14 +95,23 @@
   .tree-table{
     .table-row{
       .th,.td{
-        border: 1px solid #eceeef;
-        margin-left: -1px;
-        margin-top: -1px;
         box-sizing: border-box;
         vertical-align: middle;
+        border-left:1px solid #eee;
+        border-bottom: 1px solid #eee;
+        padding: 4px 5px;
       }
       .th{
         padding: 5px 10px;
+        border-top: 1px solid #eee;
+        &:last-child {
+          border-right: 1px solid #eee;
+        }
+      }
+      .td{
+        &:last-child{
+          border-right: 1px solid #eee;
+        }
       }
       .td.action{
         text-align: right;

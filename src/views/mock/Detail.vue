@@ -91,6 +91,7 @@
           </a-tab-pane>
         </a-tabs>
       </div>
+
       <div class="mock-editor">
         <a-card size="small" title="响应内容" :bordered="false" style="width: 100%">
           <a slot="extra" href="#">more</a>
@@ -252,6 +253,7 @@
     }
   }
 </script>
+
 
 <style scoped lang="less">
 

@@ -153,3 +153,17 @@ export const Headers = [
   'X-UIDH',
   'X-Csrf-Token'
 ]
+
+export const defaultMockForm = {
+  id: '',
+  url: '',
+  method: 'get',
+  delay: 0,
+  status: 200,
+  description: '',
+  headers: [],
+  query_params: [],
+  body_params: [],
+  body_params_type: 1,
+  body: '{}'
+}
