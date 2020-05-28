@@ -195,6 +195,8 @@
 
 <style scoped lang="less">
   .edit{
+    padding: 20px;
+
     .affix-buttons{
       position: absolute;
       right:50px;
@@ -202,10 +204,10 @@
       box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
     }
 
-    padding: 20px;
     .edit-card{
       margin-bottom: 20px;
     }
+
     .mock-form{
       width: 650px;
     }
