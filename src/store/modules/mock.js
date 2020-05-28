@@ -14,8 +14,7 @@ const mock = {
     mockForm: null,
     tabActiveKey: 'preview',
     tabPanes: [{ title: '预 览', key: 'preview', icon: 'compass' }],
-    showBodyParamsTab: false,
-    reqTabActiveKey: 'query'
+    showBodyParamsTab: false
   },
 
   mutations: {
@@ -45,9 +44,6 @@ const mock = {
     },
     SET_SHOW_BODY_PARAMS_TAB (state, data) {
       state.showBodyParamsTab = data
-    },
-    SET_REQ_TAB_ACTIVE_KEY (state, data) {
-      state.reqTabActiveKey = data
     }
   },
 
@@ -95,10 +91,8 @@ const mock = {
         commit('SET_DETAIL', bean)
         if (['post', 'put', 'delete', 'patch'].includes(mockForm.method)) {
           commit('SET_SHOW_BODY_PARAMS_TAB', true)
-          commit('SET_REQ_TAB_ACTIVE_KEY', 'body')
         } else {
           commit('SET_SHOW_BODY_PARAMS_TAB', false)
-          commit('SET_REQ_TAB_ACTIVE_KEY', 'query')
         }
       } else {
         this.$message.error('加载失败！')

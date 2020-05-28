@@ -73,7 +73,11 @@
 
       .normal-tabs{
         .ant-tabs-tab-active::before {
-          border-top: 2px solid transparent;
+          border-top: 2px solid transparent!important;
+        }
+        .ant-tabs-tab {
+          height: 36px;
+          padding: 0 16px!important;
         }
       }
     }

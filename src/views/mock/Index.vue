@@ -12,6 +12,7 @@
               draggable
               :blockNode="true"
               :expanded-keys.sync="expandedKey"
+              :selected-keys.sync="selectedKeys"
               :tree-data="categoryTree">
               <a-icon slot="folder" type="folder" />
               <template slot="parent" slot-scope="item">
@@ -114,7 +115,8 @@
           description: ''
         },
         categoryId: '',
-        expandedKey: [this.$route.params.categoryId]
+        expandedKey: [this.$route.params.categoryId],
+        selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : [`${this.$route.params.categoryId}-${this.$route.params.mockId}`]
       }
     },
     computed: {

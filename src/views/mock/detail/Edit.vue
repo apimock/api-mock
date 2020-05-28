@@ -2,7 +2,7 @@
   <div class="edit" ref="edit">
     <a-affix :offset-top="20" class="affix-buttons">
       <a-button-group>
-        <a-button type="primary" size="large" icon="save">保存</a-button>
+        <a-button type="primary" size="large" icon="save" @click="submit">保存</a-button>
         <a-button size="large" icon="logout" @click="cancelSave">取消</a-button>
       </a-button-group>
     </a-affix>
@@ -36,7 +36,7 @@
       </a-form-model>
     </a-card>
     <a-card class="edit-card request" size="small" title="请求参数">
-      <a-tabs class="normal-tabs request-tabs" v-model="reqTabActiveKey" :animated="false">
+      <a-tabs class="normal-tabs request-tabs" size="small" v-model="reqTabActiveKey" :animated="false">
         <a-tab-pane v-if="showBodyParamsTab" key="body" tab="Body Params">
           <a slot="extra" href="#">批量添加</a>
           <a-radio-group v-model="mockForm.body_params_type" style="margin-bottom: 20px">
@@ -64,6 +64,16 @@
         </a-tab-pane>
       </a-tabs>
     </a-card>
+    <a-card class="edit-card response" size="small" title="响应数据">
+      <a-tabs class="normal-tabs response-tabs" v-model="resTabActiveKey" :animated="false" @change="changeResTab">
+        <a-tab-pane key="code" tab="数据">
+          <ace-editor ref="codeEditor" v-model="mockForm.body" :is-json="mockForm.is_json" @save="submit"></ace-editor>
+        </a-tab-pane>
+        <a-tab-pane key="preview" tab="预览">
+          <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
+        </a-tab-pane>
+      </a-tabs>
+    </a-card>
   </div>
 </template>
 
@@ -74,11 +84,13 @@
   import { mapMutations, mapState } from 'vuex'
   import TreeTable from '@/views/components/TreeTable'
   import { Affix } from 'ant-design-vue'
+  import AceEditor from '@/views/components/editor/AceEditor'
 
   export default {
     name: 'DetailEdit',
     components: {
       TreeTable,
+      AceEditor,
       'a-affix': Affix
     },
     data () {
@@ -93,7 +105,9 @@
           description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
           body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
         },
-        reqTabActiveKey: 'query'
+        reqTabActiveKey: 'query',
+        resTabActiveKey: 'code',
+        previewEditorValue: ''
       }
     },
     computed: {
@@ -102,6 +116,10 @@
     watch: {
       'showBodyParamsTab': function (val) {
         this.reqTabActiveKey = val ? 'body' : 'query'
+      },
+      'mockForm.body': function (val) {
+        this.$refs.codeEditor.setValue(val)
+        this.resTabActiveKey = 'code'
       }
     },
     methods: {
@@ -149,6 +167,14 @@
         const data = [{ title: '预 览', key: 'preview', icon: 'compass' }]
         this.SET_TAB_PANES(data)
         this.SET_TAB_ACTIVE_KEY('preview')
+      },
+      changeResTab (key) {
+        if (key === 'preview') {
+          const val = this.$refs.codeEditor.getMockValue()
+          this.$nextTick(() => {
+            this.$refs.previewEditor.setValue(val)
+          })
+        }
       }
     },
     mounted () {
