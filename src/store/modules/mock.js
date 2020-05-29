@@ -1,7 +1,8 @@
-import ApiCategory from '@/api/category'
-import { CateKeyAll, Method, defaultMockForm } from '@/utils/enum'
-import ApiMock from '@/api/mock'
 import { jsonParse } from '@/utils'
+import { CateKeyAll, Method, defaultMockForm, tabPaneObj } from '@/utils/enum'
+import ApiProject from '@/api/project'
+import ApiCategory from '@/api/category'
+import ApiMock from '@/api/mock'
 
 const mock = {
   namespaced: true,
@@ -9,11 +10,12 @@ const mock = {
     projectId: '',
     categoryId: '',
     mockId: '',
+    project: null,
     categoryTree: [],
     detail: null,
     mockForm: null,
     tabActiveKey: 'preview',
-    tabPanes: [{ title: '预 览', key: 'preview', icon: 'compass' }],
+    tabPanes: [tabPaneObj.preview, tabPaneObj.advance],
     showBodyParamsTab: false
   },
 
@@ -26,6 +28,9 @@ const mock = {
     },
     SET_MOCK_ID (state, mockId) {
       state.mockId = mockId
+    },
+    SET_PROJECT (state, data) {
+      state.project = data
     },
     SET_CATEGORY_TREE (state, data) {
       state.categoryTree = data
@@ -48,6 +53,16 @@ const mock = {
   },
 
   actions: {
+    async getProject ({ commit, state }, projectId) {
+      const id = projectId || state.projectId
+      const { data } = await ApiProject.getById({ id })
+      const { code, bean } = data
+      if (code === 200) {
+        commit('SET_PROJECT', bean)
+      } else {
+        this.$message.error('加载失败！')
+      }
+    },
     async getCategoryList ({ commit, state }) {
       const { data } = await ApiCategory.list({ project_id: state.projectId })
       const { bean, code } = data
@@ -97,6 +112,13 @@ const mock = {
       } else {
         this.$message.error('加载失败！')
       }
+    },
+    switchTab ({ commit, state }, key) {
+      const data = [...state.tabPanes]
+      data.splice(0, 1)
+      data.unshift(tabPaneObj[key])
+      commit('SET_TAB_PANES', data)
+      commit('SET_TAB_ACTIVE_KEY', key)
     }
   }
 }

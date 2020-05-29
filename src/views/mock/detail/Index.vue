@@ -5,7 +5,8 @@
       class="top-tabs"
       :tabBarGutter="10"
       size="small"
-      v-model="tabActiveKey"
+      :activeKey="tabActiveKey"
+      @change="changeTab"
       :animated="false">
       <a-tab-pane v-for="pane in tabPanes" :key="pane.key">
         <span slot="tab">
@@ -14,6 +15,7 @@
         </span>
         <Preview v-if="pane.key === 'preview'"></Preview>
         <Edit v-if="pane.key === 'edit'"></Edit>
+        <advace-mock v-if="pane.key === 'advance'"></advace-mock>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -38,8 +40,11 @@
       ...mapState('mock', ['tabPanes', 'tabActiveKey'])
     },
     methods: {
-      ...mapMutations('mock', ['SET_MOCK_ID']),
-      ...mapActions('mock', ['getDetail'])
+      ...mapMutations('mock', ['SET_MOCK_ID', 'SET_TAB_ACTIVE_KEY']),
+      ...mapActions('mock', ['getDetail']),
+      changeTab (key) {
+        this.SET_TAB_ACTIVE_KEY(key)
+      }
     },
     beforeRouteUpdate (to, from, next) {
       this.getDetail(to.params.mockId)

@@ -81,7 +81,7 @@
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import { checkJson5 } from '@/utils'
   import ApiMock from '@/api/mock'
-  import { mapMutations, mapState, mapActions } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import TreeTable from '@/views/components/TreeTable'
   import { Affix } from 'ant-design-vue'
   import JsonEditor from '@/views/components/editor/JsonEditor'
@@ -118,13 +118,11 @@
         this.reqTabActiveKey = val ? 'body' : 'query'
       },
       'mockForm.body': function (val) {
-        // this.$refs.codeEditor.setValue(val)
         this.resTabActiveKey = 'code'
       }
     },
     methods: {
-      ...mapMutations('mock', ['SET_TAB_PANES', 'SET_TAB_ACTIVE_KEY']),
-      ...mapActions('mock', ['getDetail']),
+      ...mapActions('mock', ['getDetail', 'switchTab']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -159,16 +157,15 @@
           const { code, message } = data
           if (code === 200) {
             this.$message.success('更新成功')
-            this.getDetail()
+            await this.getDetail()
+            this.switchTab('preview')
           } else {
             this.$message.error(message)
           }
         })
       },
       cancelSave () {
-        const data = [{ title: '预 览', key: 'preview', icon: 'compass' }]
-        this.SET_TAB_PANES(data)
-        this.SET_TAB_ACTIVE_KEY('preview')
+        this.switchTab('preview')
       },
       changeResTab (key) {
         if (key === 'preview') {

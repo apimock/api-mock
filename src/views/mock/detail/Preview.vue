@@ -15,10 +15,10 @@
 </template>
 
 <script>
-  import { mapMutations, mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import JsonEditor from '@/views/components/editor/JsonEditor'
   import { Affix } from 'ant-design-vue'
-  import ApiProject from '@/api/project'
+  import { Method } from '@/utils/enum'
   export default {
     name: 'DetailPreview',
     components: {
@@ -32,35 +32,21 @@
       }
     },
     computed: {
-      ...mapState('mock', ['detail', 'projectId'])
-    },
-    watch: {
-      'detail.body': function (val) {
-        if (val && this.$refs.codeEditor) {
-          // this.$refs.codeEditor.setValue(val)
-        }
-      }
+      ...mapState('mock', ['detail', 'projectId', 'project'])
     },
     methods: {
-      ...mapMutations('mock', ['SET_TAB_PANES', 'SET_TAB_ACTIVE_KEY']),
+      ...mapActions('mock', ['getProject', 'switchTab']),
       edit () {
-        const data = [{ title: '编 辑', key: 'edit', icon: 'edit' }]
-        this.SET_TAB_PANES(data)
-        this.SET_TAB_ACTIVE_KEY('edit')
+        this.switchTab('edit')
       },
       view () {
-        const baseUrl = '/pro'
+        const baseUrl = this.project.base_url
         this.baseURL = `${location.origin}/mock/${this.projectId}${baseUrl}`
-        const url = `${this.baseURL}${this.detail.url}#!method=${this.detail.method}`
+        const url = `${this.baseURL}${this.detail.url}#!method=${Method[this.detail.method]}`
         window.open(url)
-      },
-      async getProject () {
-        const id = 6231
-        const { data } = await ApiProject.getById({ id })
-        console.info(data)
       }
     },
-    created () {
+    mounted () {
       this.getProject()
     }
   }

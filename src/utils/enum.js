@@ -167,3 +167,9 @@ export const defaultMockForm = {
   body_params_type: 1,
   body: '{}'
 }
+
+export const tabPaneObj = {
+  preview: { title: '预 览', key: 'preview', icon: 'compass' },
+  edit: { title: '编 辑', key: 'edit', icon: 'edit' },
+  advance: { title: '高级Mock', key: 'advance', icon: 'experiment' }
+}
