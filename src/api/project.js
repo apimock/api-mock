@@ -1,5 +1,9 @@
 import wraperApi from '@/utils/wraperApi'
 export default wraperApi({
+  getById: {
+    url: '/api/project/{id}',
+    method: 'get'
+  },
   list: {
     url: '/api/project',
     method: 'get'

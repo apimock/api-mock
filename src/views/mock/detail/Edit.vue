@@ -67,10 +67,10 @@
     <a-card class="edit-card response" size="small" title="响应数据">
       <a-tabs class="normal-tabs response-tabs" v-model="resTabActiveKey" :animated="false" @change="changeResTab">
         <a-tab-pane key="code" tab="数据">
-          <ace-editor ref="codeEditor" v-model="mockForm.body" :is-json="mockForm.is_json" @save="submit"></ace-editor>
+          <json-editor ref="codeEditor" :value="mockForm.body" @save="submit" style="height: 600px"></json-editor>
         </a-tab-pane>
         <a-tab-pane key="preview" tab="预览">
-          <ace-editor ref="previewEditor" v-model="previewEditorValue" :read-only="true"></ace-editor>
+          <json-editor ref="previewEditor" :value="previewEditorValue" :read-only="true" style="height: 600px"></json-editor>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -81,16 +81,16 @@
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import { checkJson5 } from '@/utils'
   import ApiMock from '@/api/mock'
-  import { mapMutations, mapState } from 'vuex'
+  import { mapMutations, mapState, mapActions } from 'vuex'
   import TreeTable from '@/views/components/TreeTable'
   import { Affix } from 'ant-design-vue'
-  import AceEditor from '@/views/components/editor/AceEditor'
+  import JsonEditor from '@/views/components/editor/JsonEditor'
 
   export default {
     name: 'DetailEdit',
     components: {
       TreeTable,
-      AceEditor,
+      JsonEditor,
       'a-affix': Affix
     },
     data () {
@@ -118,12 +118,13 @@
         this.reqTabActiveKey = val ? 'body' : 'query'
       },
       'mockForm.body': function (val) {
-        this.$refs.codeEditor.setValue(val)
+        // this.$refs.codeEditor.setValue(val)
         this.resTabActiveKey = 'code'
       }
     },
     methods: {
       ...mapMutations('mock', ['SET_TAB_PANES', 'SET_TAB_ACTIVE_KEY']),
+      ...mapActions('mock', ['getDetail']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -149,15 +150,16 @@
             return
           }
           const mockData = { ...this.mockForm }
+          mockData.body = this.$refs.codeEditor.getValue()
           mockData.headers = this.filterEmptyName(mockData.headers)
           mockData.query_params = this.filterEmptyName(mockData.query_params)
           mockData.body_params = this.filterEmptyName(mockData.body_params)
-          mockData.is_json = this.mockForm.is_json === true ? 1 : 0
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data
           if (code === 200) {
             this.$message.success('更新成功')
+            this.getDetail()
           } else {
             this.$message.error(message)
           }

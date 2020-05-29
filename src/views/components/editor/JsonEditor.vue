@@ -1,5 +1,5 @@
 <template>
-  <div class="ace-editor" ref="editor"></div>
+  <div class="ace-editor json-editor" ref="editor"></div>
 </template>
 
 <script>
@@ -12,7 +12,6 @@
   require('brace/theme/xcode')
   require('brace/ext/language_tools')
   require('brace/ext/searchbox')
-  require('./snippets')
   const Dom = ace.acequire('ace/lib/dom')
   const langTools = ace.acequire('ace/ext/language_tools')
   Mock.Random.extend({
@@ -23,7 +22,7 @@
   })
 
   export default {
-    name: 'AceEditor',
+    name: 'JsonEditor',
     props: {
       value: {
         type: String,
@@ -32,10 +31,6 @@
       readOnly: {
         type: Boolean,
         default: false
-      },
-      isJson: {
-        type: Boolean,
-        default: true
       }
     },
     data () {
@@ -45,15 +40,9 @@
       }
     },
     watch: {
-      currentValue (val) {
-        this.$emit('input', val)
-      },
       value (val) {
         this.currentValue = val
-      },
-      isJson (val) {
-        console.info(val)
-        // this.enableSnippets(val)
+        this.setValue(val)
       }
     },
     methods: {
@@ -65,8 +54,9 @@
       },
       install () {
         this.editor = ace.edit(this.$refs.editor)
-        this.editor.$blockScrolling = Infinity
         this.editor.getSession().setMode('ace/mode/javascript')
+        this.editor.$blockScrolling = Infinity
+        this.editor.setAutoScrollEditorIntoView(true)
         this.editor.setTheme('ace/theme/xcode')
         if (this.readOnly) {
           this.editor.setReadOnly(true)
@@ -79,7 +69,7 @@
           enableLiveAutocompletion: true, // 智能补全
           useWorker: true
         })
-        this.enableSnippets(false)
+        this.editor.setOption('enableSnippets', false)
         langTools.addCompleter({
           identifierRegexps: [/[@]/],
           getCompletions: this.getCompletions
@@ -131,13 +121,6 @@
         const pos = this.editor.selection.getCursor()
         this.editor.session.insert(pos, code)
       },
-      enableSnippets (isJson) {
-        if (isJson) {
-          this.editor.setOption('enableSnippets', false)
-        } else {
-          this.editor.setOption('enableSnippets', true)
-        }
-      },
       setValue (val) {
         if (val) {
           this.editor.setValue(this.format(val))
@@ -149,16 +132,12 @@
       },
       getMockValue () {
         let mockValue = ''
-        if (this.isJson) {
-          try {
-            const val = json5.parse(this.currentValue)
-            const mockValueFun = () => Mock.mock(val)
-            mockValue = this.jsonToStr(mockValueFun())
-          } catch (e) {
-            mockValue = `解析出错：${e.message}`
-          }
-        } else {
-          mockValue = this.currentValue
+        try {
+          const val = json5.parse(this.currentValue)
+          const mockValueFun = () => Mock.mock(val)
+          mockValue = this.jsonToStr(mockValueFun())
+        } catch (e) {
+          mockValue = `解析出错：${e.message}`
         }
         return mockValue
       }

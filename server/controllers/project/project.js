@@ -178,4 +178,19 @@ export default class Project {
     }
     ctx.body = ctx.util.resuccess(bean)
   }
+
+  static async getById (ctx) {
+    const id = ctx.checkParams('id').notEmpty().value
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
+    }
+
+    const project = await ProjectProxy.findOne({ id })
+    if (project) {
+      ctx.body = ctx.util.resuccess(project)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
 }

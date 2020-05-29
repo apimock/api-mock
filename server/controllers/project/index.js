@@ -8,6 +8,11 @@ class Api {
     return Project.list(ctx)
   }
 
+  @Route('get', '/project/:id')
+  getById (ctx) {
+    return Project.getById(ctx)
+  }
+
   @Route('post', '/project/create')
   create (ctx) {
     return Project.create(ctx)
