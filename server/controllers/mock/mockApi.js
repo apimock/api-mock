@@ -91,12 +91,17 @@ export default class MockApi {
       })
       vm.run(mock.script)
       // console.info(sandbox.Api)
+
       mock.delay = sandbox.Api.delay
+      if (isNaN(Number(sandbox.Api.status))) {
+        ctx.body = ctx.util.refail('Api.status 的值必须为数字！')
+        return
+      }
       if (mock.delay > 0) {
         await delay(mock.delay)
       }
       ctx.body = sandbox.Api.json
-      ctx.status = sandbox.Api.status
+      ctx.status = Number(sandbox.Api.status)
     } catch (e) {
       ctx.body = ctx.util.refail('数据解析出错！')
     }
