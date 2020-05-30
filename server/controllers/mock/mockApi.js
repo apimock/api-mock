@@ -92,7 +92,11 @@ export default class MockApi {
       vm.run(mock.script)
       // console.info(sandbox.Api)
 
-      mock.delay = sandbox.Api.delay
+      mock.delay = Number(sandbox.Api.delay)
+      if (isNaN(mock.delay)) {
+        ctx.body = ctx.util.refail('Api.delay 的值必须为数字！')
+        return
+      }
       if (isNaN(Number(sandbox.Api.status))) {
         ctx.body = ctx.util.refail('Api.status 的值必须为数字！')
         return
