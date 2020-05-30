@@ -3,6 +3,7 @@
   import jsBeautify from 'js-beautify/js/lib/beautify'
   const ace = require('brace')
   require('brace/mode/javascript')
+  require('brace/mode/json')
   require('brace/theme/xcode')
   require('brace/ext/language_tools')
   require('brace/ext/searchbox')
@@ -32,9 +33,9 @@
       }
     },
     methods: {
-      install () {
+      install (mode) {
         this.editor = ace.edit(this.$refs.editor)
-        this.editor.getSession().setMode('ace/mode/javascript')
+        this.editor.getSession().setMode(`ace/mode/${mode}`)
         this.editor.$blockScrolling = Infinity
         this.editor.setAutoScrollEditorIntoView(true)
         this.editor.setTheme('ace/theme/xcode')
@@ -89,10 +90,6 @@
       getValue () {
         return this.currentValue
       }
-    },
-    mounted () {
-      this.currentValue = this.value
-      this.install()
     }
   }
 </script>

@@ -14,7 +14,7 @@
     mixins: [Editor],
     methods: {
       getCompletions (editor, session, pos, prefix, callback) {
-        if (prefix.length === 0) { callback(null, []); return }
+        if (prefix.length === 0 || session.$modeId === 'ace/mode/javascript') { callback(null, []); return }
         callback(null, MockSnippets.map((item) => {
           return { name: item.value, value: item.value, score: item.value, meta: item.name }
         }))
@@ -24,6 +24,8 @@
       }
     },
     mounted () {
+      this.currentValue = this.value
+      this.install('json')
       this.editor.setOption('enableSnippets', false)
       langTools.addCompleter({
         identifierRegexps: [/[@]/],

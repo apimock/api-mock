@@ -10,6 +10,8 @@
     name: 'ScriptEditor',
     mixins: [Editor],
     mounted () {
+      this.currentValue = this.value
+      this.install('javascript')
       this.editor.setOption('enableSnippets', true)
     }
   }
