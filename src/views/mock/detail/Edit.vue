@@ -66,7 +66,7 @@
     </a-card>
     <a-card class="edit-card response" size="small" title="响应数据">
       <a-tabs class="normal-tabs response-tabs" v-model="resTabActiveKey" :animated="false" @change="changeResTab">
-        <a-tab-pane key="code" tab="数据">
+        <a-tab-pane key="code" tab="模板">
           <json-editor ref="codeEditor" :value="mockForm.body" @save="submit" style="height: 600px"></json-editor>
         </a-tab-pane>
         <a-tab-pane key="preview" tab="预览">
@@ -200,6 +200,7 @@
       position: absolute;
       right:50px;
       top:90px;
+      z-index: 99;
       box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
     }
 

@@ -11,7 +11,7 @@
       <a-tab-pane v-for="pane in tabPanes" :key="pane.key">
         <span slot="tab">
           <a-icon :type="pane.icon" />
-          {{pane.title}}
+          {{ pane.title }}
         </span>
         <Preview v-if="pane.key === 'preview'"></Preview>
         <Edit v-if="pane.key === 'edit'"></Edit>
@@ -84,6 +84,14 @@
           height: 36px;
           padding: 0 16px!important;
         }
+      }
+
+      .ant-card-small > .ant-card-head{
+        min-height: 30px;
+        border-bottom: 1px dashed #e8e8e8;
+      }
+      .ant-card-small > .ant-card-head > .ant-card-head-wrapper > .ant-card-head-title {
+        padding: 5px 0;
       }
     }
 

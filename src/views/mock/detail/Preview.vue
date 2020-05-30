@@ -6,11 +6,26 @@
         <a-button size="large" @click="view" icon="eye">view</a-button>
       </a-button-group>
     </a-affix>
-    <a-card class="edit-card response" size="small" title="响应数据" style="margin-top: 100px">
-      <div class="editor-box">
-        <json-editor ref="codeEditor" :value="detail.body" :read-only="true" style="height: 600px"></json-editor>
-      </div>
-    </a-card>
+    <a-row :gutter="20">
+      <a-col :span="12">
+        <a-card class="edit-card response" size="small" title="响应模板" style="margin-top: 100px">
+          <div class="editor-box">
+            <json-editor ref="codeEditor" :value="detail.body" :read-only="true" style="height: 600px"></json-editor>
+          </div>
+        </a-card>
+      </a-col>
+      <a-col :span="12">
+        <a-card class="edit-card response" size="small" style="margin-top: 100px">
+          <span slot="title">
+            响应数据
+            <a-button style="border:none" icon="reload" :loading="iconLoading" @click="reloadMockValue"></a-button>
+          </span>
+          <div class="editor-box">
+            <json-editor ref="previewEditor" :value="mockValue" :read-only="true" style="height: 600px"></json-editor>
+          </div>
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -28,14 +43,15 @@
     data () {
       return {
         reqTabActiveKey: 'query',
-        resTabActiveKey: 'code'
+        resTabActiveKey: 'code',
+        iconLoading: false
       }
     },
     computed: {
-      ...mapState('mock', ['detail', 'projectId', 'project'])
+      ...mapState('mock', ['detail', 'projectId', 'project', 'mockValue'])
     },
     methods: {
-      ...mapActions('mock', ['getProject', 'switchTab']),
+      ...mapActions('mock', ['getProject', 'switchTab', 'getMockValue']),
       edit () {
         this.switchTab('edit')
       },
@@ -44,6 +60,13 @@
         this.baseURL = `${location.origin}/mock/${this.projectId}${baseUrl}`
         const url = `${this.baseURL}${this.detail.url}#!method=${Method[this.detail.method]}`
         window.open(url)
+      },
+      reloadMockValue () {
+        this.iconLoading = true
+        this.getMockValue()
+        setTimeout(() => {
+          this.iconLoading = false
+        }, 500)
       }
     },
     mounted () {
@@ -60,6 +83,7 @@
       position: absolute;
       right:50px;
       top:90px;
+      z-index: 99;
       box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
     }
 

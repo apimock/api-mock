@@ -1,5 +1,6 @@
 import { jsonParse } from '@/utils'
 import { CateKeyAll, Method, defaultMockForm, tabPaneObj } from '@/utils/enum'
+import { getMockValue } from '@/utils/mock'
 import ApiProject from '@/api/project'
 import ApiCategory from '@/api/category'
 import ApiMock from '@/api/mock'
@@ -13,6 +14,7 @@ const mock = {
     project: null,
     categoryTree: [],
     detail: null,
+    mockValue: '',
     mockForm: null,
     tabActiveKey: 'preview',
     tabPanes: [tabPaneObj.preview, tabPaneObj.advance],
@@ -37,6 +39,9 @@ const mock = {
     },
     SET_DETAIL (state, data) {
       state.detail = data
+    },
+    SET_MOCK_VALUE (state, data) {
+      state.mockValue = data
     },
     SET_MOCK_FORM (state, data) {
       state.mockForm = data
@@ -96,11 +101,13 @@ const mock = {
       const { data } = await ApiMock.detail({ id })
       const { code, bean } = data
       if (code === 200) {
+        const mockValue = getMockValue(bean.body)
         const mockForm = Object.assign(Object.create(null), defaultMockForm, bean)
         mockForm.headers = jsonParse(mockForm.headers) || []
         mockForm.query_params = jsonParse(mockForm.query_params) || []
         mockForm.body_params = jsonParse(mockForm.body_params) || []
         mockForm.method = Method[bean.method]
+        commit('SET_MOCK_VALUE', mockValue)
         commit('SET_MOCK_FORM', mockForm)
         commit('SET_MOCK_ID', id)
         commit('SET_DETAIL', bean)
@@ -112,6 +119,10 @@ const mock = {
       } else {
         this.$message.error('加载失败！')
       }
+    },
+    getMockValue ({ commit, state }) {
+      const mockValue = getMockValue(state.detail.body)
+      commit('SET_MOCK_VALUE', mockValue)
     },
     switchTab ({ commit, state }, key) {
       const data = [...state.tabPanes]
