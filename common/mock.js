@@ -26,12 +26,12 @@ function jsonToStr (data) {
   }
 }
 
-export function getMockValue (data) {
+export function getMockValue (data, toStr = true) {
   let mockValue = ''
   try {
     const val = json5.parse(data)
     const mockValueFun = () => Mock.mock(val)
-    mockValue = jsonToStr(mockValueFun())
+    mockValue = toStr ? jsonToStr(mockValueFun()) : mockValueFun()
   } catch (e) {
     mockValue = `解析出错：${e.message}`
   }

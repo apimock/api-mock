@@ -1,6 +1,6 @@
 import { jsonParse } from '@/utils'
 import { CateKeyAll, Method, defaultMockForm, tabPaneObj } from '@/utils/enum'
-import { getMockValue } from '@/utils/mock'
+import { getMockValue } from '~/common/mock'
 import ApiProject from '@/api/project'
 import ApiCategory from '@/api/category'
 import ApiMock from '@/api/mock'
@@ -107,6 +107,7 @@ const mock = {
         mockForm.query_params = jsonParse(mockForm.query_params) || []
         mockForm.body_params = jsonParse(mockForm.body_params) || []
         mockForm.method = Method[bean.method]
+        mockForm.enable_script = !!bean.enable_script
         commit('SET_MOCK_VALUE', mockValue)
         commit('SET_MOCK_FORM', mockForm)
         commit('SET_MOCK_ID', id)

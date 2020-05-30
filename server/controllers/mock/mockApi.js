@@ -1,10 +1,10 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import { Method } from '~/server/utils/enum'
-import { params, delay, json5Parse } from '~/server/utils'
+import { getMockValue } from '~/common/mock'
+import { delay, json5Parse } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
-const json5 = require('json5')
 
 function checkRequest (lists, ctx, method) {
   const errorParams = []
@@ -37,7 +37,6 @@ function checkRequest (lists, ctx, method) {
 
 export default class MockApi {
   static async getApi (ctx) {
-    console.info(ctx.request.type, 'rest type')
     const method = ctx.method.toLowerCase()
     const projectId = ctx.pathNode.projectId
     let { mockURL } = ctx.pathNode
@@ -61,49 +60,43 @@ export default class MockApi {
       return
     }
 
-    try {
-      const val = json5.parse(mock.body)
-      const mockValueFun = () => Mock.mock(val)
-      const mockValue = mockValueFun()
+    const mockValue = getMockValue(mock.body, false)
+    // Mock.Handler.function = function (options) {
+    //   const mockUrl = mock.url.replace(/{/g, ':').replace(/}/g, '') // /api/{user}/{id} => /api/:user/:id
+    //   options.Mock = Mock
+    //   options._req = ctx.request
+    //   options._req.params = params(mockUrl, url)
+    //   options._req.cookies = ctx.cookies.get.bind(ctx)
+    //   return options.template.call(options.context.currentContext, options)
+    // }
+    if (!mock.enable_script) {
       ctx.body = mockValue
       return
-    } catch (e) {
-      ctx.body = ctx.util.refail('数据解析出错！')
     }
 
-    Mock.Handler.function = function (options) {
-      const mockUrl = mock.url.replace(/{/g, ':').replace(/}/g, '') // /api/{user}/{id} => /api/:user/:id
-      options.Mock = Mock
-      options._req = ctx.request
-      options._req.params = params(mockUrl, url)
-      options._req.cookies = ctx.cookies.get.bind(ctx)
-      return options.template.call(options.context.currentContext, options)
-    }
     const Api = {
-      json: {},
-      req: ctx.request
+      json: mockValue || {},
+      req: ctx.request,
+      status: 200,
+      delay: 0
     }
     try {
-      // const script = ` a.bb = 6;console.info(a)`
       const sandbox = {
-        Api
-        // Mock,
-          // body: mock.body,
-          // template: new Function(`return ${mock.body}`) // eslint-disable-line
+        Api,
+        Random: Mock.Random
       }
       const vm = new VM({
         timeout: 1000,
         sandbox
       })
-      vm.run(mock.body)
-      console.info(sandbox)
-      // vm.run('Mock.mock(new Function("return " + body)())') // 数据验证，检测 setTimeout 等方法
-      // const apiData = vm.run('Mock.mock(template())') // 解决正则表达式失效的问题
+      vm.run(mock.script)
+      // console.info(sandbox.Api)
+      mock.delay = sandbox.Api.delay
       if (mock.delay > 0) {
         await delay(mock.delay)
       }
       ctx.body = sandbox.Api.json
-      ctx.status = mock.status
+      ctx.status = sandbox.Api.status
     } catch (e) {
       ctx.body = ctx.util.refail('数据解析出错！')
     }

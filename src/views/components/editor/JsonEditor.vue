@@ -5,7 +5,7 @@
 <script>
   import Editor from '@/views/components/editor/Editor'
   import { MockSnippets } from '@/views/components/editor/mockSnippets'
-  import { getMockValue } from '@/utils/mock'
+  import { getMockValue } from '~/common/mock'
   const ace = require('brace')
   const langTools = ace.acequire('ace/ext/language_tools')
 

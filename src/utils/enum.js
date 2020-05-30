@@ -165,7 +165,8 @@ export const defaultMockForm = {
   query_params: [],
   body_params: [],
   body_params_type: 1,
-  body: '{}'
+  body: '{}',
+  script: ''
 }
 
 export const tabPaneObj = {

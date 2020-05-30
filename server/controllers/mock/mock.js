@@ -65,17 +65,19 @@ export default class Mock {
   static async update (ctx) {
     const uid = ctx.state.user.id
     const id = ctx.checkBody('id').notEmpty().value
-    const url = ctx.checkBody('url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    const method = ctx.checkBody('method').notEmpty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
-    const body = ctx.checkBody('body').notEmpty().value
+    const url = ctx.checkBody('url').empty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
+    const method = ctx.checkBody('method').empty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
+    const body = ctx.checkBody('body').empty().value
+    const script = ctx.checkBody('script').empty().value
+    const enableScript = ctx.checkBody('enable_script').empty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
-    const description = ctx.checkBody('description').notEmpty().value
+    const description = ctx.checkBody('description').empty().value
     let headers = ctx.checkBody('headers').empty().value
     let queryParams = ctx.checkBody('query_params').empty().value
     let bodyParams = ctx.checkBody('body_params').empty().value
     const bodyParamsType = ctx.checkBody('body_params_type').empty().value
-    const mockURL = decodeURIComponent(url)
+    const mockURL = url ? decodeURIComponent(url) : undefined
     const methodCode = Method[method]
 
     if (Array.isArray(headers)) {
@@ -101,7 +103,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
+    const res = await MockProxy.save({ id, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, script, enable_script: enableScript, delay, status, description })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {

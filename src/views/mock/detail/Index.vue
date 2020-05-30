@@ -15,7 +15,7 @@
         </span>
         <Preview v-if="pane.key === 'preview'"></Preview>
         <Edit v-if="pane.key === 'edit'"></Edit>
-        <advace-mock v-if="pane.key === 'advance'"></advace-mock>
+        <advance-mock v-if="pane.key === 'advance'"></advance-mock>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -24,13 +24,13 @@
 <script>
   import Preview from '@/views/mock/detail/Preview'
   import Edit from '@/views/mock/detail/Edit'
-  import AdvaceMock from '@/views/mock/detail/AdvaceMock'
+  import AdvanceMock from '@/views/mock/detail/AdvanceMock'
   import { mapState, mapMutations, mapActions } from 'vuex'
   export default {
     components: {
       Preview,
       Edit,
-      AdvaceMock
+      AdvanceMock
     },
     data () {
       return {
@@ -87,8 +87,9 @@
       }
 
       .ant-card-small > .ant-card-head{
-        min-height: 30px;
+        max-height: 30px;
         border-bottom: 1px dashed #e8e8e8;
+        overflow: hidden;
       }
       .ant-card-small > .ant-card-head > .ant-card-head-wrapper > .ant-card-head-title {
         padding: 5px 0;

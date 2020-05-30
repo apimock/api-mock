@@ -18,7 +18,7 @@
         <a-card class="edit-card response" size="small" style="margin-top: 100px">
           <span slot="title">
             响应数据
-            <a-button style="border:none" icon="reload" :loading="iconLoading" @click="reloadMockValue"></a-button>
+            <a-button style="border:none" size="small" icon="reload" :loading="iconLoading" @click="reloadMockValue"></a-button>
           </span>
           <div class="editor-box">
             <json-editor ref="previewEditor" :value="mockValue" :read-only="true" style="height: 600px"></json-editor>

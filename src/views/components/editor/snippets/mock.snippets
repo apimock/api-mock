@@ -5,115 +5,121 @@ snippet Api.params
 	Api.params
 snippet Api.header
 	Api.header
+snippet Api.delay
+	Api.delay = 1000
+snippet Api.status
+	Api.status = 200
 # Base
 snippet Random.boolean
-	@boolean
+	Random.boolean()
 snippet Random.natural
-	@natural(${1:60}, ${2:100})
+	Random.natural(${1:60}, ${2:100})
 snippet Random.integer
-	@integer(${1:60}, ${2:100})
+	Random.integer(${1:60}, ${2:100})
 snippet Random.float
-	@float(${1:60}, ${2:100})
+	Random.float(${1:60}, ${2:100})
 snippet Random.character
-	@character(${1:'abcde'})
+	Random.character(${1:'abcde'})
 snippet Random.string
-	@string(${1:7}, ${2:20})
+	Random.string(${1:7}, ${2:20})
 snippet Random.range
-	@range(${1:3}, ${2:7})
+	Random.range(${1:3}, ${2:7})
 # Date
 snippet Random.date
-	@date
+	Random.date()
 snippet Random.time
-	@time
+	Random.time()
 snippet Random.datetime
-	@datetime
+	Randbom.datetime()
 snippet Random.now
-	@now
+	Random.now()
+snippet Random.timestamp
+	Random.timestamp()
 # Image
 snippet Random.image
-  @image(${1:'200x100'}, ${2:'#50B347'}, ${3:'#FFF'}, ${4:'ApiMock'})
+	Random.image(${1:'200x100'}, ${2:'#50B347'}, ${3:'#FFF'}, ${4:'ApiMock'})
 snippet Random.dataImage
-	@dataImage(${1:'200x100'}, ${2:'ApiMock'})
+	Random.dataImage(${1:'200x100'}, ${2:'ApiMock'})
 # Color
 snippet Random.color
-	@color
+	Random.color()
 snippet Random.hex
-	@hex
+	Random.hex()
 snippet Random.rgb
-	@rgb
+	Random.rgb()
 snippet Random.rgba
-	@rgba
+	Random.rgba()
 snippet Random.hsl
-	@hsl
+	Random.hsl()
 # Text
 snippet Random.paragraph
-	@paragraph(${1:1}, ${2:3})
+	Random.paragraph(${1:1}, ${2:3})
 snippet Random.sentence
-	@sentence(${1:3}, ${2:5})
+	Random.sentence(${1:3}, ${2:5})
 snippet Random.word
-	@word(${1:3}, ${2:5})
+	Random.word(${1:3}, ${2:5})
 snippet Random.title
-	@title(${1:3}, ${2:5})
+	Random.title(${1:3}, ${2:5})
 snippet Random.cparagraph
-	@cparagraph(${1:1}, ${2:3})
+	Random.cparagraph(${1:1}, ${2:3})
 snippet Random.csentence
-	@csentence(${1:3}, ${2:5})
+	Random.csentence(${1:3}, ${2:5})
 snippet Random.cword
-	@cword(${1:'零一二三四五六七八九十'}, ${2:5}, ${3:7})
+	Random.cword(${1:'零一二三四五六七八九十'}, ${2:5}, ${3:7})
 snippet Random.ctitle
-	@ctitle(${1:3}, ${2:5})
+	Random.ctitle(${1:3}, ${2:5})
 # Name
 snippet Random.first
-	@first
+	Random.first()
 snippet Random.last
-	@last
+	Random.last()
 snippet Random.name
-	@name
+	Random.name()
 snippet Random.cfirst
-	@cfirst
+	Random.cfirst()
 snippet Random.clast
-	@clast
+	Random.clast()
 snippet Random.cname
-	@cname
+	Random.cname()
 # Web
 snippet Random.url
-	@url
+	Random.url()
 snippet Random.domain
-	@domain
+	Random.domain()
 snippet Random.protocol
-	@protocol
+	Random.protocol()
 snippet Random.tld
-	@tld
+	Random.tld()
 snippet Random.email
-	@email
+	Random.email()
 snippet Random.ip
-	@ip
+	Random.ip()
 # Address
 snippet Random.region
-	@region
+	Random.region()
 snippet Random.province
-	@province
+	Random.province()
 snippet Random.city
-	@city(${1:true})
+	Random.city(${1:true})
 snippet Random.county
-	@county(${1:true})
+	Random.county(${1:true})
 snippet Random.zip
-	@zip
+	Random.zip()
 # Helper
 snippet Random.capitalize
-	@capitalize(${1:'hello'})
+	Random.capitalize(${1:'hello'})
 snippet Random.upper
-	@upper(${1:'hello'})
+	Random.upper(${1:'hello'})
 snippet Random.lower
-	@lower(${1:'HELLO'})
+	Random.lower(${1:'HELLO'})
 snippet Random.pick
-	@pick(['a', 'e', 'i', 'o', 'u'])
+	Random.pick(['a', 'e', 'i', 'o', 'u'])
 snippet Random.shuffle
-	@shuffle(['a', 'e', 'i', 'o', 'u'])
+	Random.shuffle(['a', 'e', 'i', 'o', 'u'])
 # Miscellaneous
 snippet Random.guid
-	@guid
+	Random.guid()
 snippet Random.id
-	@id
+	Random.id()
 snippet Random.increment
-	@increment(${1:1000})
+	Random.increment(${1:1000})

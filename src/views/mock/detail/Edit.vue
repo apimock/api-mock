@@ -143,7 +143,7 @@
             console.log('error submit!!')
             return false
           }
-          if (this.mockForm.is_json && !checkJson5(this.mockForm.body)) {
+          if (!checkJson5(this.mockForm.body)) {
             this.$message.error('返回Body json格式有问题，请检查！')
             return
           }

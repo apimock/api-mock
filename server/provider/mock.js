@@ -8,6 +8,7 @@ const Message = {
 
 module.exports = class Mock {
   static save (data) {
+    console.info(data)
     if (!data.id) {
       return Model.Mock.create({ ...data, created_at: dateTime() })
     } else {
