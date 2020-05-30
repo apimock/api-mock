@@ -1,5 +1,6 @@
 <template>
   <div class="advance">
+    <ExpectDialog v-model="showExpectDialog"></ExpectDialog>
     <a-tabs class="normal-tabs response-tabs" v-model="activeKey" :animated="false">
       <a-tab-pane key="script" tab="脚本">
         <a-switch v-model="mockForm.enable_script" @change="saveScript"/>
@@ -13,14 +14,17 @@
   import ScriptEditor from '@/views/components/editor/ScriptEditor'
   import { mapActions, mapState } from 'vuex'
   import ApiMock from '@/api/mock'
+  import ExpectDialog from '@/views/components/ExpectDialog'
   export default {
     name: 'AdvanceMock',
     components: {
-      ScriptEditor
+      ScriptEditor,
+      ExpectDialog
     },
     data () {
       return {
-        activeKey: 'script'
+        activeKey: 'script',
+        showExpectDialog: true
       }
     },
     computed: {
