@@ -15,7 +15,7 @@
         </span>
         <Preview v-if="pane.key === 'preview'"></Preview>
         <Edit v-if="pane.key === 'edit'"></Edit>
-        <advance-mock v-if="pane.key === 'advance'"></advance-mock>
+        <advance-mock ref="advance" v-if="pane.key === 'advance'"></advance-mock>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -37,13 +37,18 @@
       }
     },
     computed: {
-      ...mapState('mock', ['tabPanes', 'tabActiveKey'])
+      ...mapState('mock', ['tabPanes', 'tabActiveKey', 'mockId'])
     },
     methods: {
       ...mapMutations('mock', ['SET_MOCK_ID', 'SET_TAB_ACTIVE_KEY']),
       ...mapActions('mock', ['getDetail', 'resetTab']),
       changeTab (key) {
         this.SET_TAB_ACTIVE_KEY(key)
+        if (key === 'advance') {
+          this.$nextTick(() => {
+            this.$refs.advance[0].refresh()
+          })
+        }
       }
     },
     async beforeRouteUpdate (to, from, next) {

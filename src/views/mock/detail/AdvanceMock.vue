@@ -13,23 +13,23 @@
             showPagination="auto"
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           >
-            <span slot="name" slot-scope="text"><a>{{text}}</a></span>
+            <span slot="name" slot-scope="text"><a>{{ text }}</a></span>
             <span slot="params" slot-scope="text, record">
-            <a-badge :status="setStatus(record).status" :text="setStatus(record).text"/>
-          </span>
+              <a-badge :status="setStatus(record).status" :text="setStatus(record).text"/>
+            </span>
             <span slot="avatar" slot-scope="text">
-            <a-tooltip>
-              <template slot="title">
-                {{ text.username }}
-              </template>
-              <a-avatar :src="text.avatar" :title="text.username" :size="28" />
-            </a-tooltip>
-          </span>
+              <a-tooltip>
+                <template slot="title">
+                  {{ text.username }}
+                </template>
+                <a-avatar :src="text.avatar" :title="text.username" :size="28" />
+              </a-tooltip>
+            </span>
             <span slot="action" slot-scope="text, record">
-            <a-switch v-model="record.enable" />
-            <a-button icon="edit" size="small" style="margin:0 10px">编辑</a-button>
-            <a-button icon="delete" size="small">删除</a-button>
-          </span>
+              <a-switch v-model="record.enable" />
+              <a-button icon="edit" size="small" style="margin:0 10px">编辑</a-button>
+              <a-button icon="delete" size="small">删除</a-button>
+            </span>
           </s-table>
         </div>
       </a-tab-pane>
@@ -146,6 +146,9 @@
         } else {
           this.$message.error(message)
         }
+      },
+      refresh () {
+        this.$refs.table.refresh(true)
       }
     }
   }
