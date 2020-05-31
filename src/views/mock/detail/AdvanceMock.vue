@@ -25,8 +25,8 @@
               <a-avatar :src="text.avatar" :title="text.username" :size="28" />
             </a-tooltip>
           </span>
-            <span slot="action">
-            <a-switch default-checked />
+            <span slot="action" slot-scope="text, record">
+            <a-switch v-model="record.enable" />
             <a-button icon="edit" size="small" style="margin:0 10px">编辑</a-button>
             <a-button icon="delete" size="small">删除</a-button>
           </span>
@@ -99,6 +99,9 @@
           const { data } = await ApiExpect.list(
             Object.assign(parameter, this.queryParam, { mock_id: this.mockId })
           )
+          data.bean.data.forEach((item) => {
+            item.enable = !!item.enable
+          })
           return data.bean
         },
         selectedRowKeys: [],

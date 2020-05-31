@@ -51,8 +51,9 @@
       this.resetTab()
       next()
     },
-    created () {
-      this.getDetail(this.$route.params.mockId)
+    async created () {
+      await this.getDetail(this.$route.params.mockId)
+      this.resetTab()
     }
   }
 </script>
