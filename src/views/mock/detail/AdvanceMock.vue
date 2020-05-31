@@ -2,7 +2,11 @@
   <div class="advance">
     <ExpectDialog v-model="showExpectDialog"></ExpectDialog>
     <a-tabs class="normal-tabs response-tabs" v-model="activeKey" :animated="false">
-      <a-tab-pane key="expect" tab="期望">
+      <a-tab-pane key="expect">
+        <span slot="tab">
+          期望
+          <a-badge :status="expectStatus"/>
+        </span>
         <div class="list" style="padding: 20px">
           <s-table
             ref="table"
@@ -103,13 +107,21 @@
           const { data } = await ApiExpect.list(
             Object.assign(parameter, this.queryParam, { mock_id: this.mockId })
           )
+          let expectStatus = 'default'
           data.bean.data.forEach((item) => {
             item.enable = !!item.enable
+            if (expectStatus === 'default') {
+              if (item.enable && item.params) {
+                expectStatus = 'success'
+              }
+            }
           })
+          this.expectStatus = expectStatus
           return data.bean
         },
         selectedRowKeys: [],
-        selectedRows: []
+        selectedRows: [],
+        expectStatus: 'default'
       }
     },
     computed: {
