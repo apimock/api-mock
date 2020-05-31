@@ -3,17 +3,35 @@
     <ExpectDialog v-model="showExpectDialog"></ExpectDialog>
     <a-tabs class="normal-tabs response-tabs" v-model="activeKey" :animated="false">
       <a-tab-pane key="expect" tab="期望">
-        <s-table
-          ref="table"
-          size="small"
-          rowKey="id"
-          :columns="columns"
-          :data="loadData"
-          bordered
-          showPagination="auto"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        >
-        </s-table>
+        <div class="list" style="padding: 20px">
+          <s-table
+            ref="table"
+            size="small"
+            rowKey="id"
+            :columns="columns"
+            :data="loadData"
+            showPagination="auto"
+            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          >
+            <span slot="name" slot-scope="text"><a>{{text}}</a></span>
+            <span slot="params" slot-scope="text, record">
+            <a-badge :status="setStatus(record).status" :text="setStatus(record).text"/>
+          </span>
+            <span slot="avatar" slot-scope="text">
+            <a-tooltip>
+              <template slot="title">
+                {{ text.username }}
+              </template>
+              <a-avatar :src="text.avatar" :title="text.username" :size="28" />
+            </a-tooltip>
+          </span>
+            <span slot="action">
+            <a-switch default-checked />
+            <a-button icon="edit" size="small" style="margin:0 10px">编辑</a-button>
+            <a-button icon="delete" size="small">删除</a-button>
+          </span>
+          </s-table>
+        </div>
       </a-tab-pane>
       <a-tab-pane key="script" tab="脚本">
         <a-switch v-model="mockForm.enable_script" @change="saveScript"/>
@@ -45,7 +63,36 @@
         columns: [
           {
             title: '名称',
-            dataIndex: 'name'
+            dataIndex: 'name',
+            scopedSlots: { customRender: 'name' }
+          },
+          {
+            title: '匹配状态',
+            dataIndex: 'params',
+            scopedSlots: { customRender: 'params' }
+          },
+          {
+            title: '响应状态码',
+            dataIndex: 'status',
+            align: 'center'
+          },
+          {
+            title: '延时(ms)',
+            dataIndex: 'delay',
+            align: 'center'
+          },
+          {
+            title: '创建者',
+            dataIndex: 'user',
+            align: 'center',
+            width: 120,
+            scopedSlots: { customRender: 'avatar' }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            width: 250,
+            scopedSlots: { customRender: 'action' }
           }
         ],
         loadData: async parameter => {
@@ -66,6 +113,17 @@
       onSelectChange (selectedRowKeys, selectedRows) {
         this.selectedRowKeys = selectedRowKeys
         this.selectedRows = selectedRows
+      },
+      setStatus (record) {
+        const status = {
+          success: { status: 'success', text: '正常' },
+          error: { status: 'error', text: '无匹配' }
+        }
+        if (!record.params) {
+          return status.error
+        } else {
+          return status.success
+        }
       },
       async saveScript () {
         const mockData = {

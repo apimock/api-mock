@@ -2,6 +2,7 @@ import ExpectProxy from '~/server/provider/expect'
 import MockProxy from '@server/provider/mock'
 import { getPage } from '@server/utils'
 const defaultPageSize = require('config').get('pageSize')
+const Model = require('~/server/models')()
 
 export default class Expect {
   static async create (ctx) {
@@ -47,11 +48,11 @@ export default class Expect {
         mock_id: mock.id
       },
       offset: pageSize * (pageNo - 1),
-      limit: pageSize
-      // include: {
-      //   model: Model.Mock,
-      //   as: 'children'
-      // }
+      limit: pageSize,
+      include: {
+        model: Model.User,
+        attributes: { exclude: ['password'] }
+      }
     }
     const ExpectResult = await ExpectProxy.findAndCountAll(query)
     const page = getPage(ExpectResult, pageSize, pageNo)

@@ -33,5 +33,10 @@ module.exports = function () {
     as: 'children'
   })
 
+  Model.Expect.belongsTo(Model.User, {
+    foreignKey: 'uid',
+    sourceKey: 'id'
+  })
+
   return Model
 }
