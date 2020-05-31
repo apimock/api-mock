@@ -33,7 +33,11 @@
           </s-table>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="script" tab="脚本">
+      <a-tab-pane key="script">
+        <span slot="tab">
+          脚本
+          <a-badge :status="scriptStatus"/>
+        </span>
         <a-switch v-model="mockForm.enable_script" @change="saveScript"/>
         <script-editor ref="codeEditor" :value="mockForm.script" @save="saveScript" style="height: 600px"></script-editor>
       </a-tab-pane>
@@ -109,7 +113,14 @@
       }
     },
     computed: {
-      ...mapState('mock', ['mockForm', 'mockId'])
+      ...mapState('mock', ['mockForm', 'mockId']),
+      scriptStatus () {
+        if (this.mockForm.script && this.mockForm.enable_script) {
+          return 'success'
+        } else {
+          return 'default'
+        }
+      }
     },
     methods: {
       ...mapActions('mock', ['getDetail']),
