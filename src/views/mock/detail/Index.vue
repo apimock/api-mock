@@ -41,13 +41,14 @@
     },
     methods: {
       ...mapMutations('mock', ['SET_MOCK_ID', 'SET_TAB_ACTIVE_KEY']),
-      ...mapActions('mock', ['getDetail']),
+      ...mapActions('mock', ['getDetail', 'resetTab']),
       changeTab (key) {
         this.SET_TAB_ACTIVE_KEY(key)
       }
     },
-    beforeRouteUpdate (to, from, next) {
-      this.getDetail(to.params.mockId)
+    async beforeRouteUpdate (to, from, next) {
+      await this.getDetail(to.params.mockId)
+      this.resetTab()
       next()
     },
     created () {

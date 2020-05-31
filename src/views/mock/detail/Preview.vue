@@ -4,6 +4,7 @@
       <a-button-group>
         <a-button size="large" type="primary" icon="edit" @click="edit">edit</a-button>
         <a-button size="large" @click="view" icon="eye">view</a-button>
+        <a-button size="large" @click="switchTab('advance')" icon="experiment">高级Mock</a-button>
       </a-button-group>
     </a-affix>
     <a-row :gutter="20">

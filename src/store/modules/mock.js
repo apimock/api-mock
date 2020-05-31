@@ -17,7 +17,7 @@ const mock = {
     mockValue: '',
     mockForm: null,
     tabActiveKey: 'preview',
-    tabPanes: [tabPaneObj.preview, tabPaneObj.advance],
+    tabPanes: [tabPaneObj.preview],
     showBodyParamsTab: false
   },
 
@@ -127,10 +127,24 @@ const mock = {
     },
     switchTab ({ commit, state }, key) {
       const data = [...state.tabPanes]
-      data.splice(0, 1)
-      data.unshift(tabPaneObj[key])
+      if (key === 'advance') {
+        if (!data.some((ele) => ele.key === key)) {
+          data.push(tabPaneObj.advance)
+        }
+      } else {
+        data.splice(0, 1)
+        data.unshift(tabPaneObj[key])
+      }
       commit('SET_TAB_PANES', data)
       commit('SET_TAB_ACTIVE_KEY', key)
+    },
+    resetTab ({ commit, state }) {
+      const data = [tabPaneObj.preview]
+      if (state.detail.expect_count > 0 || state.detail.script) {
+        data.push(tabPaneObj.advance)
+      }
+      commit('SET_TAB_PANES', data)
+      commit('SET_TAB_ACTIVE_KEY', 'preview')
     }
   }
 }

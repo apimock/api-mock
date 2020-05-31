@@ -1,5 +1,6 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
+import ExpectProxy from '~/server/provider/expect'
 import { Method } from '~/server/utils/enum'
 import { getPage } from '~/server/utils'
 const Op = require('sequelize').Op
@@ -207,6 +208,8 @@ export default class Mock {
     }
 
     const mock = await MockProxy.findOne({ id })
+    const expectCount = await ExpectProxy.count({ mock_id: mock.id })
+    mock.dataValues.expect_count = expectCount
     ctx.body = ctx.util.resuccess(mock)
   }
 }
