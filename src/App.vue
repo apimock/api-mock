@@ -65,5 +65,8 @@ export default {
     .ant-card{
       background: none;
     }
+    .ant-table-thead > tr > th{
+      font-weight: normal;
+    }
   }
 </style>

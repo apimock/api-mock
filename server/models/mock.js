@@ -76,7 +76,7 @@ module.exports = function(sequelize, DataTypes) {
     'enable_script': {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: '1'
+      defaultValue: '0'
     },
     'description': {
       type: DataTypes.STRING(255),

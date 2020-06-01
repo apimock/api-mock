@@ -11,5 +11,9 @@ export default wraperApi({
   update: {
     url: '/api/expect/update',
     method: 'post'
+  },
+  delete: {
+    url: '/api/expect/delete',
+    method: 'post'
   }
 })

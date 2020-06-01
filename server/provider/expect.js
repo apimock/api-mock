@@ -13,12 +13,24 @@ module.exports = class Expect {
     }
   }
 
+  static findOne (where) {
+    return Model.Expect.findOne({
+      where
+    })
+  }
+
   static findAndCountAll (query) {
     return Model.Expect.findAndCountAll(query)
   }
 
   static count (where) {
     return Model.Expect.count({
+      where
+    })
+  }
+
+  static remove (where) {
+    return Model.Expect.destroy({
       where
     })
   }

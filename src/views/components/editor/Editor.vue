@@ -39,6 +39,7 @@
         this.editor.$blockScrolling = Infinity
         this.editor.setAutoScrollEditorIntoView(true)
         this.editor.setTheme('ace/theme/xcode')
+        this.editor.setShowPrintMargin(false)
         if (this.readOnly) {
           this.editor.setReadOnly(true)
           this.editor.renderer.$cursorLayer.element.style.display = 'none'
@@ -84,8 +85,10 @@
       setValue (val) {
         if (val) {
           this.editor.setValue(this.format(val))
-          this.editor.clearSelection()
+        } else {
+          this.editor.setValue('')
         }
+        this.editor.clearSelection()
       },
       getValue () {
         return this.currentValue

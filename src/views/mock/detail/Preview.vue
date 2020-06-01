@@ -11,7 +11,7 @@
       <a-col :span="12">
         <a-card class="edit-card response" size="small" title="响应模板" style="margin-top: 100px">
           <div class="editor-box">
-            <json-editor ref="codeEditor" :value="detail.body" :read-only="true" style="height: 600px"></json-editor>
+            <json-editor ref="codeEditor" :value="detail.body" :read-only="true" style="height: 600px;border-top:1px solid #eee"></json-editor>
           </div>
         </a-card>
       </a-col>
@@ -22,7 +22,7 @@
             <a-button style="border:none" size="small" icon="reload" :loading="iconLoading" @click="reloadMockValue"></a-button>
           </span>
           <div class="editor-box">
-            <json-editor ref="previewEditor" :value="mockValue" :read-only="true" style="height: 600px"></json-editor>
+            <json-editor ref="previewEditor" :value="mockValue" :read-only="true" style="height: 600px; border-top:1px solid #eee"></json-editor>
           </div>
         </a-card>
       </a-col>
@@ -86,6 +86,10 @@
       top:90px;
       z-index: 99;
       box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
+    }
+
+    .ant-card-body{
+      padding: 0;
     }
 
     .editor-box{

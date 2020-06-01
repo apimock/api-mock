@@ -1,6 +1,6 @@
 <template>
   <div class="advance">
-    <ExpectDialog v-model="showExpectDialog"></ExpectDialog>
+    <ExpectDialog v-model="showExpectDialog" :form-data="expectFormData" @update="refresh"></ExpectDialog>
     <a-tabs class="normal-tabs response-tabs" v-model="activeKey" :animated="false">
       <a-tab-pane key="expect">
         <span slot="tab">
@@ -8,6 +8,7 @@
           <a-badge :status="expectStatus"/>
         </span>
         <div class="list" style="padding: 20px">
+          <a-button type="primary" @click="openExpectDialog(null)">添加期望</a-button>
           <s-table
             ref="table"
             size="small"
@@ -21,6 +22,9 @@
             <span slot="params" slot-scope="text, record">
               <a-badge :status="setStatus(record).status" :text="setStatus(record).text"/>
             </span>
+            <span slot="status" slot-scope="text" :style="{color:setStatusColor(text)}">
+              {{ text }}
+            </span>
             <span slot="avatar" slot-scope="text">
               <a-tooltip>
                 <template slot="title">
@@ -30,19 +34,29 @@
               </a-tooltip>
             </span>
             <span slot="action" slot-scope="text, record">
-              <a-switch v-model="record.enable" />
-              <a-button icon="edit" size="small" style="margin:0 10px">编辑</a-button>
-              <a-button icon="delete" size="small">删除</a-button>
+              <a-switch v-model="record.enable" @change="saveExpect(record)"/>
+              <a-button icon="edit" size="small" style="margin:0 10px" @click="openExpectDialog(record)">编辑</a-button>
+              <a-popconfirm
+                title="你确定要删除该条吗?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="del(record)"
+              >
+                <a-button icon="delete" size="small">删除</a-button>
+              </a-popconfirm>
             </span>
           </s-table>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="script">
+      <a-tab-pane key="script" class="script-pane">
         <span slot="tab">
           脚本
           <a-badge :status="scriptStatus"/>
         </span>
-        <a-switch v-model="mockForm.enable_script" @change="saveScript"/>
+        <div class="title">
+          是否开启：
+          <a-switch v-model="mockForm.enable_script" @change="saveScript(false)"/>
+        </div>
         <script-editor ref="codeEditor" :value="mockForm.script" @save="saveScript" style="height: 600px"></script-editor>
       </a-tab-pane>
     </a-tabs>
@@ -56,6 +70,7 @@
   import ApiMock from '@/api/mock'
   import ExpectDialog from '@/views/components/ExpectDialog'
   import { STable } from '@/components'
+  import { CodeColor } from '@/utils/enum'
   export default {
     name: 'AdvanceMock',
     components: {
@@ -67,6 +82,7 @@
       return {
         activeKey: 'expect',
         showExpectDialog: false,
+        expectFormData: null,
         queryParam: {},
         columns: [
           {
@@ -82,7 +98,8 @@
           {
             title: '响应状态码',
             dataIndex: 'status',
-            align: 'center'
+            align: 'center',
+            scopedSlots: { customRender: 'status' }
           },
           {
             title: '延时(ms)',
@@ -140,9 +157,13 @@
         this.selectedRowKeys = selectedRowKeys
         this.selectedRows = selectedRows
       },
+      setStatusColor (status) {
+        const code = parseInt(status / 100) * 100
+        return CodeColor[code] || '#000000a6'
+      },
       setStatus (record) {
         const status = {
-          success: { status: 'success', text: '正常' },
+          success: { status: 'success', text: '有匹配' },
           error: { status: 'error', text: '无匹配' }
         }
         if (!record.params) {
@@ -151,20 +172,29 @@
           return status.success
         }
       },
-      async saveScript () {
+      async saveExpect (record) {
+        const { data } = await ApiExpect.update(record)
+        const { code, message } = data
+        if (code) {
+          this.$message.success('更新成功！')
+        } else {
+          this.$message.error(message)
+        }
+      },
+      async saveScript (verifyContent = true) {
         const mockData = {
           id: this.mockForm.id,
           enable_script: this.mockForm.enable_script === true ? 1 : 0,
           script: this.$refs.codeEditor.getValue()
         }
-        if (!/Api\.json/g.test(mockData.script)) {
+        if (verifyContent && !/Api\.json/g.test(mockData.script)) {
           this.$message.error(`必须要有 Api.json = `)
           return
         }
         const { data } = await ApiMock.update(mockData)
         const { code, message } = data
         if (code === 200) {
-          this.$message.success('更新成功')
+          this.$message.success('更新成功！')
           this.getDetail()
         } else {
           this.$message.error(message)
@@ -172,6 +202,24 @@
       },
       refresh () {
         this.$refs.table.refresh(true)
+      },
+      openExpectDialog (record) {
+        if (record) {
+          this.expectFormData = record
+        } else {
+          this.expectFormData = null
+        }
+        this.showExpectDialog = true
+      },
+      async del (record) {
+        const { data } = await ApiExpect.delete(record)
+        const { code, message } = data
+        if (code === 200) {
+          this.$message.success('删除成功！')
+          this.refresh()
+        } else {
+          this.$message.error(message)
+        }
       }
     }
   }
@@ -180,5 +228,15 @@
 <style scoped lang="less">
   .advance{
     padding: 20px;
+
+    .script-pane{
+      .title{
+        background: #f0f2f5;
+        border-bottom: 1px solid #ddd;
+        padding: 0 10px;
+        line-height: 30px;
+        font-size: 13px;
+      }
+    }
   }
 </style>

@@ -36,7 +36,7 @@ export const MethodArray = [
   { code: 7, method: 'head' }
 ]
 
-const CodeColor = {
+export const CodeColor = {
   100: '#ccc',
   200: '#52c41a',
   300: '#5ca937',
