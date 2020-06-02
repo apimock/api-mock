@@ -88,3 +88,18 @@ export function jsonParse (json) {
     return json
   }
 }
+
+export function filterEmptyKey (data) {
+  return data.filter((item) => {
+    return item.key !== ''
+  })
+}
+
+export function keyValueToStr (data) {
+  if (Array.isArray(data)) {
+    data = filterEmptyKey(data)
+    return JSON.stringify(data)
+  } else {
+    return String(data)
+  }
+}

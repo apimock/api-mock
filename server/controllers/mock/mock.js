@@ -2,7 +2,7 @@ import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import ExpectProxy from '~/server/provider/expect'
 import { Method } from '~/server/utils/enum'
-import { getPage } from '~/server/utils'
+import { getPage, keyValueToStr } from '~/server/utils'
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
 const Model = require('~/server/models')()
@@ -25,17 +25,9 @@ export default class Mock {
     const mockURL = decodeURIComponent(url)
     const methodCode = Method[method]
 
-    if (Array.isArray(headers)) {
-      headers = JSON.stringify(headers)
-    }
-
-    if (Array.isArray(queryParams)) {
-      queryParams = JSON.stringify(queryParams)
-    }
-
-    if (Array.isArray(bodyParams)) {
-      bodyParams = JSON.stringify(bodyParams)
-    }
+    headers = keyValueToStr(headers)
+    queryParams = keyValueToStr(queryParams)
+    bodyParams = keyValueToStr(bodyParams)
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -81,17 +73,9 @@ export default class Mock {
     const mockURL = url ? decodeURIComponent(url) : undefined
     const methodCode = Method[method]
 
-    if (Array.isArray(headers)) {
-      headers = JSON.stringify(headers)
-    }
-
-    if (Array.isArray(queryParams)) {
-      queryParams = JSON.stringify(queryParams)
-    }
-
-    if (Array.isArray(bodyParams)) {
-      bodyParams = JSON.stringify(bodyParams)
-    }
+    headers = keyValueToStr(headers)
+    queryParams = keyValueToStr(queryParams)
+    bodyParams = keyValueToStr(bodyParams)
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)

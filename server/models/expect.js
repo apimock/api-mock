@@ -3,17 +3,17 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('expect', {
     'id': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
     'uid': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       allowNull: false
     },
     'mock_id': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       allowNull: false
     },
     'name': {
@@ -26,12 +26,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     'status': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       allowNull: true,
       defaultValue: '200'
     },
     'delay': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       allowNull: true,
       defaultValue: '0'
     },
@@ -39,8 +39,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    'headers': {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     'enable': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       allowNull: true,
       defaultValue: '1'
     },

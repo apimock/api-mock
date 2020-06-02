@@ -213,15 +213,15 @@
                   binary
                 </a-radio>
               </a-radio-group>
-              <tree-table v-model="mockForm.body_params" name="body_params"></tree-table>
+              <key-value-editor v-model="mockForm.body_params" name="body_params"></key-value-editor>
             </a-tab-pane>
             <a-tab-pane key="query" tab="Query Params">
               <a slot="extra" href="#">批量添加</a>
-              <tree-table v-model="mockForm.query_params" name="query_params"></tree-table>
+              <key-value-editor v-model="mockForm.query_params" name="query_params"></key-value-editor>
             </a-tab-pane>
             <a-tab-pane key="header" tab="Headers">
               <a-card size="small" title="请求参数" :bordered="false" style="width: 100%">
-                <tree-table v-model="mockForm.headers" name="headers"></tree-table>
+                <key-value-editor v-model="mockForm.headers" name="headers"></key-value-editor>
               </a-card>
             </a-tab-pane>
           </a-tabs>
@@ -245,7 +245,7 @@
   import ApiProject from '@/api/project'
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import jsBeautify from 'js-beautify/js/lib/beautify'
-  import TreeTable from '@/views/components/TreeTable'
+  import KeyValueEditor from '@/views/components/KeyValueEditor'
   import { jsonParse } from '@/utils'
   const ace = require('brace')
   require('brace/mode/javascript')
@@ -272,7 +272,7 @@
     name: 'Mock',
     components: {
       STable,
-      TreeTable
+      KeyValueEditor
     },
     data () {
       return {

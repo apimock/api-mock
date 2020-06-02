@@ -1,6 +1,6 @@
 import ExpectProxy from '~/server/provider/expect'
 import MockProxy from '@server/provider/mock'
-import { getPage } from '@server/utils'
+import { getPage, keyValueToStr } from '@server/utils'
 const defaultPageSize = require('config').get('pageSize')
 const Model = require('~/server/models')()
 
@@ -9,7 +9,8 @@ export default class Expect {
     const uid = ctx.state.user.id
     const name = ctx.checkBody('name').notEmpty().value
     const mockId = ctx.checkBody('mock_id').notEmpty().value
-    const params = ctx.checkBody('params').empty().value
+    let params = ctx.checkBody('params').empty().value
+    let headers = ctx.checkBody('headers').empty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
     const body = ctx.checkBody('body').empty().value
@@ -18,6 +19,9 @@ export default class Expect {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
+
+    params = keyValueToStr(params)
+    headers = keyValueToStr(headers)
 
     const mock = await MockProxy.checkById(mockId, uid)
     if (typeof mock === 'string') {
@@ -31,9 +35,9 @@ export default class Expect {
         ctx.body = ctx.util.refail(null, 10001, 'id不能为空！')
         return
       }
-      res = await ExpectProxy.save({ id, uid, mock_id: mockId, name, params, delay, status, body, enable })
+      res = await ExpectProxy.save({ id, uid, mock_id: mockId, name, params, delay, status, headers, body, enable })
     } else {
-      res = await ExpectProxy.save({ uid, mock_id: mockId, name, params, delay, status, body, enable })
+      res = await ExpectProxy.save({ uid, mock_id: mockId, name, params, delay, status, headers, body, enable })
     }
 
     if (res) {

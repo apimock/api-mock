@@ -15,6 +15,9 @@
         <a-form-model-item label="期望名称" prop="name" :labelCol="{span:4}" :wrapperCol="{span:10}">
           <a-input v-model="expectForm.name" placeholder="please input name"/>
         </a-form-model-item>
+        <a-form-model-item label="参数匹配" prop="name" :labelCol="{span:4}" :wrapperCol="{span:19}">
+          <key-value-editor v-model="expectForm.params" :only-key-value="true"></key-value-editor>
+        </a-form-model-item>
       </a-card>
       <a-card title="响应设置" size="small" style="margin-top: 20px">
         <a-form-model-item label="状态码" :labelCol="{span:4}" :wrapperCol="{span:10}">
@@ -40,6 +43,9 @@
             :step="100"
             style="width: 100%"/>
         </a-form-model-item>
+        <a-form-model-item label="Headers" prop="name" :labelCol="{span:4}" :wrapperCol="{span:19}">
+          <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="Headers"></key-value-editor>
+        </a-form-model-item>
         <a-form-model-item label="Body" prop="body" style="margin-bottom: 0">
           <json-editor ref="codeEditor" :value="expectForm.body" @save="submit" style="height: 400px; border-top:1px solid #ddd"></json-editor>
         </a-form-model-item>
@@ -49,20 +55,24 @@
 </template>
 
 <script>
-  import { ResponseStatus } from '@/utils/enum'
+  import { ResponseStatus, Headers } from '@/utils/enum'
   import { mapState } from 'vuex'
   import JsonEditor from '@/views/components/editor/JsonEditor'
-  import { checkJson5 } from '@/utils'
+  import { checkJson5, jsonParse } from '@/utils'
   import ApiExpect from '@/api/expect'
+  import KeyValueEditor from '@/views/components/KeyValueEditor'
   const expectForm = {
     name: '',
+    params: [],
     status: 200,
-    delay: 0
+    delay: 0,
+    headers: []
   }
   export default {
     name: 'ExpectDialog',
     components: {
-      JsonEditor
+      JsonEditor,
+      KeyValueEditor
     },
     props: {
       value: {
@@ -78,6 +88,7 @@
       return {
         currentValue: false,
         ResponseStatus,
+        Headers,
         expectForm,
         title: '',
         rules: {
@@ -142,7 +153,7 @@
       },
       setExpectForm (val) {
         if (!val) {
-          this.title = '创建期望'
+          this.title = '添加期望'
           this.expectForm = Object.assign(expectForm, {
             body: this.mockForm.body
           })
@@ -150,6 +161,8 @@
           this.title = '编辑期望'
           this.expectForm = val
         }
+        this.expectForm.params = jsonParse(this.expectForm.params) || []
+        this.expectForm.headers = jsonParse(this.expectForm.headers) || []
       }
     },
     mounted () {
@@ -165,6 +178,10 @@
   .exceptForm{
     .ant-card-head{
       border-bottom: 1px dashed #eee;
+      min-height: 24px;
+      .ant-card-head-title{
+        padding: 5px 0!important;
+      }
     }
     .ant-card-body{
       padding:24px 0 0 0;

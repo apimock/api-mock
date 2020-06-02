@@ -53,14 +53,14 @@
               binary
             </a-radio>
           </a-radio-group>
-          <tree-table v-model="mockForm.body_params" name="body_params"></tree-table>
+          <key-value-editor v-model="mockForm.body_params"></key-value-editor>
         </a-tab-pane>
         <a-tab-pane key="query" tab="Query Params">
           <a slot="extra" href="#">批量添加</a>
-          <tree-table v-model="mockForm.query_params" name="query_params"></tree-table>
+          <key-value-editor v-model="mockForm.query_params"></key-value-editor>
         </a-tab-pane>
         <a-tab-pane key="header" tab="Headers">
-          <tree-table v-model="mockForm.headers" name="headers"></tree-table>
+          <key-value-editor v-model="mockForm.headers" :key-source="Headers"></key-value-editor>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -78,18 +78,18 @@
 </template>
 
 <script>
-  import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus, Headers } from '@/utils/enum'
   import { checkJson5 } from '@/utils'
   import ApiMock from '@/api/mock'
   import { mapState, mapActions } from 'vuex'
-  import TreeTable from '@/views/components/TreeTable'
+  import KeyValueEditor from '@/views/components/KeyValueEditor'
   import { Affix } from 'ant-design-vue'
   import JsonEditor from '@/views/components/editor/JsonEditor'
 
   export default {
     name: 'DetailEdit',
     components: {
-      TreeTable,
+      KeyValueEditor,
       JsonEditor,
       'a-affix': Affix
     },
@@ -107,7 +107,8 @@
         },
         reqTabActiveKey: 'query',
         resTabActiveKey: 'code',
-        previewEditorValue: ''
+        previewEditorValue: '',
+        Headers
       }
     },
     computed: {
@@ -129,11 +130,6 @@
       methodTagColor (num) {
         return MethodTagColor[num]
       },
-      filterEmptyName (items) {
-        return items.filter((item) => {
-          return item.name !== ''
-        })
-      },
       submit (e) {
         if (e) {
           e.preventDefault()
@@ -149,9 +145,6 @@
           }
           const mockData = { ...this.mockForm }
           mockData.body = this.$refs.codeEditor.getValue()
-          mockData.headers = this.filterEmptyName(mockData.headers)
-          mockData.query_params = this.filterEmptyName(mockData.query_params)
-          mockData.body_params = this.filterEmptyName(mockData.body_params)
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data
