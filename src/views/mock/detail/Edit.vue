@@ -37,8 +37,11 @@
     </a-card>
     <a-card class="edit-card request" size="small" title="请求参数">
       <a-tabs class="normal-tabs request-tabs" size="small" v-model="reqTabActiveKey" :animated="false">
-        <a-tab-pane v-if="showBodyParamsTab" key="body" tab="Body Params">
-          <a slot="extra" href="#">批量添加</a>
+        <a-tab-pane v-if="showBodyParamsTab" key="body">
+          <span slot="tab">
+            Body Params
+            <a-badge :status="bodyParamsStatus"/>
+          </span>
           <a-radio-group v-model="mockForm.body_params_type" style="margin-bottom: 20px">
             <a-radio :value="1">
               form
@@ -55,11 +58,18 @@
           </a-radio-group>
           <key-value-editor v-model="mockForm.body_params"></key-value-editor>
         </a-tab-pane>
-        <a-tab-pane key="query" tab="Query Params">
-          <a slot="extra" href="#">批量添加</a>
+        <a-tab-pane key="query">
+          <span slot="tab">
+            Query Params
+            <a-badge :status="queryParamsStatus"/>
+          </span>
           <key-value-editor v-model="mockForm.query_params"></key-value-editor>
         </a-tab-pane>
-        <a-tab-pane key="header" tab="Headers">
+        <a-tab-pane key="header">
+          <span slot="tab">
+            Headers
+            <a-badge :status="headersStatus"/>
+          </span>
           <key-value-editor v-model="mockForm.headers" :key-source="Headers"></key-value-editor>
         </a-tab-pane>
       </a-tabs>
@@ -108,7 +118,10 @@
         reqTabActiveKey: 'query',
         resTabActiveKey: 'code',
         previewEditorValue: '',
-        Headers
+        Headers,
+        bodyParamsStatus: 'default',
+        queryParamsStatus: 'default',
+        headersStatus: 'default'
       }
     },
     computed: {
@@ -120,6 +133,15 @@
       },
       'mockForm.body': function (val) {
         this.resTabActiveKey = 'code'
+      },
+      'mockForm.body_params': function (val) {
+        this.setStatus(val, 'bodyParamsStatus')
+      },
+      'mockForm.query_params': function (val) {
+        this.setStatus(val, 'queryParamsStatus')
+      },
+      'mockForm.headers': function (val) {
+        this.setStatus(val, 'headersStatus')
       }
     },
     methods: {
@@ -167,10 +189,21 @@
             this.$refs.previewEditor.setValue(val)
           })
         }
+      },
+      setStatus (arr, target) {
+        const res = arr.some((item) => item.key !== '' && item.value !== '' && item.required)
+        if (res) {
+          this[target] = 'success'
+        } else {
+          this[target] = 'default'
+        }
       }
     },
     mounted () {
       this.reqTabActiveKey = this.showBodyParamsTab ? 'body' : 'query'
+      this.setStatus(this.mockForm.body_params, 'bodyParamsStatus')
+      this.setStatus(this.mockForm.query_params, 'queryParamsStatus')
+      this.setStatus(this.mockForm.headers, 'headersStatus')
     }
   }
 </script>
