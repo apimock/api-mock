@@ -15,8 +15,8 @@
         <a-form-model-item label="期望名称" prop="name" :labelCol="{span:4}" :wrapperCol="{span:10}">
           <a-input v-model="expectForm.name" placeholder="please input name"/>
         </a-form-model-item>
-        <a-form-model-item label="参数匹配" prop="name" :labelCol="{span:4}" :wrapperCol="{span:19}">
-          <key-value-editor v-model="expectForm.params" :only-key-value="true"></key-value-editor>
+        <a-form-model-item label="参数匹配" :labelCol="{span:4}" :wrapperCol="{span:19}">
+          <key-value-editor v-model="expectForm.params" :only-key-value="true" ref="keyValueParams"></key-value-editor>
         </a-form-model-item>
       </a-card>
       <a-card title="响应设置" size="small" style="margin-top: 20px">
@@ -34,7 +34,7 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="延时" prop="delay" :labelCol="{span:4}" :wrapperCol="{span:10}">
+        <a-form-model-item label="延时(ms)" prop="delay" :labelCol="{span:4}" :wrapperCol="{span:4}">
           <a-input-number
             v-model="expectForm.delay"
             :min="0"
@@ -43,8 +43,8 @@
             :step="100"
             style="width: 100%"/>
         </a-form-model-item>
-        <a-form-model-item label="Headers" prop="name" :labelCol="{span:4}" :wrapperCol="{span:19}">
-          <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="Headers"></key-value-editor>
+        <a-form-model-item label="Headers" :labelCol="{span:4}" :wrapperCol="{span:19}">
+          <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="Headers" ref="keyValueHeaders"></key-value-editor>
         </a-form-model-item>
         <a-form-model-item label="Body" prop="body" style="margin-bottom: 0">
           <json-editor ref="codeEditor" :value="expectForm.body" @save="submit" style="height: 400px; border-top:1px solid #ddd"></json-editor>
@@ -107,9 +107,9 @@
       },
       value (val) {
         this.currentValue = val
-      },
-      formData (val) {
-        this.setExpectForm(val)
+        if (val) {
+          this.setExpectForm()
+        }
       }
     },
     methods: {
@@ -151,25 +151,26 @@
       cancel () {
         this.currentValue = false
       },
-      setExpectForm (val) {
+      setExpectForm () {
+        const val = this.formData
         if (!val) {
           this.title = '添加期望'
-          this.expectForm = Object.assign(expectForm, {
-            body: this.mockForm.body
-          })
+          this.expectForm = { ...expectForm, body: this.mockForm.body }
+          this.$refs.keyValueParams && this.$refs.keyValueParams.clear()
+          this.$refs.keyValueHeaders && this.$refs.keyValueHeaders.clear()
         } else {
           this.title = '编辑期望'
           this.expectForm = val
+          this.expectForm.params = jsonParse(this.expectForm.params) || []
+          this.expectForm.headers = jsonParse(this.expectForm.headers) || []
         }
-        this.expectForm.params = jsonParse(this.expectForm.params) || []
-        this.expectForm.headers = jsonParse(this.expectForm.headers) || []
       }
     },
     mounted () {
       if (this.value) {
         this.currentValue = true
+        this.setExpectForm()
       }
-      this.setExpectForm(this.formData)
     }
   }
 </script>

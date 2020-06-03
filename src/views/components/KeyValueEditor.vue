@@ -1,14 +1,18 @@
 <template>
   <div class="key-value">
     <a-row type="flex" class="table-row table-header">
-      <a-col class="th action"><a-icon type="plus" @click="addItem"/></a-col>
-      <a-col class="th key">键Key</a-col>
-      <a-col class="th value">值Value</a-col>
-      <a-col class="th required" v-if="!onlyKeyValue">必选</a-col>
-      <!--      <a-col class="th rule">生成规则</a-col>-->
-      <a-col class="th desc" v-if="!onlyKeyValue">描述</a-col>
+      <a-col class="th action">
+        <a-switch checked-children="json" un-checked-children="json" size="small" v-model="isJson" @change="changeEditor" />
+        <a-icon style="float:right; margin-top: 5px" v-if="!isJson" type="plus-circle" @click="addItem" title="添加"/>
+      </a-col>
+      <a-col class="th key" v-if="!isJson">键Key</a-col>
+      <a-col class="th value" v-if="!isJson">值Value</a-col>
+      <a-col class="th required" v-if="!isJson && !onlyKeyValue">必选</a-col>
+      <a-col class="th desc" v-if="!isJson && !onlyKeyValue">描述</a-col>
+      <a-col v-if="isJson" class="th" style="flex: 1"></a-col>
     </a-row>
     <draggable
+      v-if="!isJson"
       v-model="currentValue"
       draggable=".table-row"
       handle=".handle"
@@ -31,16 +35,18 @@
         <a-col class="td key" v-else>  <a-input v-model="item.key" /></a-col>
         <a-col class="td value"><a-input v-model="item.value" /></a-col>
         <a-col class="td required" v-if="!onlyKeyValue"><a-checkbox v-model="item.required"></a-checkbox></a-col>
-        <!--        <a-col class="td rule"><a-input v-model="item.rule" /></a-col>-->
         <a-col class="td desc" v-if="!onlyKeyValue"><a-input v-model="item.desc" /></a-col>
       </a-row>
     </draggable>
+    <json-editor v-if="isJson" ref="editor" :value="editorValue" style="height: 200px;border-right: 1px solid #eee;border-bottom: 1px solid #eee"></json-editor>
   </div>
 </template>
 
 <script>
   import draggable from 'vuedraggable'
   import { AutoComplete } from 'ant-design-vue'
+  import JsonEditor from '@/views/components/editor/JsonEditor'
+  import json5 from 'json5'
   const defaultValue = {
     key: '',
     value: '',
@@ -55,25 +61,22 @@
   export default {
     name: 'KeyValueEditor',
     components: {
+      JsonEditor,
       draggable,
       'AAutoComplete': AutoComplete
     },
     props: {
-      name: {
-        type: String,
-        default: ''
-      },
-      onlyKeyValue: {
-        type: Boolean,
-        default: false
+      value: {
+        type: Array,
+        default: () => []
       },
       keySource: {
         type: Array,
         default: () => []
       },
-      value: {
-        type: Array,
-        default: () => []
+      onlyKeyValue: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -81,7 +84,9 @@
         currentValue: [{ ...defaultValue }],
         helperValue: [{ ...defaultHelper }],
         dragging: false,
-        Headers
+        Headers,
+        isJson: false,
+        editorValue: ''
       }
     },
     watch: {
@@ -94,10 +99,16 @@
     },
     methods: {
       setValue (val) {
-        this.currentValue = val
-        this.helperValue = val.map(() => {
-          return defaultHelper
-        })
+        if (Array.isArray(val) && val.length) {
+          this.currentValue = val
+          this.helperValue = val.map(() => {
+            return { ...defaultHelper }
+          })
+        }
+      },
+      clear () {
+        this.currentValue = [{ ...defaultValue }]
+        this.helperValue = [{ ...defaultHelper }]
       },
       addItem () {
         this.currentValue.push({ ...defaultValue })
@@ -128,12 +139,30 @@
         setTimeout(() => {
           this.dragging = false
         }, 0)
+      },
+      changeEditor () {
+        if (this.isJson) {
+          if (this.onlyKeyValue) {
+            this.editorValue = JSON.stringify(this.currentValue.map((item) => { return { key: item.key, value: item.value } }), null, 2)
+          } else {
+            this.editorValue = JSON.stringify(this.currentValue, null, 2)
+          }
+        } else {
+          try {
+            const value = json5.parse(this.$refs.editor.getValue())
+            if (Array.isArray(value)) {
+              this.currentValue = json5.parse(this.$refs.editor.getValue())
+            } else {
+              this.$message.error('JSON格式错误，必需为数组')
+            }
+          } catch (e) {
+            this.$message.error('JSON格式错误')
+          }
+        }
       }
     },
     mounted () {
-      if (this.value && this.value.length) {
-        this.setValue(this.value)
-      }
+      this.setValue(this.value)
     }
   }
 </script>
@@ -155,6 +184,7 @@
         &:last-child {
           border-right: 1px solid #eee;
         }
+        clear: both;
       }
       .td{
         line-height: 30px;
@@ -170,9 +200,9 @@
         align-items: center;
       }
       .action{
-        width: 80px;
+        width: 95px;
         .handle{
-          margin-right: 20px;
+          margin-right: 25px;
           cursor: ns-resize;
         }
       }
@@ -185,9 +215,6 @@
       .required{
         width: 60px;
         text-align: center;
-      }
-      .rule{
-        width: 100px;
       }
       .desc{
         flex: 1;

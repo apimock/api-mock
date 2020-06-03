@@ -18,6 +18,10 @@
       readOnly: {
         type: Boolean,
         default: false
+      },
+      mockSnippets: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -43,6 +47,11 @@
         if (this.readOnly) {
           this.editor.setReadOnly(true)
           this.editor.renderer.$cursorLayer.element.style.display = 'none'
+        }
+        if (this.mockSnippets) {
+          this.editor.mockSnippets = true
+        } else {
+          this.editor.mockSnippets = false
         }
         this.editor.setOptions({
           tabSize: 2,

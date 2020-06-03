@@ -67,7 +67,7 @@
     <a-card class="edit-card response" size="small" title="响应数据">
       <a-tabs class="normal-tabs response-tabs" v-model="resTabActiveKey" :animated="false" @change="changeResTab">
         <a-tab-pane key="code" tab="模板">
-          <json-editor ref="codeEditor" :value="mockForm.body" @save="submit" style="height: 600px"></json-editor>
+          <json-editor ref="codeEditor" :value="mockForm.body" :mockSnippets="true" @save="submit" style="height: 600px"></json-editor>
         </a-tab-pane>
         <a-tab-pane key="preview" tab="预览">
           <json-editor ref="previewEditor" :value="previewEditorValue" :read-only="true" style="height: 600px"></json-editor>
