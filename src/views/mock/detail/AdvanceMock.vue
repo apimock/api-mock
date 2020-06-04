@@ -18,9 +18,15 @@
             showPagination="auto"
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           >
-            <span slot="name" slot-scope="text"><a>{{ text }}</a></span>
+            <span slot="name" slot-scope="text, record"><a @click="view(record)">{{ text }}</a></span>
             <span slot="params" slot-scope="text, record">
-              <a-badge :status="setStatus(record).status" :text="setStatus(record).text"/>
+              <a-badge v-if="!text || text ==='[]'" :status="setStatus(record).status" :text="setStatus(record).text"/>
+              <a-popover v-else  title="参数匹配" trigger="click">
+                <template slot="content">
+                  {{serializeParams(text)}}
+                </template>
+                <a-badge style="cursor: pointer" :status="setStatus(record).status" :text="setStatus(record).text"/>
+              </a-popover>
             </span>
             <span slot="status" slot-scope="text" :style="{color:setStatusColor(text)}">
               {{ text }}
@@ -128,7 +134,7 @@
           data.bean.data.forEach((item) => {
             item.enable = !!item.enable
             if (expectStatus === 'default') {
-              if (item.enable && item.params) {
+              if (item.enable && item.params && item.params !== '[]') {
                 expectStatus = 'success'
               }
             }
@@ -142,7 +148,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['mockForm', 'mockId']),
+      ...mapState('mock', ['mockForm', 'mockId', 'project']),
       scriptStatus () {
         if (this.mockForm.script && this.mockForm.enable_script) {
           return 'success'
@@ -166,20 +172,32 @@
           success: { status: 'success', text: '有匹配' },
           error: { status: 'error', text: '无匹配' }
         }
-        if (!record.params) {
+        if (!record.params || record.params === '[]') {
           return status.error
         } else {
           return status.success
         }
       },
+      serializeParams (params) {
+        try {
+          params = JSON.parse(params)
+        } catch (e) {
+          params = []
+        }
+        const res = params.map((item) => {
+          return `${item.key}=${item.value}`
+        })
+        return res.join('&')
+      },
       async saveExpect (record) {
         const { data } = await ApiExpect.update(record)
         const { code, message } = data
         if (code) {
-          this.$message.success('更新成功！')
+          // this.$message.success('更新成功！')
         } else {
           this.$message.error(message)
         }
+        this.refresh()
       },
       async saveScript (verifyContent = true) {
         const mockData = {
@@ -220,6 +238,13 @@
         } else {
           this.$message.error(message)
         }
+      },
+      view (record) {
+        const baseUrl = this.project.base_url
+        this.baseURL = `${location.origin}/mock/${this.project.id}${baseUrl}`
+        const params = this.serializeParams(record.params)
+        const url = `${this.baseURL}${this.mockForm.url}?${params}#!method=${this.mockForm.method}`
+        window.open(url)
       }
     }
   }
