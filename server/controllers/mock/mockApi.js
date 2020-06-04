@@ -14,9 +14,10 @@ function checkRequest (lists, ctx, method) {
   let errMsg = ''
   lists.map((list) => {
     if (!list.data || !list.data.length) {
-      return
+      return false
     }
     const data = json5Parse(list.data)
+    if (!Array.isArray(data)) return false
     data.filter((item) => {
       return !!item.required
     }).map((item) => {
@@ -75,7 +76,7 @@ export default class MockApi {
     if (!mock) ctx.throw(404)
 
     const errMsg = checkRequest([{ name: 'query', data: mock.query_params }, { name: 'body', data: mock.body_params }, { name: 'headers', data: mock.headers }], ctx, method)
-    if (errMsg) {
+    if (errMsg && typeof errMsg === 'string') {
       ctx.body = ctx.util.refail(errMsg, 10001)
       return
     }

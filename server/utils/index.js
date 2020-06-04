@@ -90,6 +90,8 @@ export function jsonParse (json) {
 }
 
 export function filterEmptyKey (data) {
+  if (!Array.isArray(data)) return data
+
   return data.filter((item) => {
     return item.key !== ''
   })
