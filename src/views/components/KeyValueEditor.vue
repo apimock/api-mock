@@ -81,7 +81,7 @@
     },
     data () {
       return {
-        currentValue: [{ ...defaultValue }],
+        currentValue: [ this.getDefaultValue() ],
         helperValue: [{ ...defaultHelper }],
         dragging: false,
         Headers,
@@ -98,6 +98,13 @@
       }
     },
     methods: {
+      getDefaultValue () {
+        if (this.onlyKeyValue) {
+          return { key: defaultValue.key, value: defaultValue.value }
+        } else {
+          return { ...defaultValue }
+        }
+      },
       setValue (val) {
         if (Array.isArray(val) && val.length) {
           this.currentValue = val
@@ -107,11 +114,11 @@
         }
       },
       clear () {
-        this.currentValue = [{ ...defaultValue }]
+        this.currentValue = [this.getDefaultValue()]
         this.helperValue = [{ ...defaultHelper }]
       },
       addItem () {
-        this.currentValue.push({ ...defaultValue })
+        this.currentValue.push(this.getDefaultValue())
         this.helperValue.push({ ...defaultHelper })
       },
       removeItem (index) {
@@ -135,7 +142,9 @@
         this.dragging = true
       },
       onEnd (evt) {
-        this.$set(this.helperValue, evt.newIndex, { handle: true })
+        this.$nextTick(() => {
+          this.$set(this.helperValue, evt.newIndex, { handle: true })
+        })
         setTimeout(() => {
           this.dragging = false
         }, 0)

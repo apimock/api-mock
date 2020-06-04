@@ -1,10 +1,12 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
+import ExpectProxy from '~/server/provider/expect'
 import { Method } from '~/server/utils/enum'
 import { getMockValue } from '~/common/mock'
-import { delay, json5Parse } from '~/server/utils'
+import { delay, json5Parse, zipKeyValue } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
+const _ = require('lodash')
 
 function checkRequest (lists, ctx, method) {
   const errorParams = []
@@ -35,6 +37,24 @@ function checkRequest (lists, ctx, method) {
   return errMsg
 }
 
+async function getExpects (ctx, mock) {
+  const matchList = []
+  const params = { ...ctx.query, ...ctx.request.body }
+  if (!params || typeof params !== 'object' || !Object.keys(params).length) {
+    return matchList
+  }
+  console.info(params, 'params')
+  const expects = await ExpectProxy.findAll({ mock_id: mock.id, enable: 1 })
+  expects.forEach((item) => {
+    const itemParams = zipKeyValue(item.params)
+    if (_.isEqual(params, itemParams)) {
+      matchList.push(item)
+    }
+    console.info(itemParams, 'itemParams')
+  })
+  return matchList
+}
+
 export default class MockApi {
   static async getApi (ctx) {
     const method = ctx.method.toLowerCase()
@@ -60,6 +80,18 @@ export default class MockApi {
       return
     }
 
+    const expects = await getExpects(ctx, mock)
+    if (expects.length) {
+      const expect = expects[0]
+      const expectValue = getMockValue(expect.body, false)
+      if (expect.delay > 0) {
+        await delay(expect.delay)
+      }
+      ctx.body = expectValue
+      ctx.status = Number(expect.status)
+      return
+    }
+
     const mockValue = getMockValue(mock.body, false)
     // Mock.Handler.function = function (options) {
     //   const mockUrl = mock.url.replace(/{/g, ':').replace(/}/g, '') // /api/{user}/{id} => /api/:user/:id
@@ -69,6 +101,7 @@ export default class MockApi {
     //   options._req.cookies = ctx.cookies.get.bind(ctx)
     //   return options.template.call(options.context.currentContext, options)
     // }
+
     if (!mock.enable_script) {
       ctx.body = mockValue
       return

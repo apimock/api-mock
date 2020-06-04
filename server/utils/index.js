@@ -95,11 +95,41 @@ export function filterEmptyKey (data) {
   })
 }
 
+export function uniqueKey (arr, keyName) {
+  const res = []
+  arr.forEach((v) => {
+    if (!res.length || !res.some(x => x[keyName] === v[keyName])) {
+      res.push(v)
+    }
+  })
+  return res
+}
+
 export function keyValueToStr (data) {
   if (Array.isArray(data)) {
     data = filterEmptyKey(data)
+    data = uniqueKey(data, 'key')
     return JSON.stringify(data)
   } else {
     return String(data)
   }
+}
+
+export function zipKeyValue (arr) {
+  if (!Array.isArray(arr)) {
+    try {
+      arr = JSON.parse(arr)
+    } catch (e) {
+      arr = []
+    }
+  }
+  const obj = {}
+  if (!arr.length) return obj
+
+  arr.forEach((item) => {
+    if (item.key !== null && item.value !== null) {
+      obj[item.key] = item.value
+    }
+  })
+  return obj
 }

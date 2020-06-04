@@ -19,6 +19,12 @@ module.exports = class Expect {
     })
   }
 
+  static findAll (where) {
+    return Model.Expect.findAll({
+      where
+    })
+  }
+
   static findAndCountAll (query) {
     return Model.Expect.findAndCountAll(query)
   }

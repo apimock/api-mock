@@ -191,6 +191,7 @@
         }
       },
       setStatus (arr, target) {
+        if (!Array.isArray(arr)) return
         const res = arr.some((item) => item.key !== '' && item.value !== '' && item.required)
         if (res) {
           this[target] = 'success'
