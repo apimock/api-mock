@@ -70,7 +70,7 @@
             Headers
             <a-badge :status="headersStatus"/>
           </span>
-          <key-value-editor v-model="mockForm.headers" :key-source="Headers"></key-value-editor>
+          <key-value-editor v-model="mockForm.headers" :key-source="RequestHeaders"></key-value-editor>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-  import { Method, MethodTagColor, MethodArray, ResponseStatus, Headers } from '@/utils/enum'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus, RequestHeaders } from '@/utils/enum'
   import { checkJson5 } from '@/utils'
   import ApiMock from '@/api/mock'
   import { mapState, mapActions } from 'vuex'
@@ -118,7 +118,7 @@
         reqTabActiveKey: 'query',
         resTabActiveKey: 'code',
         previewEditorValue: '',
-        Headers,
+        RequestHeaders,
         bodyParamsStatus: 'default',
         queryParamsStatus: 'default',
         headersStatus: 'default'

@@ -106,7 +106,7 @@ export const ResponseStatus = [
   { code: 511, desc: 'Network Authentication Required', color: CodeColor['500'] }
 ]
 
-export const Headers = [
+export const RequestHeaders = [
   'Accept',
   'Accept-Charset',
   'Accept-Encoding',
@@ -152,6 +152,44 @@ export const Headers = [
   'Proxy-Connection',
   'X-UIDH',
   'X-Csrf-Token'
+]
+
+export const ResponseHeaders = [
+  'Access-Control-Allow-Origin',
+  'Accept-Patch',
+  'Accept-Ranges',
+  'Age',
+  'Allow',
+  'Cache-control',
+  'Connection',
+  'Content-Disposition',
+  'Content-Encoding',
+  'Content-language',
+  'Content-Length',
+  'Content-Location',
+  'Content-MD5',
+  'Content-Range',
+  'Content-Type',
+  'Date',
+  'Etag',
+  'Expires',
+  'Last-Modified',
+  'Link',
+  'Location',
+  'P3P',
+  'Pragaa',
+  'Proxy-Authenticate',
+  'Public-Key-Pins',
+  'Refresh',
+  'Retry-After',
+  'Server',
+  'Set-Cookie',
+  'Status',
+  'Trailer',
+  'Transfer-Encoding',
+  'Upgrade',
+  'Vary',
+  'Vis'
 ]
 
 export const defaultMockForm = {

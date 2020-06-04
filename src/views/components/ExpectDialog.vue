@@ -44,7 +44,7 @@
             style="width: 100%"/>
         </a-form-model-item>
         <a-form-model-item label="Headers" :labelCol="{span:4}" :wrapperCol="{span:19}">
-          <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="Headers" ref="keyValueHeaders"></key-value-editor>
+          <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="ResponseHeaders" ref="keyValueHeaders"></key-value-editor>
         </a-form-model-item>
         <a-form-model-item label="Body" prop="body" style="margin-bottom: 0">
           <json-editor ref="codeEditor" :value="expectForm.body" @save="submit" style="height: 400px; border-top:1px solid #ddd"></json-editor>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-  import { ResponseStatus, Headers } from '@/utils/enum'
+  import { ResponseStatus, ResponseHeaders } from '@/utils/enum'
   import { mapState } from 'vuex'
   import JsonEditor from '@/views/components/editor/JsonEditor'
   import { checkJson5, jsonParse } from '@/utils'
@@ -88,7 +88,7 @@
       return {
         currentValue: false,
         ResponseStatus,
-        Headers,
+        ResponseHeaders,
         expectForm,
         title: '',
         rules: {

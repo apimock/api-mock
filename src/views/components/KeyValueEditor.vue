@@ -84,7 +84,6 @@
         currentValue: [ this.getDefaultValue() ],
         helperValue: [{ ...defaultHelper }],
         dragging: false,
-        Headers,
         isJson: false,
         editorValue: ''
       }
