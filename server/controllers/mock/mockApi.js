@@ -7,6 +7,7 @@ import { delay, json5Parse, zipKeyValue } from '~/server/utils'
 const { VM } = require('vm2')
 const Mock = require('mockjs')
 const _ = require('lodash')
+const cookie = require('cookie-parse')
 
 function checkRequest (lists, ctx, method) {
   const errorParams = []
@@ -18,21 +19,25 @@ function checkRequest (lists, ctx, method) {
     }
     const data = json5Parse(list.data)
     if (!Array.isArray(data)) return false
+
     data.filter((item) => {
       return !!item.required
     }).map((item) => {
-      if (list.name === 'query' && !query[item.name]) {
+      if (item.key === null || item.key === undefined) return
+      item._name = list.name
+
+      if (list.name === 'query' && !query[item.key]) {
         errorParams.push(item)
       }
-      if (!['get', 'head', 'options'].includes(method) && list.name === 'body' && !body[item.name]) {
+      if (!['get', 'head', 'options'].includes(method) && list.name === 'body' && !body[item.key]) {
         errorParams.push(item)
       }
-      if (list.name === 'headers' && !headers[item.name.toLowerCase()]) {
+      if (list.name === 'headers' && !headers[item.key.toLowerCase()]) {
         errorParams.push(item)
       }
     })
     if (errorParams.length) {
-      errMsg = `必选参数${errorParams[0].name}未传值。 Required parameter ${errorParams[0].name} has no value. `
+      errMsg = `必选参数[${errorParams[0]._name}]:'${errorParams[0].key}'未传值。 Required parameter [${errorParams[0]._name}]: '${errorParams[0].key}' has no value. `
     }
   })
   return errMsg
@@ -44,16 +49,44 @@ async function getExpects (ctx, mock) {
   if (!params || typeof params !== 'object' || !Object.keys(params).length) {
     return matchList
   }
-  console.info(params, 'params')
   const expects = await ExpectProxy.findAll({ mock_id: mock.id, enable: 1 })
   expects.forEach((item) => {
     const itemParams = zipKeyValue(item.params)
     if (_.isEqual(params, itemParams)) {
       matchList.push(item)
     }
-    console.info(itemParams, 'itemParams')
   })
   return matchList
+}
+
+function setHeaders (ctx, headers) {
+  if (!Array.isArray(headers)) {
+    try {
+      headers = JSON.parse(headers)
+    } catch (e) {
+      headers = []
+    }
+  }
+  if (!headers.length) return
+
+  headers.forEach((item) => {
+    if (item.key === 'Set-Cookie') {
+      const cookies = cookie.parse(item.value)
+      if (!cookies || typeof cookies !== 'object' || !Object.keys(cookies).length) return
+      const ignoreKey = ['Max-Age', 'Expires', 'Path', 'Domain', 'Secure', 'HttpOnly', 'SameSite']
+      for (const key in cookies) {
+        if (cookies.hasOwnProperty(key)) {
+          if (ignoreKey.includes(key)) break
+          ctx.cookies.set(key, cookies[key], {
+            maxAge: 864000000,
+            httpOnly: false
+          })
+        }
+      }
+    } else {
+      ctx.set(item.key, item.value)
+    }
+  })
 }
 
 export default class MockApi {
@@ -88,6 +121,7 @@ export default class MockApi {
       if (expect.delay > 0) {
         await delay(expect.delay)
       }
+      setHeaders(ctx, expect.headers)
       ctx.body = expectValue
       ctx.status = Number(expect.status)
       return
