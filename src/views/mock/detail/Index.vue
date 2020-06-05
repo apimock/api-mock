@@ -65,7 +65,6 @@
 
 <style lang="less">
   .detail-wrap {
-    margin-top: 20px;
 
     .top-tabs {
       &.ant-tabs-card {

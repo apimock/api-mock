@@ -1,5 +1,38 @@
 <template>
   <div class="page-mock">
+    <div class="mock-header">
+      <a-row type="flex" justify="space-between">
+        <a-col class="left">
+          <a-icon style="font-size: 20px; margin-right: 5px;" type="book" />
+          <a style="font-size: 20px">moon</a>
+          <span style="font-size: 16px; margin: 0 5px">/</span>
+          <a-dropdown v-if="project" :trigger="['click']">
+            <a class="ant-dropdown-link" @click="onProjectDropdown" style="font-size: 20px">
+              {{ project.name }} <a-icon type="down" />
+            </a>
+            <a-menu slot="overlay">
+              <a-menu-item :disabled="true">
+                <a-input-search v-model="projectSearch" placeholder="input search text" style="width: 200px" @search="onProjectSearch"/>
+                <a-button @click="toProjectList" style="margin-left: 10px" icon="form" ></a-button>
+              </a-menu-item>
+              <a-menu-item :disabled="true">
+                项目列表
+              </a-menu-item>
+              <a-menu-divider />
+              <a-menu-item v-for="(item, index) in projectList" :key="index">
+                <router-link :to="{name: 'mock', params: { projectId: item.id }}" replace>{{ item.name }}</router-link>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+          <a class="min-btn"><a-icon type="import"></a-icon> 导入</a>
+          <a class="min-btn"><a-icon type="export"></a-icon> 导出</a>
+        </a-col>
+        <a-col class="right">
+          <a-button class="interaction" icon="interaction">动态</a-button>
+          <a-button class="setting" icon="setting">设置</a-button>
+        </a-col>
+      </a-row>
+    </div>
     <a-card :bordered="false" :bodyStyle="{ padding: '0', height: '100%' }" :style="{ height: '100%' }">
       <div class="mock-main">
         <div class="mock-left" ref="mockLeft" :style="{width: mockLeftWidth + 'px'}">
@@ -14,7 +47,7 @@
               :expanded-keys.sync="expandedKey"
               :selected-keys.sync="selectedKeys"
               :tree-data="categoryTree">
-              <a-icon slot="folder" type="folder" />
+              <a-icon slot="folder" type="folder" theme="filled" style="color: #808080" />
               <template slot="parent" slot-scope="item">
                 <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                   <strong>{{ item.title }}</strong>
@@ -90,6 +123,7 @@
   import Vue from 'vue'
   import { mapState, mapMutations, mapActions } from 'vuex'
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
+  import ApiProject from '@/api/project'
   export default {
     components: {
       RouteView,
@@ -98,6 +132,8 @@
     },
     data () {
       return {
+        projectList: [],
+        projectSearch: '',
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || 300,
         showCreateMockDialog: false,
         modalCreateCategory: {
@@ -120,11 +156,29 @@
       }
     },
     computed: {
-      ...mapState('mock', ['projectId', 'categoryTree'])
+      ...mapState('mock', ['projectId', 'categoryTree', 'project'])
     },
     methods: {
       ...mapMutations('mock', ['SET_PROJECT_ID', 'SET_CATEGORY_ID', 'SET_MOCK_ID']),
-      ...mapActions('mock', ['getCategoryList']),
+      ...mapActions('mock', ['getCategoryList', 'getProject']),
+      async getProjectList (params) {
+        const { data } = await ApiProject.list(params)
+        const { bean, code } = data
+        if (code === 200) {
+          this.projectList = bean.data
+        }
+      },
+      onProjectDropdown (e) {
+        e.preventDefault()
+        this.projectSearch = ''
+        this.getProjectList()
+      },
+      onProjectSearch (value) {
+        this.getProjectList({ keywords: value })
+      },
+      toProjectList () {
+        this.$router.push({ name: 'project' })
+      },
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -201,7 +255,9 @@
       const { projectId, categoryId } = this.$route.params
       this.SET_PROJECT_ID(projectId)
       this.SET_CATEGORY_ID(categoryId)
+      this.getProject()
       this.getCategoryList()
+      this.getProjectList()
     },
     mounted () {
       // eslint-disable-next-line no-new
@@ -218,15 +274,33 @@
 
 <style lang="less">
   .page-mock{
+    .mock-header{
+      height: 60px;
+      line-height: 60px;
+      padding: 0 20px;
+
+      .left{
+        .min-btn{
+          margin-left: 20px;
+        }
+      }
+
+      .right{
+        button{
+          margin-left: 20px;
+        }
+      }
+    }
+
     .mock-main{
       width: 100%;
       display: flex;
       height: 100%;
       overflow: auto;
       .mock-left{
-        background: #fff;
-        border-right: 1px solid #ddd;
-        box-shadow: -1px 0 2px 1px #d2d2d2;
+        background: #f3f3f3;
+        border: 1px solid #dadada;
+        /*box-shadow: -1px 0 2px 1px #d2d2d2;*/
         display: flex;
         .content{
           flex: 1;
@@ -237,7 +311,7 @@
           height: 100%;
         }
         .mock-tree{
-          margin-left: 20px;
+          margin-left: 10px;
           li{
             .ant-tree-node-content-wrapper{
               height: 30px;
@@ -270,7 +344,7 @@
 
       .mock-right{
         flex: 1;
-        padding-left: 20px;
+        padding-left: 10px;
       }
     }
   }

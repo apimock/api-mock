@@ -73,10 +73,10 @@ function setHeaders (ctx, headers) {
     if (item.key === 'Set-Cookie') {
       const cookies = cookie.parse(item.value)
       if (!cookies || typeof cookies !== 'object' || !Object.keys(cookies).length) return
-      const ignoreKey = ['Max-Age', 'Expires', 'Path', 'Domain', 'Secure', 'HttpOnly', 'SameSite']
+      const ignoreKeys = ['Max-Age', 'Expires', 'Path', 'Domain', 'Secure', 'HttpOnly', 'SameSite']
       for (const key in cookies) {
         if (cookies.hasOwnProperty(key)) {
-          if (ignoreKey.includes(key)) break
+          if (ignoreKeys.includes(key)) break
           ctx.cookies.set(key, cookies[key], {
             maxAge: 864000000,
             httpOnly: false
