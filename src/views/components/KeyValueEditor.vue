@@ -67,7 +67,6 @@
     },
     props: {
       value: {
-        type: Array,
         default: () => []
       },
       keySource: {

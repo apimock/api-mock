@@ -113,7 +113,7 @@ export function keyValueToStr (data) {
     data = uniqueKey(data, 'key')
     return JSON.stringify(data)
   } else {
-    return String(data)
+    return data
   }
 }
 
