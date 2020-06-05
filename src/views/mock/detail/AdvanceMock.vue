@@ -148,7 +148,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['mockForm', 'mockId', 'project']),
+      ...mapState('mock', ['mockForm', 'mockId', 'project', 'baseURL']),
       scriptStatus () {
         if (this.mockForm.script && this.mockForm.enable_script) {
           return 'success'
@@ -242,8 +242,6 @@
         }
       },
       view (record) {
-        const baseUrl = this.project.base_url
-        this.baseURL = `${location.origin}/mock/${this.project.id}${baseUrl}`
         const params = this.serializeParams(record.params)
         const url = `${this.baseURL}${this.mockForm.url}?${params}#!method=${this.mockForm.method}`
         window.open(url)

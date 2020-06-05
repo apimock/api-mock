@@ -12,6 +12,7 @@ const mock = {
     categoryId: '',
     mockId: '',
     project: null,
+    baseURL: '',
     categoryTree: [],
     detail: null,
     mockValue: '',
@@ -33,6 +34,9 @@ const mock = {
     },
     SET_PROJECT (state, data) {
       state.project = data
+    },
+    SET_BASE_URL (state, data) {
+      state.baseURL = data
     },
     SET_CATEGORY_TREE (state, data) {
       state.categoryTree = data
@@ -63,6 +67,9 @@ const mock = {
       const { data } = await ApiProject.getById({ id })
       const { code, bean } = data
       if (code === 200) {
+        const { id, base_url: baseUrl } = bean
+        const baseURL = `${location.origin}/mock/${id}${baseUrl}`
+        commit('SET_BASE_URL', baseURL)
         commit('SET_PROJECT', bean)
       } else {
         this.$message.error('加载失败！')

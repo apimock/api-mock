@@ -49,7 +49,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['detail', 'projectId', 'project', 'mockValue'])
+      ...mapState('mock', ['detail', 'projectId', 'project', 'mockValue', 'baseURL'])
     },
     methods: {
       ...mapActions('mock', ['getProject', 'switchTab', 'getMockValue']),
@@ -57,8 +57,6 @@
         this.switchTab('edit')
       },
       view () {
-        const baseUrl = this.project.base_url
-        this.baseURL = `${location.origin}/mock/${this.projectId}${baseUrl}`
         const url = `${this.baseURL}${this.detail.url}#!method=${Method[this.detail.method]}`
         window.open(url)
       },

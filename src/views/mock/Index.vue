@@ -24,6 +24,12 @@
               </a-menu-item>
             </a-menu>
           </a-dropdown>
+          <a
+            class="min-btn"
+            v-if="baseURL"
+            v-clipboard:copy="baseURL"
+            v-clipboard:success="onCopySuccess"
+            v-clipboard:error="onCopyError"><a-icon type="link"></a-icon> Base URL</a>
           <a class="min-btn"><a-icon type="import"></a-icon> 导入</a>
           <a class="min-btn"><a-icon type="export"></a-icon> 导出</a>
         </a-col>
@@ -156,7 +162,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['projectId', 'categoryTree', 'project'])
+      ...mapState('mock', ['projectId', 'categoryTree', 'project', 'baseURL'])
     },
     methods: {
       ...mapMutations('mock', ['SET_PROJECT_ID', 'SET_CATEGORY_ID', 'SET_MOCK_ID']),
@@ -241,6 +247,12 @@
         }
         this.SET_MOCK_ID(item.id)
         this.$router.push({ name: 'mockDetail', params: { categoryId, mockId: item.id } })
+      },
+      onCopySuccess (e) {
+        this.$message.success('You just copied: ' + e.text)
+      },
+      onCopyError (e) {
+        this.$message.error('Failed to copy texts')
       }
     },
     beforeRouteUpdate (to, from, next) {
