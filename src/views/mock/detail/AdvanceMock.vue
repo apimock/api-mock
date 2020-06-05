@@ -179,10 +179,12 @@
         }
       },
       serializeParams (params) {
-        try {
-          params = JSON.parse(params)
-        } catch (e) {
-          params = []
+        if (!Array.isArray(params)) {
+          try {
+            params = JSON.parse(params)
+          } catch (e) {
+            params = []
+          }
         }
         const res = params.map((item) => {
           return `${item.key}=${item.value}`

@@ -134,14 +134,23 @@
       'mockForm.body': function (val) {
         this.resTabActiveKey = 'code'
       },
-      'mockForm.body_params': function (val) {
-        this.setStatus(val, 'bodyParamsStatus')
+      'mockForm.body_params': {
+        handler: function (val) {
+          this.setStatus(val, 'bodyParamsStatus')
+        },
+        deep: true
       },
-      'mockForm.query_params': function (val) {
-        this.setStatus(val, 'queryParamsStatus')
+      'mockForm.query_params': {
+        handler: function (val) {
+          this.setStatus(val, 'queryParamsStatus')
+        },
+        deep: true
       },
-      'mockForm.headers': function (val) {
-        this.setStatus(val, 'headersStatus')
+      'mockForm.headers': {
+        handler: function (val) {
+          this.setStatus(val, 'headersStatus')
+        },
+        deep: true
       }
     },
     methods: {

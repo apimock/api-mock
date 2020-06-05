@@ -89,8 +89,11 @@
       }
     },
     watch: {
-      currentValue (val) {
-        this.$emit('input', val)
+      currentValue: {
+        handler: function (val) {
+          this.$emit('input', val)
+        },
+        deep: true
       },
       value (val) {
         this.setValue(val)

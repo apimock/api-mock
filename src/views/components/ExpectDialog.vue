@@ -5,8 +5,10 @@
     :visible="currentValue"
     @ok="submit"
     @cancel="cancel"
+    class="expect-dialog"
   >
     <a-form-model
+      style="height: 430px; overflow: auto"
       :model="expectForm"
       ref="expectForm"
       class="exceptForm"
@@ -176,6 +178,19 @@
 </script>
 
 <style lang="less">
+  .expect-dialog{
+    .ant-modal-close-x{
+      width: 46px;
+      height: 46px;
+      line-height: 46px;
+    }
+    .ant-modal-header{
+      padding: 10px 24px;
+    }
+    .ant-modal-body{
+      padding: 15px;
+    }
+  }
   .exceptForm{
     .ant-card-head{
       border-bottom: 1px dashed #eee;
