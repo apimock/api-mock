@@ -150,12 +150,12 @@
           let expectStatus = 'default'
           data.bean.data.forEach((item) => {
             item.enable = !!item.enable
+            item.default = !isNaN(defaultExpectId) && defaultExpectId === Number(item.id)
             if (expectStatus === 'default') {
-              if (item.enable && item.params && item.params !== '[]') {
+              if ((item.enable && item.params && item.params !== '[]') || (item.enable && item.default)) {
                 expectStatus = 'success'
               }
             }
-            item.default = !isNaN(defaultExpectId) && defaultExpectId === Number(item.id)
           })
           this.expectStatus = expectStatus
           return data.bean
