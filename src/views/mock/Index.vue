@@ -3,7 +3,7 @@
     <div class="mock-header">
       <a-row type="flex" justify="space-between">
         <a-col class="left">
-          <a-icon style="font-size: 20px; margin-right: 5px;" type="book" />
+          <a-icon style="font-size: 20px; margin-right: 5px;" type="book"/>
           <a style="font-size: 20px">moon</a>
           <span style="font-size: 16px; margin: 0 5px">/</span>
           <a-dropdown v-if="project" :trigger="['click']">
@@ -34,7 +34,7 @@
           <a class="min-btn"><a-icon type="export"></a-icon> 导出</a>
         </a-col>
         <a-col class="right">
-          <a-button class="interaction" icon="interaction">动态</a-button>
+          <a-button class="interaction" icon="control">动态</a-button>
           <a-button class="setting" icon="setting">设置</a-button>
         </a-col>
       </a-row>
@@ -57,7 +57,7 @@
               <template slot="parent" slot-scope="item">
                 <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                   <strong>{{ item.title }}</strong>
-                  <a-button-group v-show="item.showRightButton" size="small" style="float:right">
+                  <a-button-group v-show="item.showRightButton" size="small">
                     <a-tooltip title="添加接口">
                       <a-button @click="addApi(item.dataRef.id)" icon="plus"></a-button>
                     </a-tooltip>
@@ -158,7 +158,7 @@
         },
         categoryId: '',
         expandedKey: [this.$route.params.categoryId],
-        selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : [`${this.$route.params.categoryId}-${this.$route.params.mockId}`]
+        selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : this.$route.params.mockId ? [`${this.$route.params.categoryId}-${this.$route.params.mockId}`] : [this.$route.params.categoryId]
       }
     },
     computed: {
@@ -310,6 +310,7 @@
       height: 100%;
       overflow: auto;
       .mock-left{
+        margin-right: 10px;
         background: #f3f3f3;
         border: 1px solid #dadada;
         /*box-shadow: -1px 0 2px 1px #d2d2d2;*/
@@ -327,26 +328,36 @@
           li{
             .ant-tree-node-content-wrapper{
               height: 30px;
-              line-height:26px
+              line-height:26px;
+            }
+            .ant-tree-node-content-wrapper:not(.ant-tree-node-selected):hover{
+              background: #e8e8e8;
             }
             position: relative;
           }
           .tree-parent-item{
             position: absolute;
-            width: 220px;
+            display: inline-flex;
+            width: calc(100% - 58px);
             strong{
               font-weight: normal;
+              flex: 1;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
             }
           }
           .tree-child-item {
             display: flex;
-            width: 220px;
             strong{
               margin-right: 10px;
               font-size: 12px;
             }
             span{
               flex: 1;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
             }
             em{
             }
@@ -356,7 +367,6 @@
 
       .mock-right{
         flex: 1;
-        padding-left: 10px;
       }
     }
   }

@@ -8,7 +8,7 @@
           <a-badge :status="expectStatus"/>
         </span>
         <div class="list" style="padding: 20px">
-          <a-button type="primary" @click="openExpectDialog(null)">添加期望</a-button>
+          <a-button type="primary" icon="plus" @click="openExpectDialog(null)" style="margin-bottom: 20px">添加期望</a-button>
           <s-table
             ref="table"
             size="small"
@@ -61,7 +61,8 @@
         </span>
         <div class="title">
           是否开启：
-          <a-switch v-model="mockForm.enable_script" @change="saveScript(false)"/>
+          <a-switch v-model="mockForm.enable_script" @change="saveScript(false)" style="margin-top: -3px"/>
+          <a-button type="primary" @click="saveScript" icon="save" size="small" style="margin-left: 20px">保存</a-button>
         </div>
         <script-editor ref="codeEditor" :value="mockForm.script" @save="saveScript" style="height: 600px"></script-editor>
       </a-tab-pane>
@@ -259,7 +260,7 @@
         background: #f0f2f5;
         border-bottom: 1px solid #ddd;
         padding: 0 10px;
-        line-height: 30px;
+        line-height: 34px;
         font-size: 13px;
       }
     }
