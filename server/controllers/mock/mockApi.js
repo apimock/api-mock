@@ -46,16 +46,20 @@ function checkRequest (lists, ctx, method) {
 async function getExpects (ctx, mock) {
   const matchList = []
   const params = { ...ctx.query, ...ctx.request.body }
-  if (!params || typeof params !== 'object' || !Object.keys(params).length) {
-    return matchList
-  }
   const expects = await ExpectProxy.findAll({ mock_id: mock.id, enable: 1 })
-  expects.forEach((item) => {
+
+  for (const item of expects) {
+    if (item.id === mock.default_expect_id) {
+      matchList.push(item)
+      break
+    }
+
     const itemParams = zipKeyValue(item.params)
     if (_.isEqual(params, itemParams)) {
       matchList.push(item)
     }
-  })
+  }
+
   return matchList
 }
 

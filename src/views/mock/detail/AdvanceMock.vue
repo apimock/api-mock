@@ -39,8 +39,13 @@
                 <a-avatar :src="text.avatar" :title="text.username" :size="28" />
               </a-tooltip>
             </span>
-            <span slot="action" slot-scope="text, record">
+            <span slot="default" slot-scope="text, record">
+              <a-switch v-model="record.default" @change="changeDefaultExpect(record)"/>
+            </span>
+            <span slot="enable" slot-scope="text, record">
               <a-switch v-model="record.enable" @change="saveExpect(record)"/>
+            </span>
+            <span slot="action" slot-scope="text, record">
               <a-button icon="edit" size="small" style="margin:0 10px" @click="openExpectDialog(record)">编辑</a-button>
               <a-popconfirm
                 title="你确定要删除该条吗?"
@@ -121,6 +126,16 @@
             scopedSlots: { customRender: 'avatar' }
           },
           {
+            title: '默认',
+            dataIndex: 'default',
+            scopedSlots: { customRender: 'default' }
+          },
+          {
+            title: '开启',
+            dataIndex: 'enable',
+            scopedSlots: { customRender: 'enable' }
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             width: 250,
@@ -128,6 +143,7 @@
           }
         ],
         loadData: async parameter => {
+          const defaultExpectId = Number(this.mockForm.default_expect_id)
           const { data } = await ApiExpect.list(
             Object.assign(parameter, this.queryParam, { mock_id: this.mockId })
           )
@@ -139,6 +155,7 @@
                 expectStatus = 'success'
               }
             }
+            item.default = !isNaN(defaultExpectId) && defaultExpectId === Number(item.id)
           })
           this.expectStatus = expectStatus
           return data.bean
@@ -192,6 +209,15 @@
         })
         return res.join('&')
       },
+      async changeDefaultExpect (record) {
+        if (record.default) {
+          this.mockForm.default_expect_id = record.id
+        } else {
+          this.mockForm.default_expect_id = -1
+        }
+        await this.saveScript(false)
+        this.refresh()
+      },
       async saveExpect (record) {
         const { data } = await ApiExpect.update(record)
         const { code, message } = data
@@ -205,8 +231,9 @@
       async saveScript (verifyContent = true) {
         const mockData = {
           id: this.mockForm.id,
+          default_expect_id: this.mockForm.default_expect_id,
           enable_script: this.mockForm.enable_script === true ? 1 : 0,
-          script: this.$refs.codeEditor.getValue()
+          script: this.$refs.codeEditor && this.$refs.codeEditor.getValue()
         }
         if (verifyContent && !/Api\.json/g.test(mockData.script)) {
           this.$message.error(`必须要有 Api.json = `)
