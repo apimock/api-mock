@@ -48,8 +48,9 @@
         <a-form-model-item label="Headers" :labelCol="{span:4}" :wrapperCol="{span:19}">
           <key-value-editor v-model="expectForm.headers" :only-key-value="true" :key-source="ResponseHeaders" ref="keyValueHeaders"></key-value-editor>
         </a-form-model-item>
-        <a-form-model-item label="Body" prop="body" style="margin-bottom: 0">
-          <json-editor ref="codeEditor" :value="expectForm.body" @save="submit" style="height: 400px; border-top:1px solid #ddd"></json-editor>
+        <a-form-model-item style="margin-bottom: 0">
+          <a-divider orientation="left" dashed>Body</a-divider>
+          <json-editor ref="codeEditor" :value="expectForm.body" @save="submit" style="height: 400px; border-top:1px solid #e8e8e8"></json-editor>
         </a-form-model-item>
       </a-card>
     </a-form-model>
