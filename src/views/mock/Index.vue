@@ -40,8 +40,8 @@
       </a-row>
     </div>
     <a-card :bordered="false" :bodyStyle="{ padding: '0', height: '100%' }" :style="{ height: '100%' }">
-      <div class="mock-main">
-        <div class="mock-left" ref="mockLeft" :style="{width: mockLeftWidth + 'px'}">
+      <Multipane layout="vertical" class="mock-main" @paneResizeStop="paneResizeStop">
+        <div class="mock-left" ref="mockLeft" :style="{width:mockLeftWidth}">
           <div class="content">
             <a-row type="flex" :gutter="5">
               <a-col style="flex: 1">
@@ -97,8 +97,9 @@
           </div>
           <div class="resize-hand"></div>
         </div>
+        <MultipaneResizer></MultipaneResizer>
         <div class="mock-right"><route-view></route-view></div>
-      </div>
+      </Multipane>
       <a-modal
         title="添加分类"
         :width="400"
@@ -127,12 +128,12 @@
 </template>
 
 <script>
+  import { Multipane, MultipaneResizer } from 'vue-multipane'
   import { Tree } from 'ant-design-vue'
   import ApiCategory from '@/api/category'
   import { RouteView } from '@/layouts'
   import { MethodTagColor, Method, CateKeyAll } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
-  import { DragResizeBorder } from '@/utils/dragResizeBorder'
   import Vue from 'vue'
   import { mapState, mapMutations, mapActions } from 'vuex'
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
@@ -155,6 +156,8 @@
 
   export default {
     components: {
+      Multipane,
+      MultipaneResizer,
       RouteView,
       CreateMockDialog,
       'a-tree': Tree
@@ -163,7 +166,7 @@
       return {
         projectList: [],
         projectSearch: '',
-        mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || 300,
+        mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || '300px',
         showCreateMockDialog: false,
         modalCreateCategory: {
           show: false,
@@ -190,6 +193,9 @@
     methods: {
       ...mapMutations('mock', ['SET_PROJECT_ID', 'SET_CATEGORY_ID', 'SET_MOCK_ID']),
       ...mapActions('mock', ['getCategoryList', 'getProject']),
+      paneResizeStop (pane, container, size) {
+        Vue.ls.set(MOCK_LEFT_WIDTH, size)
+      },
       async getProjectList (params) {
         const { data } = await ApiProject.list(params)
         const { bean, code } = data
@@ -309,16 +315,6 @@
       this.getProject()
       this.getCategoryList()
       this.getProjectList()
-    },
-    mounted () {
-      // eslint-disable-next-line no-new
-      new DragResizeBorder('.mock-left', {
-        change (width) {
-          if (!isNaN(width)) {
-            Vue.ls.set(MOCK_LEFT_WIDTH, width)
-          }
-        }
-      })
     }
   }
 </script>
@@ -348,7 +344,28 @@
       display: flex;
       height: 100%;
       overflow: auto;
+
+      .multipane-resizer {
+        height: auto;
+        &:before{
+          display: block;
+          content: "";
+          width: 3px;
+          height: 40px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin-top: -20px;
+          margin-left: -4.5px;
+          border-left: 1px solid #ccc;
+          border-right: 1px solid #ccc;
+        }
+      }
+
       .mock-left{
+        min-width: 200px;
+        width: 300px;
+        max-width: 500px;
         margin-right: 5px;
         background: #f3f3f3;
         border: 1px solid #dadada;
