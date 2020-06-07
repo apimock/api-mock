@@ -15,7 +15,7 @@
             rowKey="id"
             :columns="columns"
             :data="loadData"
-            showPagination="auto"
+            :showPagination="false"
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           >
             <span slot="name" slot-scope="text, record"><a @click="view(record)">{{ text }}</a></span>

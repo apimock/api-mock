@@ -95,8 +95,8 @@ export default class Expect {
       where: {
         mock_id: mock.id
       },
-      offset: pageSize * (pageNo - 1),
-      limit: pageSize,
+      // offset: pageSize * (pageNo - 1),
+      // limit: pageSize,
       include: {
         model: Model.User,
         attributes: { exclude: ['password'] }
