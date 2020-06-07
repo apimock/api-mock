@@ -43,14 +43,21 @@
       <div class="mock-main">
         <div class="mock-left" ref="mockLeft" :style="{width: mockLeftWidth + 'px'}">
           <div class="content">
-            <a-button type="primary" @click="createCategory">添加分类</a-button>
+            <a-row type="flex" :gutter="5">
+              <a-col style="flex: 1">
+                <a-input-search placeholder="Search" @change="onSearchCategory" />
+              </a-col>
+              <a-col>
+                <a-button type="primary" @click="createCategory" icon="plus">添加分类</a-button>
+              </a-col>
+            </a-row>
             <a-tree
               v-if="categoryTree.length"
               class="mock-tree"
               show-icon
               draggable
               :blockNode="true"
-              :expanded-keys.sync="expandedKey"
+              :expanded-keys.sync="expandedKeys"
               :selected-keys.sync="selectedKeys"
               :tree-data="categoryTree">
               <a-icon slot="folder" type="folder" theme="filled" style="color: #808080" />
@@ -130,6 +137,22 @@
   import { mapState, mapMutations, mapActions } from 'vuex'
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
   import ApiProject from '@/api/project'
+
+  const getParentKey = (key, tree) => {
+    let parentKey
+    for (let i = 0; i < tree.length; i++) {
+      const node = tree[i]
+      if (node.children) {
+        if (node.children.some(item => item.key === key)) {
+          parentKey = node.key
+        } else if (getParentKey(key, node.children)) {
+          parentKey = getParentKey(key, node.children)
+        }
+      }
+    }
+    return parentKey
+  }
+
   export default {
     components: {
       RouteView,
@@ -157,12 +180,12 @@
           description: ''
         },
         categoryId: '',
-        expandedKey: [this.$route.params.categoryId],
+        expandedKeys: [this.$route.params.categoryId],
         selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : this.$route.params.mockId ? [`${this.$route.params.categoryId}-${this.$route.params.mockId}`] : [this.$route.params.categoryId]
       }
     },
     computed: {
-      ...mapState('mock', ['projectId', 'categoryTree', 'project', 'baseURL'])
+      ...mapState('mock', ['projectId', 'categoryTree', 'categoryTreeFlat', 'project', 'baseURL'])
     },
     methods: {
       ...mapMutations('mock', ['SET_PROJECT_ID', 'SET_CATEGORY_ID', 'SET_MOCK_ID']),
@@ -198,6 +221,22 @@
       },
       mouseout (e) {
         e.dataRef.showRightButton = false
+      },
+      onSearchCategory (e) {
+        const value = e.target.value
+        const expandedKeys = this.categoryTreeFlat
+          .map(item => {
+            if (item.title.indexOf(value) > -1) {
+              return getParentKey(item.key, this.categoryTree)
+            }
+            return null
+          })
+          .filter((item, i, self) => item && self.indexOf(item) === i)
+        Object.assign(this, {
+          expandedKeys,
+          searchValue: value,
+          autoExpandParent: true
+        })
       },
       createCategory () {
         this.modalCreateCategory.show = true
@@ -259,8 +298,8 @@
       const { projectId, categoryId } = to.params
       this.SET_PROJECT_ID(projectId)
       this.SET_CATEGORY_ID(categoryId)
-      this.expandedKey.splice(0, this.expandedKey.length)
-      this.expandedKey.push(String(categoryId))
+      this.expandedKeys.splice(0, this.expandedKeys.length)
+      this.expandedKeys.push(String(categoryId))
       next()
     },
     created () {
@@ -310,13 +349,14 @@
       height: 100%;
       overflow: auto;
       .mock-left{
-        margin-right: 10px;
+        margin-right: 5px;
         background: #f3f3f3;
         border: 1px solid #dadada;
         /*box-shadow: -1px 0 2px 1px #d2d2d2;*/
         display: flex;
         .content{
           flex: 1;
+          padding: 5px 0 5px 5px;
           overflow: hidden;
         }
         .resize-hand{

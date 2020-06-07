@@ -5,6 +5,19 @@ import ApiProject from '@/api/project'
 import ApiCategory from '@/api/category'
 import ApiMock from '@/api/mock'
 
+const treeFlat = (data, dataList) => {
+  dataList = dataList || []
+  for (let i = 0; i < data.length; i++) {
+    const node = data[i]
+    const key = node.key
+    dataList.push({ key, title: node.title })
+    if (node.children) {
+      treeFlat(node.children, dataList)
+    }
+  }
+  return dataList
+}
+
 const mock = {
   namespaced: true,
   state: {
@@ -14,6 +27,7 @@ const mock = {
     project: null,
     baseURL: '',
     categoryTree: [],
+    categoryTreeFlat: [],
     detail: null,
     mockValue: '',
     mockForm: null,
@@ -40,6 +54,9 @@ const mock = {
     },
     SET_CATEGORY_TREE (state, data) {
       state.categoryTree = data
+    },
+    SET_CATEGORY_TREE_FLAT (state, data) {
+      state.categoryTreeFlat = data
     },
     SET_DETAIL (state, data) {
       state.detail = data
@@ -100,7 +117,9 @@ const mock = {
           slots: { icon: 'folder' },
           scopedSlots: { title: 'parent' }
         })
+        const flat = treeFlat(bean)
         commit('SET_CATEGORY_TREE', bean)
+        commit('SET_CATEGORY_TREE_FLAT', flat)
       }
     },
     async getDetail ({ commit, state }, mockId) {

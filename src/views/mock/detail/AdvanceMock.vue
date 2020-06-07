@@ -100,6 +100,7 @@
           {
             title: '名称',
             dataIndex: 'name',
+            width: 160,
             scopedSlots: { customRender: 'name' }
           },
           {
@@ -138,7 +139,7 @@
           {
             title: '操作',
             dataIndex: 'action',
-            width: 250,
+            width: 180,
             scopedSlots: { customRender: 'action' }
           }
         ],
