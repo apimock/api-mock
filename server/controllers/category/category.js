@@ -52,4 +52,19 @@ export default class Category {
     const categoryResult = await CategoryProxy.findAll(query)
     ctx.body = ctx.util.resuccess(categoryResult)
   }
+
+  static async getById (ctx) {
+    const id = ctx.checkParams('id').notEmpty().value
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
+    }
+
+    const category = await CategoryProxy.findOne({ id })
+    if (category) {
+      ctx.body = ctx.util.resuccess(category)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
 }

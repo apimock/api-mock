@@ -8,6 +8,11 @@ class Api {
     return Category.list(ctx)
   }
 
+  @Route('get', '/category/:id')
+  getById (ctx) {
+    return Category.getById(ctx)
+  }
+
   @Route('post', '/category/create')
   create (ctx) {
     return Category.create(ctx)

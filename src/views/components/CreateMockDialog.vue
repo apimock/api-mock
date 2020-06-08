@@ -52,7 +52,7 @@
     body_params: [],
     body_params_type: 1,
     project_id: '',
-    category_id: '',
+    category_id: -1,
     body: '{}'
   }
   export default {
@@ -91,7 +91,7 @@
       },
       value (val) {
         this.currentValue = val
-        this.mockForm.category_id = this.categoryId
+        this.mockForm.category_id = Number(this.categoryId)
         this.mockForm.description = ''
         this.mockForm.url = ''
       }
@@ -115,6 +115,7 @@
           const { code, message } = data
           if (code === 200) {
             this.getCategoryList()
+            this.$emit('success')
             this.$message.success('创建成功')
             this.currentValue = false
           } else {

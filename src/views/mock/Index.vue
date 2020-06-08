@@ -300,11 +300,12 @@
       }
     },
     beforeRouteUpdate (to, from, next) {
-      const { projectId, categoryId } = to.params
+      const { projectId, categoryId, mockId } = to.params
       this.SET_PROJECT_ID(projectId)
       this.SET_CATEGORY_ID(categoryId)
       this.expandedKeys.splice(0, this.expandedKeys.length)
       this.expandedKeys.push(String(categoryId))
+      this.selectedKeys = categoryId === 'all' ? [CateKeyAll] : mockId ? [`${categoryId}-${mockId}`] : [categoryId]
       next()
     },
     created () {

@@ -13,6 +13,12 @@ module.exports = class Category {
     }
   }
 
+  static findOne (where) {
+    return Model.Category.findOne({
+      where
+    })
+  }
+
   static findAll (query) {
     return Model.Category.findAll(query)
   }
