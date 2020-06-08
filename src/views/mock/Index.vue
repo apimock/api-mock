@@ -95,7 +95,6 @@
               </template>
             </a-tree>
           </div>
-          <div class="resize-hand"></div>
         </div>
         <MultipaneResizer></MultipaneResizer>
         <div class="mock-right"><route-view></route-view></div>
@@ -128,7 +127,7 @@
 </template>
 
 <script>
-  import { Multipane, MultipaneResizer } from 'vue-multipane'
+  import { Multipane, MultipaneResizer } from '@/views/components/vue-multipane'
   import { Tree } from 'ant-design-vue'
   import ApiCategory from '@/api/category'
   import { RouteView } from '@/layouts'
@@ -373,12 +372,8 @@
         display: flex;
         .content{
           flex: 1;
-          padding: 5px 0 5px 5px;
+          padding: 5px;
           overflow: hidden;
-        }
-        .resize-hand{
-          width: 5px;
-          height: 100%;
         }
         .mock-tree{
           margin-left: 10px;
