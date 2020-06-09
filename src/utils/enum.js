@@ -194,11 +194,11 @@ export const ResponseHeaders = [
 
 export const defaultMockForm = {
   id: '',
+  name: '',
   url: '',
   method: 'get',
   delay: 0,
   status: 200,
-  description: '',
   headers: [],
   query_params: [],
   body_params: [],

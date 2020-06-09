@@ -43,13 +43,6 @@ export const asyncRouterMap = [
             component: () => import('@/views/mock/detail/Index')
           }
         ]
-      },
-      {
-        path: '/project2/:projectId',
-        name: 'mock2',
-        component: () => import('@/views/mock/Mock'),
-        hidden: true,
-        meta: { title: 'Mock列表', permission: [0] }
       }
     ]
   },

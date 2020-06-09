@@ -21,6 +21,9 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        <a-form-model-item label="接口名称" prop="name">
+          <a-input v-model="mockForm.name" placeholder="please input name" />
+        </a-form-model-item>
         <a-form-model-item label="接口URL" prop="url">
           <a-input v-model="mockForm.url" placeholder="please input url">
             <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
@@ -29,9 +32,6 @@
               </a-select-option>
             </a-select>
           </a-input>
-        </a-form-model-item>
-        <a-form-model-item label="接口描述" prop="description">
-          <a-input v-model="mockForm.description" placeholder="please input description" />
         </a-form-model-item>
       </a-form-model>
     </a-card>
@@ -111,8 +111,8 @@
         ResponseStatus,
         rules: {
           category_id: [{ required: true, message: 'Please input url' }],
+          name: [{ required: true, message: 'Please input name', trigger: 'blur' }],
           url: [{ required: true, message: 'Please input url', trigger: 'blur' }],
-          description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
           body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
         },
         reqTabActiveKey: 'query',
