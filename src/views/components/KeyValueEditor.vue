@@ -1,13 +1,13 @@
 <template>
   <div class="key-value">
     <a-row type="flex" class="table-row table-header">
-      <a-col class="th action">
+      <a-col class="th action" v-if="!readOnly">
         <a-switch checked-children="json" un-checked-children="json" size="small" v-model="isJson" @change="changeEditor" />
         <a-icon style="float:right; margin-top: 5px" v-if="!isJson" type="plus-circle" @click="addItem" title="添加"/>
       </a-col>
       <a-col class="th key" v-if="!isJson">键Key</a-col>
       <a-col class="th value" v-if="!isJson">值Value</a-col>
-      <a-col class="th required" v-if="!isJson && !onlyKeyValue">必选</a-col>
+      <a-col class="th required" v-if="!isJson && !onlyKeyValue">必须</a-col>
       <a-col class="th desc" v-if="!isJson && !onlyKeyValue">描述</a-col>
       <a-col v-if="isJson" class="th" style="flex: 1"></a-col>
     </a-row>
@@ -26,16 +26,25 @@
         :key="index"
         @mouseover.native="mouseover(helperValue[index])"
         @mouseout.native="mouseout(helperValue[index])">
-        <a-col class="td action"><a-icon v-show="helperValue[index].handle" type="menu" class="handle"></a-icon><a-icon type="delete" @click="removeItem(index)"/></a-col>
-        <a-col class="td key" v-if="keySource.length"><a-auto-complete
-          v-model="item.key"
-          :filter-option="filterOption"
-          :data-source="keySource"
-          style="width: 100%"/></a-col>
-        <a-col class="td key" v-else>  <a-input v-model="item.key" /></a-col>
-        <a-col class="td value"><a-input v-model="item.value" /></a-col>
-        <a-col class="td required" v-if="!onlyKeyValue"><a-checkbox v-model="item.required"></a-checkbox></a-col>
-        <a-col class="td desc" v-if="!onlyKeyValue"><a-input v-model="item.desc" /></a-col>
+        <a-col class="td action" v-if="!readOnly"><a-icon v-show="helperValue[index].handle" type="menu" class="handle"></a-icon><a-icon type="delete" @click="removeItem(index)"/></a-col>
+        <a-col class="td key">
+          <span v-if="readOnly">{{ item.key }}</span>
+          <template v-else>
+            <template v-if="keySource.length">
+              <a-auto-complete
+                v-model="item.key"
+                :filter-option="filterOption"
+                :data-source="keySource"
+                style="width: 100%"/>
+            </template>
+            <template v-else>
+              <a-input v-model="item.key" />
+            </template>
+          </template>
+        </a-col>
+        <a-col class="td value"> <span v-if="readOnly">{{ item.value }}</span> <a-input v-else v-model="item.value" /></a-col>
+        <a-col class="td required" v-if="!onlyKeyValue"> <span v-if="readOnly">{{ item.required ? '是' : '否' }}</span> <a-checkbox v-else v-model="item.required"></a-checkbox></a-col>
+        <a-col class="td desc" v-if="!onlyKeyValue"> <span v-if="readOnly">{{ item.desc }}</span> <a-input v-else v-model="item.desc" /></a-col>
       </a-row>
     </draggable>
     <json-editor v-if="isJson" ref="editor" :value="editorValue" style="height: 200px;border-right: 1px solid #eee;border-bottom: 1px solid #eee"></json-editor>
@@ -74,6 +83,10 @@
         default: () => []
       },
       onlyKeyValue: {
+        type: Boolean,
+        default: false
+      },
+      readOnly: {
         type: Boolean,
         default: false
       }
@@ -191,6 +204,7 @@
         line-height: 22px;
         padding: 5px 10px;
         border-top: 1px solid #eee;
+        background: hsl(54, 100%, 97%);
         &:last-child {
           border-right: 1px solid #eee;
         }
@@ -198,6 +212,11 @@
       }
       .td{
         line-height: 30px;
+
+        span{
+          margin-left: 10px;
+        }
+
         &:last-child{
           border-right: 1px solid #eee;
         }
@@ -225,6 +244,9 @@
       .required{
         width: 60px;
         text-align: center;
+        span{
+          margin: 0;
+        }
       }
       .desc{
         flex: 1;

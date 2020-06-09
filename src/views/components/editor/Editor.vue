@@ -106,11 +106,12 @@
   }
 </script>
 
-<style lang="less" scoped>
-  .ace-editor{
+<style lang="less">
+  .ace-editor {
     width: 100%;
     height: 300px;
-    &.fullscreen{
+
+    &.fullscreen {
       height: auto;
       width: auto;
       border: 0;
@@ -121,6 +122,13 @@
       left: 0;
       right: 0;
       z-index: 1000000;
+    }
+
+    .ace_gutter {
+      background: #fbfbfb !important;
+    }
+    .ace_marker-layer .ace_active-line {
+      background: hsla(0, 0%, 0%, 0.041)!important;
     }
   }
 </style>
