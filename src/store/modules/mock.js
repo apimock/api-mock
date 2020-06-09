@@ -137,6 +137,9 @@ const mock = {
         commit('SET_MOCK_VALUE', mockValue)
         commit('SET_MOCK_FORM', mockForm)
         commit('SET_MOCK_ID', id)
+        bean.headers = mockForm.headers
+        bean.query_params = mockForm.query_params
+        bean.body_params = mockForm.body_params
         commit('SET_DETAIL', bean)
         if (['post', 'put', 'delete', 'patch'].includes(mockForm.method)) {
           commit('SET_SHOW_BODY_PARAMS_TAB', true)

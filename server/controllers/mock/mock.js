@@ -59,7 +59,7 @@ export default class Mock {
     const uid = ctx.state.user.id
     const id = ctx.checkBody('id').notEmpty().value
     const categoryId = ctx.checkBody('category_id').empty().value
-    const defaultExpectId = ctx.checkBody('default_expect_id').notEmpty().value
+    const defaultExpectId = ctx.checkBody('default_expect_id').empty().value
     const url = ctx.checkBody('url').empty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').empty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
     const body = ctx.checkBody('body').empty().value
@@ -192,8 +192,17 @@ export default class Mock {
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
     }
+    const query = {
+      where: {
+        id
+      },
+      include: {
+        model: Model.User,
+        attributes: { exclude: ['password'] }
+      }
+    }
 
-    const mock = await MockProxy.findOne({ id })
+    const mock = await MockProxy.findOne(query)
     const expectCount = await ExpectProxy.count({ mock_id: mock.id })
     mock.dataValues.expect_count = expectCount
     ctx.body = ctx.util.resuccess(mock)

@@ -305,8 +305,13 @@
       this.SET_CATEGORY_ID(categoryId)
       this.expandedKeys.splice(0, this.expandedKeys.length)
       this.expandedKeys.push(String(categoryId))
-      this.selectedKeys = categoryId === 'all' ? [CateKeyAll] : mockId ? [`${categoryId}-${mockId}`] : [categoryId]
+      setTimeout(() => {
+        this.selectedKeys = categoryId === 'all' ? [CateKeyAll] : mockId ? [`${categoryId}-${mockId}`] : [categoryId]
+      }, 500)
       next()
+    },
+    mounted () {
+      console.info(this.selectedKeys)
     },
     created () {
       const { projectId, categoryId } = this.$route.params
@@ -369,7 +374,6 @@
         margin-right: 5px;
         background: #f3f3f3;
         border: 1px solid #dadada;
-        /*box-shadow: -1px 0 2px 1px #d2d2d2;*/
         display: flex;
         .content{
           flex: 1;

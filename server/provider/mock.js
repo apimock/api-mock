@@ -21,10 +21,13 @@ module.exports = class Mock {
     return Model.Mock.findAndCountAll(query)
   }
 
-  static findOne (where) {
-    return Model.Mock.findOne({
-      where
-    })
+  static findOne (query) {
+    if (!query.where) {
+      query = {
+        where: query
+      }
+    }
+    return Model.Mock.findOne(query)
   }
 
   static async checkById (id, uid, creater) {
