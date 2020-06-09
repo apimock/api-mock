@@ -8,6 +8,9 @@
       <h3 class="preview-title" style="margin-top: 0">基本信息</h3>
       <ul>
         <li>
+          名称：{{ detail.name }}
+        </li>
+        <li>
           地址：<a-tag :color="methodTagColor(detail.method)">{{ methodToString(detail.method) }}</a-tag>
           <a @click="view">{{ detail.url }}</a> <a-button icon="copy" size="small" style="border: none" @click="copy" title="复制地址"></a-button>
         </li>
@@ -15,10 +18,12 @@
           创建人： <a-avatar :src="detail.user.avatar" :title="detail.user.username" :size="28" /> {{ detail.user.username }}
         </li>
         <li>
-          更新时间：{{ detail.updated_at | moment }}
-        </li>
-        <li>
-          描述：{{ detail.description }}
+          <template v-if="detail.updated_at">
+            更新时间：{{ detail.updated_at | moment }}
+          </template>
+          <template v-else>
+            创建时间：{{ detail.created_at | moment }}
+          </template>
         </li>
       </ul>
     </div>

@@ -18,17 +18,17 @@
           </a-select-option>
         </a-select>
       </a-form-model-item>
-      <a-form-model-item label="URL" prop="url">
-        <a-input v-model="mockForm.url" placeholder="please input url">
+      <a-form-model-item label="接口名称" prop="name">
+        <a-input v-model="mockForm.name" placeholder="please input name"/>
+      </a-form-model-item>
+      <a-form-model-item label="接口地址" prop="url">
+        <a-input v-model="mockForm.url" placeholder="/path" @blur="onUrlBlur">
           <a-select v-model="mockForm.method" slot="addonBefore" style="width: 90px">
             <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
               <strong :style="{color: methodTagColor(item.code)}">{{ item.method }}</strong>
             </a-select-option>
           </a-select>
         </a-input>
-      </a-form-model-item>
-      <a-form-model-item label="Description" prop="description">
-        <a-input v-model="mockForm.description" placeholder="please input description"/>
       </a-form-model-item>
     </a-form-model>
   </a-modal>
@@ -38,7 +38,7 @@
 <script>
   import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import ApiMock from '@/api/mock'
-  import { mapState, mapActions } from 'vuex'
+  import { mapState, mapActions, mapMutations } from 'vuex'
 
   const mockForm = {
     id: '',
@@ -46,7 +46,7 @@
     method: 'get',
     delay: 0,
     status: 200,
-    description: '',
+    name: '',
     headers: [],
     query_params: [],
     body_params: [],
@@ -81,7 +81,7 @@
           url: [
             { required: true, message: 'Please input url', trigger: 'blur' }
           ],
-          description: [{ required: true, message: 'Please input description', trigger: 'blur' }]
+          name: [{ required: true, message: 'Please input name', trigger: 'blur' }]
         }
       }
     },
@@ -92,11 +92,12 @@
       value (val) {
         this.currentValue = val
         this.mockForm.category_id = Number(this.categoryId)
-        this.mockForm.description = ''
+        this.mockForm.name = ''
         this.mockForm.url = ''
       }
     },
     methods: {
+      ...mapMutations('mock', ['SET_MOCK_ID']),
       ...mapActions('mock', ['getCategoryList']),
       methodToString (num) {
         return Method[num].toUpperCase()
@@ -104,20 +105,31 @@
       methodTagColor (num) {
         return MethodTagColor[num]
       },
+      onUrlBlur (e) {
+        const value = e.target.value
+        if (!/^\/.*$/.test(value)) {
+          this.mockForm.url = `/${this.mockForm.url}`
+        }
+      },
       async createApiOk () {
         this.$refs.mockForm.validate(async valid => {
           if (!valid) {
             console.log('error submit!!')
             return false
           }
+          if (!/^\/.*$/.test(this.mockForm.url)) {
+            this.mockForm.url = `/${this.mockForm.url}`
+          }
           this.mockForm.project_id = this.projectId
           const { data } = await ApiMock.create({ ...this.mockForm })
-          const { code, message } = data
+          const { code, message, bean } = data
           if (code === 200) {
             this.getCategoryList()
             this.$emit('success')
             this.$message.success('创建成功')
             this.currentValue = false
+            this.SET_MOCK_ID(bean.id)
+            this.$router.push({ name: 'mockDetail', params: { categoryId: this.categoryId, mockId: bean.id } })
           } else {
             this.$message.error(message)
           }

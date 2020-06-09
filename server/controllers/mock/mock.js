@@ -17,7 +17,7 @@ export default class Mock {
     const body = ctx.checkBody('body').notEmpty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
-    const description = ctx.checkBody('description').notEmpty().value
+    const name = ctx.checkBody('name').notEmpty().value
     let headers = ctx.checkBody('headers').empty().value
     let queryParams = ctx.checkBody('query_params').empty().value
     let bodyParams = ctx.checkBody('body_params').empty().value
@@ -51,8 +51,13 @@ export default class Mock {
       return
     }
 
-    await MockProxy.save({ uid, project_id: projectId, category_id: categoryId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, description })
-    ctx.body = ctx.util.resuccess()
+    const res = await MockProxy.save({ uid, project_id: projectId, category_id: categoryId, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, delay, status, name })
+
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
   }
 
   static async update (ctx) {
@@ -67,7 +72,7 @@ export default class Mock {
     const enableScript = ctx.checkBody('enable_script').empty().value
     const delay = ctx.checkBody('delay').empty().toInt().ge(0, 'Response Delay must between (0, 180000)').le(180000, 'Response Delay must between (0, 180000)').default(0).value
     const status = ctx.checkBody('status').empty().toInt().ge(100, 'Response Status must between 1 (100, 511)').le(511, 'Response Status must between 2 (100, 511)').default(200).value
-    const description = ctx.checkBody('description').empty().value
+    const name = ctx.checkBody('name').empty().value
     let headers = ctx.checkBody('headers').empty().value
     let queryParams = ctx.checkBody('query_params').empty().value
     let bodyParams = ctx.checkBody('body_params').empty().value
@@ -90,7 +95,7 @@ export default class Mock {
       return
     }
 
-    const res = await MockProxy.save({ id, category_id: categoryId, default_expect_id: defaultExpectId, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, script, enable_script: enableScript, delay, status, description })
+    const res = await MockProxy.save({ id, category_id: categoryId, default_expect_id: defaultExpectId, uid, url: mockURL, method: methodCode, headers, query_params: queryParams, body_params: bodyParams, body_params_type: bodyParamsType, body, script, enable_script: enableScript, delay, status, name })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -166,7 +171,7 @@ export default class Mock {
           {
             [Op.or]: [
               { url: kw },
-              { description: kw },
+              { name: kw },
               { body: kw }
             ]
           }

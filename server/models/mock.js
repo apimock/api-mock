@@ -3,33 +3,29 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock', {
     'id': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
     'uid': {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      references: {
-        model: 'user',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false
     },
     'project_id': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(11).UNSIGNED,
       allowNull: false
     },
     'category_id': {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      references: {
-        model: 'category',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER(11).UNSIGNED,
+      allowNull: false
     },
     'default_expect_id': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
+      allowNull: true
+    },
+    'name': {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     'url': {
@@ -38,17 +34,17 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: ''
     },
     'method': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(1).UNSIGNED,
       allowNull: true,
       defaultValue: '1'
     },
     'delay': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: true,
       defaultValue: '0'
     },
     'status': {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER(10).UNSIGNED,
       allowNull: true,
       defaultValue: '200'
     },
@@ -65,26 +61,22 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     'body_params_type': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(1),
       allowNull: true,
       defaultValue: '0'
     },
     'body': {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     'script': {
       type: DataTypes.TEXT,
       allowNull: true
     },
     'enable_script': {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(4),
       allowNull: true,
-      defaultValue: '1'
-    },
-    'description': {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      defaultValue: '0'
     },
     'created_at': {
       type: DataTypes.DATE,

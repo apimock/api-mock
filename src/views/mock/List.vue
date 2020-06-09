@@ -17,11 +17,11 @@
       showPagination="auto"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-      <span slot="method" slot-scope="text">
-        <a-tag style="width:70px" :color="methodTagColor(text)">{{ methodToString(text) }}</a-tag>
+      <span slot="name" slot-scope="text, record">
+        <a @click="toDetail(record)">{{ text }}</a>
       </span>
       <span slot="url" slot-scope="text, record">
-        <a @click="toDetail(record)">{{ text }}</a>
+        <a-tag :color="methodTagColor(record.method)">{{ methodToString(record.method) }}</a-tag><a @click="toView(record)">{{ text }}</a>
       </span>
       <span slot="avatar" slot-scope="text">
         <a-tooltip>
@@ -76,30 +76,32 @@
         showCreateMockDialog: false,
         columns: [
           {
-            title: 'Method',
-            dataIndex: 'method',
-            width: 100,
-            align: 'center',
-            filters: [
-              { text: 'get', value: '1' },
-              { text: 'post', value: '2' },
-              { text: 'put', value: '3' },
-              { text: 'delete', value: '4' },
-              { text: 'patch', value: '5' }
-            ],
-            scopedSlots: { customRender: 'method' }
+            title: '名称',
+            sorter: true,
+            dataIndex: 'name',
+            width: 150,
+            scopedSlots: { customRender: 'name' }
           },
+          // {
+          //   title: 'Method',
+          //   dataIndex: 'method',
+          //   width: 100,
+          //   align: 'center',
+          //   filters: [
+          //     { text: 'get', value: '1' },
+          //     { text: 'post', value: '2' },
+          //     { text: 'put', value: '3' },
+          //     { text: 'delete', value: '4' },
+          //     { text: 'patch', value: '5' }
+          //   ],
+          //   scopedSlots: { customRender: 'method' }
+          // },
           {
             title: 'URL',
             dataIndex: 'url',
             width: 300,
             sorter: true,
             scopedSlots: { customRender: 'url' }
-          },
-          {
-            title: '描述',
-            sorter: true,
-            dataIndex: 'description'
           },
           {
             title: '创建者',
@@ -134,19 +136,7 @@
           return data.bean
         },
         selectedRowKeys: [],
-        selectedRows: [],
-        editor: null,
-        editorSetup: false,
-        modalCreateApi: {
-          show: false
-        },
-        rules: {
-          url: [
-            { required: true, message: 'Please input url', trigger: 'blur' }
-          ],
-          description: [{ required: true, message: 'Please input description', trigger: 'blur' }],
-          body: [{ required: true, message: 'Please input body', trigger: 'blur' }]
-        }
+        selectedRows: []
       }
     },
     beforeRouteUpdate (to, from, next) {
@@ -193,9 +183,13 @@
       addApi () {
         this.showCreateMockDialog = true
       },
-      toDetail (item) {
-        this.SET_MOCK_ID(item.id)
-        this.$router.push({ name: 'mockDetail', params: { categoryId: this.categoryId, mockId: item.id } })
+      toDetail (record) {
+        this.SET_MOCK_ID(record.id)
+        this.$router.push({ name: 'mockDetail', params: { categoryId: this.categoryId, mockId: record.id } })
+      },
+      toView (record) {
+        const url = `${this.baseURL}${record.url}#!method=${Method[record.method]}`
+        window.open(url)
       },
       test () {
         this.columns.splice(0, 1)
