@@ -22,6 +22,10 @@
       mockSnippets: {
         type: Boolean,
         default: false
+      },
+      height: {
+        type: Number,
+        default: 300
       }
     },
     data () {
@@ -34,6 +38,11 @@
       value (val) {
         this.currentValue = val
         this.setValue(val)
+      },
+      height () {
+        this.$nextTick(() => {
+          this.editor.resize()
+        })
       }
     },
     methods: {

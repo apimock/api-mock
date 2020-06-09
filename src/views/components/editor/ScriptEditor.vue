@@ -1,5 +1,5 @@
 <template>
-  <div class="ace-editor script-editor" ref="editor"></div>
+  <div class="ace-editor script-editor" :style="{height: height+'px'}" ref="editor"></div>
 </template>
 
 <script>

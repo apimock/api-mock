@@ -310,9 +310,6 @@
       }, 500)
       next()
     },
-    mounted () {
-      console.info(this.selectedKeys)
-    },
     created () {
       const { projectId, categoryId } = this.$route.params
       this.SET_PROJECT_ID(projectId)

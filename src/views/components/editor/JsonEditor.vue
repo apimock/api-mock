@@ -1,5 +1,5 @@
 <template>
-  <div class="ace-editor json-editor" ref="editor"></div>
+  <div class="ace-editor json-editor" :style="{height: height+'px'}" ref="editor"></div>
 </template>
 
 <script>

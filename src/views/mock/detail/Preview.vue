@@ -43,7 +43,7 @@
         <a-col :span="12">
           <a-card class="edit-card response" size="small" title="响应模板">
             <div class="editor-box">
-              <json-editor ref="codeEditor" :value="detail.body" :read-only="true" style="height: 600px;border-top:1px solid #eee"></json-editor>
+              <json-editor ref="codeEditor" :value="detail.body" :read-only="true" class="preview-json-editor" :height="detail.body === '{}' ? 200 : 600"></json-editor>
             </div>
           </a-card>
         </a-col>
@@ -54,7 +54,7 @@
               <a-button style="border:none" size="small" icon="reload" :loading="iconLoading" @click="reloadMockValue"></a-button>
             </span>
             <div class="editor-box">
-              <json-editor ref="previewEditor" :value="mockValue" :read-only="true" style="height: 600px; border-top:1px solid #eee"></json-editor>
+              <json-editor ref="previewEditor" :value="mockValue" :read-only="true" class="preview-json-editor" :height="detail.body === '{}' ? 200 : 600"></json-editor>
             </div>
           </a-card>
         </a-col>
@@ -188,6 +188,10 @@
           background-image: none;
         }
       }
+    }
+
+    .preview-json-editor{
+      border-top:1px solid #eee
     }
   }
 </style>
