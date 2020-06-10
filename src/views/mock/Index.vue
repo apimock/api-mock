@@ -59,6 +59,7 @@
               :blockNode="true"
               :expanded-keys.sync="expandedKeys"
               :selected-keys.sync="selectedKeys"
+              @drop="onDrop"
               :tree-data="categoryTree">
               <a-icon slot="star" type="star" theme="filled" style="color: #808080" />
               <a-icon slot="appstore" type="appstore" theme="filled" style="color: #808080" />
@@ -139,6 +140,7 @@
   import { mapState, mapMutations, mapActions } from 'vuex'
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
   import ApiProject from '@/api/project'
+  import ApiMock from '@/api/mock'
 
   const getParentKey = (key, tree) => {
     let parentKey
@@ -301,6 +303,71 @@
       },
       onCopyError (e) {
         this.$message.error('Failed to copy texts')
+      },
+      async updateMock (updateObj) {
+        const { data } = await ApiMock.update(updateObj)
+        const { code, message } = data
+        if (code === 200) {
+        } else {
+          this.$message.error(message)
+        }
+      },
+      onDrop (info) {
+        const dropKey = info.node.eventKey
+        const dragKey = info.dragNode.eventKey
+        const dropPos = info.node.pos.split('-')
+        const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1])
+        const dragArr = dragKey.split('-')
+        const dragId = dragArr[dragArr.length - 1]
+        const loop = (data, key, callback) => {
+          data.forEach((item, index, arr) => {
+            if (item.key === key) {
+              return callback(item, index, arr)
+            }
+            if (item.children) {
+              return loop(item.children, key, callback)
+            }
+          })
+        }
+        const data = [...this.categoryTree]
+
+        // Find dragObject
+        let dragObj
+        loop(data, dragKey, (item, index, arr) => {
+          arr.splice(index, 1)
+          dragObj = item
+        })
+        if (!info.dropToGap) {
+          // Drop on the content
+          loop(data, dropKey, item => {
+            item.children = item.children || []
+            // where to insert
+            item.children.push(dragObj)
+          })
+        } else if (
+          (info.node.children || []).length > 0 && // Has children
+          info.node.expanded && // Is expanded
+          dropPosition === 1 // On the bottom gap
+        ) {
+          loop(data, dropKey, item => {
+            item.children = item.children || []
+            // where to insert
+            item.children.unshift(dragObj)
+          })
+        } else {
+          let ar
+          let i
+          loop(data, dropKey, (item, index, arr) => {
+            ar = arr
+            i = index
+          })
+          if (dropPosition === -1) {
+            ar.splice(i, 0, dragObj)
+          } else {
+            ar.splice(i + 1, 0, dragObj)
+          }
+        }
+       this.updateMock({ id: dragId, category_id: dropKey })
       }
     },
     beforeRouteUpdate (to, from, next) {
