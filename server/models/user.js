@@ -36,6 +36,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: '1'
     },
+    'stars': {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     'created_at': {
       type: DataTypes.DATE,
       allowNull: true

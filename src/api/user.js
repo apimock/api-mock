@@ -11,5 +11,9 @@ export default wraperApi({
   getInfo: {
     url: '/api/userInfo',
     method: 'get'
+  },
+  star: {
+    url: '/api/star',
+    method: 'post'
   }
 })

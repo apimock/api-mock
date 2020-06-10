@@ -79,4 +79,47 @@ export default class User {
       ctx.body = ctx.util.refail()
     }
   }
+
+  static async star (ctx) {
+    const uid = ctx.state.user.id
+    const qstars = ctx.checkBody('stars').notEmpty().type('array').value
+    const type = ctx.checkBody('type').notEmpty().value
+    if (ctx.errors || !qstars.length) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
+    }
+
+    const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+    let saveStarsArr = []
+    if (stars) {
+      try {
+        const starsArr = JSON.parse(stars)
+        if (type) {
+          qstars.forEach((item) => {
+            item = Number(item)
+            if (!isNaN(item)) {
+              const index = starsArr.indexOf(item)
+              if (index !== -1) {
+                starsArr.splice(index, 1)
+              }
+            }
+          })
+          saveStarsArr = starsArr
+        } else {
+          saveStarsArr = starsArr.concat(qstars)
+        }
+      } catch (e) {
+        if (type) saveStarsArr = qstars
+      }
+    }
+    saveStarsArr = saveStarsArr.filter((item) => !isNaN(item) && item !== null)
+
+    const saveStarStr = Array.from(new Set(saveStarsArr)).toString().replace(/,+$/g, '')
+    const user = await UserProxy.save({ id: uid, stars: `[${saveStarStr}]` })
+    if (user) {
+      ctx.body = ctx.util.resuccess(user)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
 }

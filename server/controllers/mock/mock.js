@@ -1,6 +1,7 @@
 import MockProxy from '~/server/provider/mock'
 import ProjectProxy from '~/server/provider/project'
 import ExpectProxy from '~/server/provider/expect'
+import UserProxy from '~/server/provider/user'
 import { Method } from '~/server/utils/enum'
 import { getPage, keyValueToStr } from '~/server/utils'
 const Op = require('sequelize').Op
@@ -104,7 +105,6 @@ export default class Mock {
   }
 
   static async list (ctx) {
-    // const uid = ctx.state.user.id
     const keywords = ctx.query.keywords
     const projectId = ctx.checkQuery('project_id').notEmpty().value
     const categoryId = ctx.checkQuery('category_id').empty().value
@@ -146,6 +146,24 @@ export default class Mock {
           category_id: categoryId
         }
       })
+    }
+
+    if (categoryId && categoryId === 'stars') {
+      const uid = ctx.state.user.id
+      const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+      if (stars) {
+        try {
+          const starsArr = JSON.parse(stars)
+          Object.assign(query.where, {
+            [Op.and]: {
+              id: {
+                [Op.in]: starsArr
+              }
+            }
+          })
+        } catch (e) {
+        }
+      }
     }
 
     if (sortField && sortOrder) {
@@ -192,6 +210,7 @@ export default class Mock {
 
   static async detail (ctx) {
     // const projectId = ctx.checkQuery('project_id').notEmpty().value
+    const uid = ctx.state.user.id
     const id = ctx.checkQuery('id').notEmpty().value
 
     if (ctx.errors) {
@@ -206,9 +225,18 @@ export default class Mock {
         attributes: { exclude: ['password'] }
       }
     }
-
     const mock = await MockProxy.findOne(query)
     const expectCount = await ExpectProxy.count({ mock_id: mock.id })
+    const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+    let hadStar = false
+    if (stars) {
+      try {
+        const starsArr = JSON.parse(stars)
+        if (starsArr.includes(mock.id)) hadStar = true
+      } catch (e) {
+      }
+    }
+    mock.dataValues.hadStar = hadStar
     mock.dataValues.expect_count = expectCount
     ctx.body = ctx.util.resuccess(mock)
   }

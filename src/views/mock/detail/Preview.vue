@@ -8,14 +8,14 @@
       <h3 class="preview-title" style="margin-top: 0">基本信息</h3>
       <ul>
         <li>
-          名称：{{ detail.name }}
+          名称：{{ detail.name }} <a-button size="small" style="border:none" @click="star"><a-icon type="star" :theme="detail.hadStar ? 'filled': 'outlined'"></a-icon></a-button>
         </li>
         <li>
           地址：<a-tag :color="methodTagColor(detail.method)">{{ methodToString(detail.method) }}</a-tag>
           <a @click="view">{{ detail.url }}</a> <a-button icon="copy" size="small" style="border: none" @click="copy" title="复制地址"></a-button>
         </li>
         <li>
-          创建人： <a-avatar :src="detail.user.avatar" :title="detail.user.username" :size="28" /> {{ detail.user.username }}
+          创建人： <a-avatar :src="detail.user.avatar" :title="detail.user.username" :size="28" />  {{ detail.user.username }}
         </li>
         <li>
           <template v-if="detail.updated_at">
@@ -74,6 +74,7 @@
   import { Affix } from 'ant-design-vue'
   import { Method, MethodTagColor } from '@/utils/enum'
   import KeyValueEditor from '@/views/components/KeyValueEditor'
+  import ApiUser from '@/api/user'
   export default {
     name: 'DetailPreview',
     components: {
@@ -92,7 +93,7 @@
       ...mapState('mock', ['detail', 'projectId', 'project', 'mockValue', 'baseURL'])
     },
     methods: {
-      ...mapActions('mock', ['getProject', 'switchTab', 'getMockValue']),
+      ...mapActions('mock', ['getProject', 'switchTab', 'getMockValue', 'getDetail']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -120,6 +121,14 @@
         setTimeout(() => {
           this.iconLoading = false
         }, 500)
+      },
+      async star () {
+        const type = this.detail.hadStar ? 1 : 0
+        const { data } = await ApiUser.star({ stars: [this.detail.id], type })
+        const { code } = data
+        if (code === 200) {
+          this.getDetail()
+        }
       }
     },
     mounted () {

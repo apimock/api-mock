@@ -60,6 +60,8 @@
               :expanded-keys.sync="expandedKeys"
               :selected-keys.sync="selectedKeys"
               :tree-data="categoryTree">
+              <a-icon slot="star" type="star" theme="filled" style="color: #808080" />
+              <a-icon slot="appstore" type="appstore" theme="filled" style="color: #808080" />
               <a-icon slot="folder" type="folder" theme="filled" style="color: #808080" />
               <template slot="parent" slot-scope="item">
                 <span class="tree-parent-item" @click="toList(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
@@ -281,6 +283,8 @@
         let categoryId = item.id
         if (item.eventKey === CateKeyAll) {
           categoryId = 'all'
+        } else if (item.eventKey === 'star') {
+          categoryId = 'stars'
         }
         this.$router.push({ name: 'mockList', params: { categoryId } })
       },

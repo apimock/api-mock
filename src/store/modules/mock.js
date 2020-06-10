@@ -113,8 +113,14 @@ const mock = {
         })
         bean.unshift({
           key: CateKeyAll,
-          title: '全部分类',
-          slots: { icon: 'folder' },
+          title: '全部接口',
+          slots: { icon: 'appstore' },
+          scopedSlots: { title: 'parent' }
+        })
+        bean.unshift({
+          key: 'star',
+          title: '我的收藏',
+          slots: { icon: 'star' },
           scopedSlots: { title: 'parent' }
         })
         const flat = treeFlat(bean)

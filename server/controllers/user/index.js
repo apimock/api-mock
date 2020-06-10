@@ -17,6 +17,11 @@ class Api {
   login (ctx) {
     return User.login(ctx)
   }
+
+  @Route('post', '/star')
+  star (ctx) {
+    return User.star(ctx)
+  }
 }
 
 export default Api

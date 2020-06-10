@@ -1,8 +1,8 @@
 <template>
   <a-card :bordered="true" class="detail-list">
     <a-row type="flex" justify="space-between" class="top">
-      <a-col class="left">
-        <a-icon type="folder" theme="filled"></a-icon> <span v-if="category">{{ category.name }}</span> <span v-if="totalCount > 0">({{ totalCount }})</span>
+      <a-col class="left" v-if="category">
+        <a-icon :type="category.icon" theme="filled"></a-icon> <span >{{ category.name }}</span> <span v-if="totalCount > 0">({{ totalCount }})</span>
       </a-col>
       <a-col>
         <a-button type="primary" icon="plus" @click="addApi">添加接口</a-button>
@@ -44,6 +44,7 @@
             v-clipboard:success="onCopySuccess"
             v-clipboard:error="onCopyError"><a-icon type="link" /></a-button>
         </a-button-group>
+        <a-button size="small" @click="star(record)"><a-icon type="star" :theme="record.hadStar ? 'filled': 'outlined'" /></a-button>
         <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>
       </span>
     </s-table>
@@ -58,6 +59,7 @@
   import { Method, MethodTagColor } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
   import { mapMutations } from 'vuex'
+  import ApiUser from '@/api/user'
 
   export default {
     components: {
@@ -129,6 +131,18 @@
           const { data } = await ApiMock.list(
             Object.assign(parameter, this.queryParam, { project_id: this.projectId, category_id: this.categoryId })
           )
+          data.bean.data.forEach((item) => {
+            try {
+              const starsArr = JSON.parse(item.user.stars)
+              if (starsArr.includes(item.id)) {
+                item.hadStar = true
+              } else {
+                item.hadStar = false
+              }
+            } catch (e) {
+              item.hadStar = false
+            }
+          })
           this.project = data.bean.project
           const { id, base_url: baseUrl } = data.bean.project
           this.baseURL = `${location.origin}/mock/${id}${baseUrl}`
@@ -170,13 +184,21 @@
       async getCategory () {
         if (this.categoryId === 'all') {
           this.category = {
-            name: '全部分类'
+            name: '全部分类',
+            icon: 'appstore'
+          }
+          return
+        } else if (this.categoryId === 'stars') {
+          this.category = {
+            name: '我的收藏',
+            icon: 'star'
           }
           return
         }
         const { data } = await ApiCategory.getById({ id: this.categoryId })
         const { bean, code } = data
         if (code === 200) {
+          bean.icon = 'folder'
           this.category = bean
         }
       },
@@ -190,6 +212,14 @@
       toView (record) {
         const url = `${this.baseURL}${record.url}#!method=${Method[record.method]}`
         window.open(url)
+      },
+      async star (record) {
+        const type = record.hadStar ? 1 : 0
+        const { data } = await ApiUser.star({ stars: [record.id], type })
+        const { code } = data
+        if (code === 200) {
+          this.refresh()
+        }
       },
       test () {
         this.columns.splice(0, 1)
