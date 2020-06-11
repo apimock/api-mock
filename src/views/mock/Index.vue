@@ -35,7 +35,7 @@
         </a-col>
         <a-col class="right">
           <a-button class="interaction" icon="control">动态</a-button>
-          <a-button class="setting" icon="setting">设置</a-button>
+          <a-button class="setting" icon="setting" @click="showSetting=true">设置</a-button>
         </a-col>
       </a-row>
     </div>
@@ -125,6 +125,7 @@
         </a-form-model>
       </a-modal>
       <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog"></CreateMockDialog>
+      <Setting v-model="showSetting"></Setting>
     </a-card>
   </div>
 </template>
@@ -141,6 +142,7 @@
   import { MOCK_LEFT_WIDTH } from '@/store/mutation-types'
   import ApiProject from '@/api/project'
   import ApiMock from '@/api/mock'
+  import Setting from '@/views/components/setting/Index'
 
   const getParentKey = (key, tree) => {
     let parentKey
@@ -163,10 +165,12 @@
       MultipaneResizer,
       RouteView,
       CreateMockDialog,
-      'a-tree': Tree
+      'a-tree': Tree,
+      Setting
     },
     data () {
       return {
+        showSetting: true,
         projectList: [],
         projectSearch: '',
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || '300px',
