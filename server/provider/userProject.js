@@ -30,7 +30,9 @@ module.exports = class Project {
     return res.map((item) => item.uid)
   }
 
-  static remove (query) {
-    return Model.UserProject.destroy(query)
+  static destroy (where) {
+    return Model.UserProject.destroy({
+      where
+    })
   }
 }

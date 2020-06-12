@@ -22,4 +22,10 @@ module.exports = class Category {
   static findAll (query) {
     return Model.Category.findAll(query)
   }
+
+  static destroy (where) {
+    return Model.Category.destroy({
+      where
+    })
+  }
 }

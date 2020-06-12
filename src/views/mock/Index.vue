@@ -170,7 +170,7 @@
     },
     data () {
       return {
-        showSetting: true,
+        showSetting: false,
         projectList: [],
         projectSearch: '',
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || '300px',

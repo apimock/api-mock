@@ -44,12 +44,9 @@ module.exports = class Mock {
     }
   }
 
-  static delete (id) {
-    // return Model.User.destroy({
-    //   where: {
-    //     id
-    //   }
-    // })
-    return this.save({ id, status: 0 })
+  static destroy (where) {
+    return Model.Mock.destroy({
+      where
+    })
   }
 }

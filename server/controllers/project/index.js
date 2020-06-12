@@ -22,6 +22,11 @@ class Api {
   update (ctx) {
     return Project.update(ctx)
   }
+
+  @Route('post', '/project/delete')
+  delete (ctx) {
+    return Project.delete(ctx)
+  }
 }
 
 export default Api

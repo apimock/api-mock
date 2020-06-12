@@ -68,7 +68,7 @@ export default class Expect {
       return
     }
 
-    const res = await ExpectProxy.remove({ id, mock_id: mockId })
+    const res = await ExpectProxy.destroy({ id, mock_id: mockId })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {

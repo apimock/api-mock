@@ -35,7 +35,7 @@ module.exports = class Expect {
     })
   }
 
-  static remove (where) {
+  static destroy (where) {
     return Model.Expect.destroy({
       where
     })

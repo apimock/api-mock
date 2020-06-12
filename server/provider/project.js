@@ -47,12 +47,11 @@ module.exports = class Project {
     }
   }
 
-  static delete (id) {
-    // return Model.User.destroy({
-    //   where: {
-    //     id
-    //   }
-    // })
-    return this.save({ id, status: 0 })
+  static destroy (id) {
+    return Model.Project.destroy({
+      where: {
+        id
+      }
+    })
   }
 }

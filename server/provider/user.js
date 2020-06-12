@@ -31,7 +31,7 @@ module.exports = class User {
     return this.save({ id, status: 0 })
   }
 
-  static remove (id) {
+  static destroy (id) {
     return Model.User.destroy({
       where: {
         id

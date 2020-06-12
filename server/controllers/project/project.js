@@ -1,5 +1,7 @@
 import ProjectProxy from '~/server/provider/project'
 import ProjectUserProxy from '~/server/provider/userProject'
+import MockProxy from '~/server/provider/mock'
+import CategoryProxy from '~/server/provider/category'
 import dateTime from '~/server/utils/dateTime'
 import { getPage } from '~/server/utils'
 const _ = require('lodash')
@@ -62,12 +64,10 @@ export default class Project {
     const project = await ProjectProxy.checkById(id, uid)
     let diffMembers = _.difference(project.members, members)
     if (diffMembers.length > 0) {
-      await ProjectUserProxy.remove({
-        where: {
-          project_id: project.id,
-          uid: {
-            [Op.in]: diffMembers
-          }
+      await ProjectUserProxy.destroy({
+        project_id: project.id,
+        uid: {
+          [Op.in]: diffMembers
         }
       })
     }
@@ -189,6 +189,32 @@ export default class Project {
     const project = await ProjectProxy.findOne({ id })
     if (project) {
       ctx.body = ctx.util.resuccess(project)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
+
+  static async delete (ctx) {
+    const uid = ctx.state.user.id
+    const id = ctx.checkBody('id').notEmpty().value
+    const project = await ProjectProxy.findOne({ id })
+    if (!project) {
+      ctx.body = ctx.util.refail('项目不存在')
+      return
+    }
+
+    if (project.uid !== uid) {
+      ctx.body = ctx.util.refail('无权限')
+      return
+    }
+
+    const where = { project_id: id }
+    await MockProxy.destroy(where)
+    await CategoryProxy.destroy(where)
+    await ProjectUserProxy.destroy(where)
+    const res = ProjectProxy.destroy(id)
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
     } else {
       ctx.body = ctx.util.refail()
     }

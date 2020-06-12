@@ -63,6 +63,11 @@
           this.$message.error(message)
         }
       },
+      async deleteProject () {
+        const { data } = await ApiProject.delete({ id: this.project.id })
+        const { code } = data
+        console.info(code)
+      },
       del () {
         const that = this
         const modal = this.$confirm({
@@ -74,9 +79,10 @@
               <p><a-input ref="confirm" v-model={this.delProjectName}></a-input></p>
             </div>
           ),
-          onOk (e) {
+          async onOk (e) {
             const value = that.$refs.confirm.$el.value
             if (value === that.project.name) {
+              await that.deleteProject()
               modal.destroy()
             }
           },
