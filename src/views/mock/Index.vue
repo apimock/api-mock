@@ -70,13 +70,13 @@
                   <strong>{{ item.title }}</strong>
                   <a-button-group v-show="item.showRightButton" size="small">
                     <a-tooltip title="添加接口">
-                      <a-button @click="addApi(item.dataRef.id)" icon="plus"></a-button>
+                      <a-button @click.stop="addApi(item.dataRef.id)" icon="plus"></a-button>
                     </a-tooltip>
                     <a-tooltip title="修改分类">
-                      <a-button @click="copyApi(item.dataRef.id)" icon="edit"></a-button>
+                      <a-button @click.stop="copyApi(item.dataRef.id)" icon="edit"></a-button>
                     </a-tooltip>
                     <a-tooltip title="删除分类">
-                      <a-button @click="deleteApi(item.dataRef.id)" icon="delete"></a-button>
+                      <a-button @click.stop="deleteCategory(item.dataRef.id, item)" icon="delete"></a-button>
                     </a-tooltip>
                   </a-button-group>
                 </span>
@@ -91,11 +91,17 @@
                   <em v-show="item.showRightButton">
                     <a-button-group size="small">
                       <a-tooltip title="复制接口">
-                        <a-button @click="copyApi(item.dataRef.id)" icon="copy"></a-button>
+                        <a-button @click.stop="copyApi(item.dataRef.id)" icon="copy"></a-button>
                       </a-tooltip>
-                      <a-tooltip title="删除接口">
-                        <a-button @click="deleteApi(item.dataRef.id)" icon="delete"></a-button>
-                      </a-tooltip>
+                      <a-popconfirm
+                        trigger="click"
+                        title="确定删除吗?"
+                        @visibleChange="(visible)=> {if(!visible) {mouseEnable=true; item.dataRef.showRightButton=false} }"
+                        @cancel.stop="() => {mouseEnable=true; item.dataRef.showRightButton=false }"
+                        @confirm.stop="deleteApi(item.dataRef.id, item)"
+                      >
+                        <a-button @click.stop="() => {mouseEnable=false}" icon="delete"></a-button>
+                      </a-popconfirm>
                     </a-button-group>
                   </em>
                 </span>
@@ -193,6 +199,7 @@
           name: '',
           description: ''
         },
+        mouseEnable: true,
         categoryId: '',
         autoExpandParent: true,
         searchValue: '',
@@ -234,12 +241,14 @@
         return MethodTagColor[num]
       },
       mouseover (e) {
-        if (e.eventKey !== CateKeyAll) {
+        if (e.eventKey !== CateKeyAll && this.mouseEnable) {
           e.dataRef.showRightButton = true
         }
       },
       mouseout (e) {
-        e.dataRef.showRightButton = false
+        if (this.mouseEnable) {
+          e.dataRef.showRightButton = false
+        }
       },
       onChangeCategory (e) {
         const value = e.target.value
@@ -284,6 +293,26 @@
       createCategoryCancel () {
         this.modalCreateCategory.show = false
       },
+      async deleteCategory (id, record) {
+        const that = this
+        this.$confirm({
+          title: `确定要删除分类：${record.title} 吗?`,
+          content: '分类一旦被删除不可恢复，并且会删除其中所有的接口！',
+          async onOk () {
+            const { data } = await ApiCategory.delete({ id })
+            const { code } = data
+            if (code === 200) {
+              await that.getCategoryList()
+              that.toList({ eventKey: CateKeyAll }, true)
+            } else {
+              that.$message.error('删除分类失败')
+            }
+          },
+          onCancel () {
+            console.log('Cancel')
+          }
+        })
+      },
       addApi (id) {
         this.categoryId = id
         this.showCreateMockDialog = true
@@ -291,17 +320,28 @@
       copyApi (id) {
         console.info(id)
       },
-      deleteApi (id) {
-        console.info(id)
+      async deleteApi (id, item) {
+        const { data } = await ApiMock.delete({ id })
+        const { code } = data
+        if (code === 200) {
+          await this.getCategoryList()
+          this.toList({ id: item.category_id }, true)
+        } else {
+          this.$message.error('删除接口失败')
+        }
       },
-      toList (item) {
+      toList (item, refresh = false) {
         let categoryId = item.id
         if (item.eventKey === CateKeyAll) {
           categoryId = 'all'
         } else if (item.eventKey === 'star') {
           categoryId = 'stars'
         }
-        this.$router.push({ name: 'mockList', params: { categoryId } })
+        if (refresh) {
+          this.$router.push({ name: 'mockList', params: { categoryId }, query: { refresh: new Date().getTime() } })
+        } else {
+          this.$router.push({ name: 'mockList', params: { categoryId } })
+        }
       },
       toDetail (item) {
         let categoryId = item.parentId

@@ -153,11 +153,19 @@
         selectedRows: []
       }
     },
+    watch: {
+      $route () {
+        const refresh = this.$route.params.refresh
+        if (refresh) {
+          this.refresh()
+        }
+      }
+    },
     beforeRouteUpdate (to, from, next) {
       this.project_id = to.params.projectId
       this.categoryId = to.params.categoryId
       this.getCategory()
-      this.$refs.table.refresh(true)
+      this.refresh()
       next()
     },
     methods: {

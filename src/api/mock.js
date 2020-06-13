@@ -15,5 +15,9 @@ export default wraperApi({
   update: {
     url: '/api/mock/update',
     method: 'post'
+  },
+  delete: {
+    url: '/api/mock/delete',
+    method: 'post'
   }
 })

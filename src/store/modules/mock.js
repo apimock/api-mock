@@ -89,7 +89,7 @@ const mock = {
         commit('SET_BASE_URL', baseURL)
         commit('SET_PROJECT', bean)
       } else {
-        this.$message.error('加载失败！')
+        this._vm.$message.error('加载失败！')
       }
     },
     async getCategoryList ({ commit, state }, keywords) {
@@ -153,7 +153,10 @@ const mock = {
           commit('SET_SHOW_BODY_PARAMS_TAB', false)
         }
       } else {
-        this.$message.error('加载失败！')
+        commit('SET_MOCK_VALUE', '')
+        commit('SET_MOCK_FORM', null)
+        commit('SET_MOCK_ID', '')
+        this._vm.$message.error('加载失败！')
       }
     },
     getMockValue ({ commit, state }) {
@@ -174,6 +177,8 @@ const mock = {
       commit('SET_TAB_ACTIVE_KEY', key)
     },
     resetTab ({ commit, state }) {
+      if (!state.detail) return
+
       const data = [tabPaneObj.preview]
       if (state.detail.expect_count > 0 || state.detail.script) {
         data.push(tabPaneObj.advance)

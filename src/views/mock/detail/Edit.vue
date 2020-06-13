@@ -25,7 +25,7 @@
           <a-input v-model="mockForm.name" placeholder="please input name" />
         </a-form-model-item>
         <a-form-model-item label="接口URL" prop="url">
-          <a-input v-model="mockForm.url" placeholder="please input url">
+          <a-input v-model="mockForm.url" placeholder="please input url" @blur="onUrlBlur">
             <a-select v-model="mockForm.method" slot="addonBefore" style="width: 120px">
               <a-select-option v-for="(item, index) in MethodArray" :key="index" :value="item.method">
                 <a-tag style="width: 80px; text-align: center" :color="methodTagColor(item.code)">{{ item.method }}</a-tag>
@@ -154,12 +154,18 @@
       }
     },
     methods: {
-      ...mapActions('mock', ['getDetail', 'switchTab']),
+      ...mapActions('mock', ['getDetail', 'switchTab', 'getCategoryList']),
       methodToString (num) {
         return Method[num].toUpperCase()
       },
       methodTagColor (num) {
         return MethodTagColor[num]
+      },
+      onUrlBlur (e) {
+        const value = e.target.value
+        if (!/^\/.*$/.test(value)) {
+          this.mockForm.url = `/${this.mockForm.url}`
+        }
       },
       submit (e) {
         if (e) {
@@ -174,6 +180,9 @@
             this.$message.error('返回Body json格式有问题，请检查！')
             return
           }
+          if (!/^\/.*$/.test(this.mockForm.url)) {
+            this.mockForm.url = `/${this.mockForm.url}`
+          }
           const mockData = { ...this.mockForm }
           mockData.body = this.$refs.codeEditor.getValue()
 
@@ -183,6 +192,7 @@
             this.$message.success('更新成功')
             await this.getDetail()
             this.switchTab('preview')
+            this.getCategoryList()
           } else {
             this.$message.error(message)
           }

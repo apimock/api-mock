@@ -22,6 +22,11 @@ class Api {
   update (ctx) {
     return Mock.update(ctx)
   }
+
+  @Route('post', '/mock/delete')
+  delete (ctx) {
+    return Mock.delete(ctx)
+  }
 }
 
 export default Api

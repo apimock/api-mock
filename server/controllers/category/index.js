@@ -22,6 +22,11 @@ class Api {
   update (ctx) {
     return Category.update(ctx)
   }
+
+  @Route('post', '/category/delete')
+  delete (ctx) {
+    return Category.delete(ctx)
+  }
 }
 
 export default Api

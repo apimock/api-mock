@@ -1,5 +1,6 @@
 import CategoryProxy from '~/server/provider/category'
 import ProjectProxy from '@server/provider/project'
+import MockProxy from '@server/provider/mock'
 const Model = require('~/server/models')()
 const Op = require('sequelize').Op
 
@@ -80,6 +81,35 @@ export default class Category {
     const category = await CategoryProxy.findOne({ id })
     if (category) {
       ctx.body = ctx.util.resuccess(category)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
+
+  static async delete (ctx) {
+    const uid = ctx.state.user.id
+    const id = ctx.checkBody('id').notEmpty().value
+
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+    }
+
+    const category = await CategoryProxy.findOne({ id })
+
+    if (!category) {
+      ctx.body = ctx.util.refail('接口不存在')
+      return
+    }
+
+    if (category.uid !== uid) {
+      ctx.body = ctx.util.refail('无权限')
+      return
+    }
+
+    await MockProxy.destroy({ category_id: id })
+    const res = await CategoryProxy.destroy({ id })
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
     } else {
       ctx.body = ctx.util.refail()
     }

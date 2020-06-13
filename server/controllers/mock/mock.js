@@ -226,6 +226,11 @@ export default class Mock {
       }
     }
     const mock = await MockProxy.findOne(query)
+    if (!mock) {
+      ctx.body = ctx.util.refail('接口不存在！')
+      return
+    }
+
     const expectCount = await ExpectProxy.count({ mock_id: mock.id })
     const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
     let hadStar = false
@@ -239,5 +244,33 @@ export default class Mock {
     mock.dataValues.hadStar = hadStar
     mock.dataValues.expect_count = expectCount
     ctx.body = ctx.util.resuccess(mock)
+  }
+
+  static async delete (ctx) {
+    const uid = ctx.state.user.id
+    const id = ctx.checkBody('id').notEmpty().value
+
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+    }
+
+    const mock = await MockProxy.findOne({ id })
+
+    if (!mock) {
+      ctx.body = ctx.util.refail('接口不存在')
+      return
+    }
+
+    if (mock.uid !== uid) {
+      ctx.body = ctx.util.refail('无权限')
+      return
+    }
+
+    const res = await MockProxy.destroy({ id })
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
   }
 }

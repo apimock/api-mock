@@ -1,6 +1,7 @@
 <template>
   <div class="detail-wrap">
     <a-tabs
+      v-if="mockId"
       type="card"
       class="top-tabs"
       :tabBarGutter="10"
@@ -18,6 +19,8 @@
         <advance-mock ref="advance" v-if="pane.key === 'advance'"></advance-mock>
       </a-tab-pane>
     </a-tabs>
+    <a-result v-else status="404" title="404" sub-title="Sorry, the page you visited does not exist.">
+    </a-result>
   </div>
 </template>
 
@@ -26,11 +29,13 @@
   import Edit from '@/views/mock/detail/Edit'
   import AdvanceMock from '@/views/mock/detail/AdvanceMock'
   import { mapState, mapMutations, mapActions } from 'vuex'
+  import { Result } from 'ant-design-vue'
   export default {
     components: {
       Preview,
       Edit,
-      AdvanceMock
+      AdvanceMock,
+      'a-result': Result
     },
     data () {
       return {
