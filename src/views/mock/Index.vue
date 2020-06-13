@@ -45,7 +45,7 @@
           <div class="content">
             <a-row type="flex" :gutter="5">
               <a-col style="flex: 1">
-                <a-input-search placeholder="Search" @change="onSearchCategory" />
+                <a-input-search placeholder="Search" @change="onChangeCategory" @search="onSearchCategory" />
               </a-col>
               <a-col>
                 <a-button type="primary" @click="createCategory" icon="plus">添加分类</a-button>
@@ -56,6 +56,7 @@
               class="mock-tree"
               show-icon
               draggable
+              :auto-expand-parent="autoExpandParent"
               :blockNode="true"
               :expanded-keys.sync="expandedKeys"
               :selected-keys.sync="selectedKeys"
@@ -83,7 +84,10 @@
               <template slot="child" slot-scope="item">
                 <span class="tree-child-item" @click="toDetail(item)" @mouseover="mouseover(item)" @mouseout="mouseout(item)">
                   <strong :style="{color: methodTagColor(item.dataRef.method)}">{{ methodToString(item.dataRef.method) }}</strong>
-                  <span>{{ item.dataRef.url }}</span>
+                  <span v-if="item.dataRef.url.match(searchValue) && item.dataRef.url.match(searchValue)[0]">
+                    <span style="color: #f50">{{ item.dataRef.url }}</span>
+                  </span>
+                  <span v-else>{{ item.dataRef.url }}</span>
                   <em v-show="item.showRightButton">
                     <a-button-group size="small">
                       <a-tooltip title="复制接口">
@@ -190,6 +194,8 @@
           description: ''
         },
         categoryId: '',
+        autoExpandParent: true,
+        searchValue: '',
         expandedKeys: [this.$route.params.categoryId],
         selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : this.$route.params.mockId ? [`${this.$route.params.categoryId}-${this.$route.params.mockId}`] : [this.$route.params.categoryId]
       }
@@ -235,7 +241,7 @@
       mouseout (e) {
         e.dataRef.showRightButton = false
       },
-      onSearchCategory (e) {
+      onChangeCategory (e) {
         const value = e.target.value
         const expandedKeys = this.categoryTreeFlat
           .map(item => {
@@ -250,6 +256,9 @@
           searchValue: value,
           autoExpandParent: true
         })
+      },
+      onSearchCategory (value) {
+        this.getCategoryList(value)
       },
       createCategory () {
         this.modalCreateCategory.show = true

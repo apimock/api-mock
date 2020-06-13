@@ -92,8 +92,8 @@ const mock = {
         this.$message.error('加载失败！')
       }
     },
-    async getCategoryList ({ commit, state }) {
-      const { data } = await ApiCategory.list({ project_id: state.projectId })
+    async getCategoryList ({ commit, state }, keywords) {
+      const { data } = await ApiCategory.list({ project_id: state.projectId, keywords })
       const { bean, code } = data
       if (code === 200) {
         bean.forEach((parent, m) => {

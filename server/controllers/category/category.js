@@ -1,6 +1,7 @@
 import CategoryProxy from '~/server/provider/category'
 import ProjectProxy from '@server/provider/project'
 const Model = require('~/server/models')()
+const Op = require('sequelize').Op
 
 export default class Category {
   static async create (ctx) {
@@ -29,6 +30,7 @@ export default class Category {
 
   static async list (ctx) {
     const projectId = ctx.checkQuery('project_id').notEmpty().value
+    const keywords = ctx.checkQuery('keywords').empty().value
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
@@ -49,6 +51,21 @@ export default class Category {
         as: 'children'
       }
     }
+
+    if (keywords) {
+      const kw = { [Op.substring]: keywords }
+      query.include = {
+        model: Model.Mock,
+        as: 'children',
+        where: {
+          [Op.or]: [
+            { url: kw },
+            { name: kw }
+          ]
+        }
+      }
+    }
+
     const categoryResult = await CategoryProxy.findAll(query)
     ctx.body = ctx.util.resuccess(categoryResult)
   }
