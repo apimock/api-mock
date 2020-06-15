@@ -5,7 +5,7 @@ const Model = require('~/server/models')()
 const Op = require('sequelize').Op
 
 export default class Category {
-  static async create (ctx) {
+  static async createOrUpdate (ctx, update = false) {
     const uid = ctx.state.user.id
     const name = ctx.checkBody('name').notEmpty().value
     const description = ctx.checkBody('description').empty().value
@@ -21,7 +21,18 @@ export default class Category {
       return
     }
 
-    const res = await CategoryProxy.save({ uid, project_id: projectId, name, description })
+    let res = null
+    if (update) {
+      const id = ctx.request.body.id
+      if (!id) {
+        ctx.body = ctx.util.refail(null, 10001, 'id不能为空！')
+        return
+      }
+      res = await CategoryProxy.save({ id, uid, project_id: projectId, name, description })
+    } else {
+      res = await CategoryProxy.save({ uid, project_id: projectId, name, description })
+    }
+
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {

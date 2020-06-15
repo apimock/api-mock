@@ -15,12 +15,12 @@ class Api {
 
   @Route('post', '/category/create')
   create (ctx) {
-    return Category.create(ctx)
+    return Category.createOrUpdate(ctx)
   }
 
   @Route('post', '/category/update')
   update (ctx) {
-    return Category.update(ctx)
+    return Category.createOrUpdate(ctx, true)
   }
 
   @Route('post', '/category/delete')

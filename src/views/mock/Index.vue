@@ -48,7 +48,7 @@
                 <a-input-search placeholder="Search" @change="onChangeCategory" @search="onSearchCategory" />
               </a-col>
               <a-col>
-                <a-button type="primary" @click="createCategory" icon="plus">添加分类</a-button>
+                <a-button type="primary" @click="createOrUpdateCategory" icon="plus">添加分类</a-button>
               </a-col>
             </a-row>
             <a-tree
@@ -73,7 +73,7 @@
                       <a-button @click.stop="addApi(item.dataRef.id)" icon="plus"></a-button>
                     </a-tooltip>
                     <a-tooltip title="修改分类">
-                      <a-button @click.stop="copyApi(item.dataRef.id)" icon="edit"></a-button>
+                      <a-button @click.stop="createOrUpdateCategory(item.dataRef)" icon="edit"></a-button>
                     </a-tooltip>
                     <a-tooltip title="删除分类">
                       <a-button @click.stop="deleteCategory(item.dataRef.id, item)" icon="delete"></a-button>
@@ -113,24 +113,24 @@
         <div class="mock-right"><route-view></route-view></div>
       </Multipane>
       <a-modal
-        title="添加分类"
+        :title="modalCreateOrUpdateCategory.title"
         :width="400"
-        :visible="modalCreateCategory.show"
-        @ok="createCategoryOk"
-        @cancel="createCategoryCancel"
+        :visible="modalCreateOrUpdateCategory.show"
+        @ok="createOrUpdateCategoryOk"
+        @cancel="createOrUpdateCategoryCancel"
       >
         <a-form-model
           :model="formCategory"
           ref="formCategory"
-          :label-col="modalCreateCategory.labelCol"
-          :wrapper-col="modalCreateCategory.wrapperCol"
-          :rules="modalCreateCategory.rules"
+          :label-col="modalCreateOrUpdateCategory.labelCol"
+          :wrapper-col="modalCreateOrUpdateCategory.wrapperCol"
+          :rules="modalCreateOrUpdateCategory.rules"
         >
           <a-form-model-item label="分类名" prop="name">
-            <a-input v-model="formCategory.name" placeholder="please input name"/>
+            <a-input v-model="formCategory.name" placeholder="分类名称"/>
           </a-form-model-item>
           <a-form-model-item label="备注" prop="description">
-            <a-input v-model="formCategory.description" placeholder="please input description" />
+            <a-input v-model="formCategory.description" placeholder="备注" />
           </a-form-model-item>
         </a-form-model>
       </a-modal>
@@ -185,13 +185,14 @@
         projectSearch: '',
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || '300px',
         showCreateMockDialog: false,
-        modalCreateCategory: {
+        modalCreateOrUpdateCategory: {
           show: false,
+          title: '',
           labelCol: { span: 6 },
           wrapperCol: { span: 18 },
           rules: {
             name: [
-              { required: true, message: 'Please input name', trigger: 'blur' }
+              { required: true, message: '请输入分类名', trigger: 'blur' }
             ]
           }
         },
@@ -269,29 +270,53 @@
       onSearchCategory (value) {
         this.getCategoryList(value)
       },
-      createCategory () {
-        this.modalCreateCategory.show = true
+      createOrUpdateCategory (record) {
+        if (record && record.id) {
+          this.formCategory.id = record.id
+          this.formCategory.name = record.name
+          this.formCategory.description = record.description
+          this.modalCreateOrUpdateCategory.title = '修改分类'
+        } else {
+          this.formCategory.id = ''
+          this.formCategory.name = ''
+          this.formCategory.description = ''
+          this.modalCreateOrUpdateCategory.title = '添加分类'
+        }
+        this.modalCreateOrUpdateCategory.show = true
       },
-      createCategoryOk () {
+      createOrUpdateCategoryOk () {
         this.$refs.formCategory.validate(async valid => {
             if (!valid) {
               console.log('error submit!!')
               return false
             }
-            const { data } = await ApiCategory.create({ ...this.formCategory, project_id: this.projectId })
-            const { code, message } = data
-            if (code === 200) {
-              this.getCategoryList()
-              this.$message.success('创建成功')
+
+            if (this.formCategory.id) {
+              const { data } = await ApiCategory.update({ ...this.formCategory, project_id: this.projectId })
+              const { code, message } = data
+              if (code === 200) {
+                this.getCategoryList()
+                this.$message.success('更新成功')
+              } else {
+                this.$message.error(message)
+              }
             } else {
-              this.$message.error(message)
+              const { data } = await ApiCategory.create({ ...this.formCategory, project_id: this.projectId })
+              const { code, message } = data
+              if (code === 200) {
+                this.getCategoryList()
+                this.$message.success('创建成功')
+              } else {
+                this.$message.error(message)
+              }
             }
-            this.modalCreateCategory.show = false
+
+            this.modalCreateOrUpdateCategory.show = false
           }
         )
       },
-      createCategoryCancel () {
-        this.modalCreateCategory.show = false
+      createOrUpdateCategoryCancel () {
+        this.modalCreateOrUpdateCategory.show = false
       },
       async deleteCategory (id, record) {
         const that = this
