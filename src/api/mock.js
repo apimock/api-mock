@@ -19,5 +19,9 @@ export default wraperApi({
   delete: {
     url: '/api/mock/delete',
     method: 'post'
+  },
+  copy: {
+    url: '/api/mock/copy',
+    method: 'get'
   }
 })

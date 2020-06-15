@@ -27,6 +27,11 @@ class Api {
   delete (ctx) {
     return Mock.delete(ctx)
   }
+
+  @Route('get', '/mock/copy')
+  copy (ctx) {
+    return Mock.copy(ctx)
+  }
 }
 
 export default Api

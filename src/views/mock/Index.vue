@@ -342,8 +342,15 @@
         this.categoryId = id
         this.showCreateMockDialog = true
       },
-      copyApi (id) {
-        console.info(id)
+      async copyApi (id) {
+        const { data } = await ApiMock.copy({ id })
+        const { code, bean } = data
+        if (code === 200) {
+          await this.getCategoryList()
+          this.toDetail({ parentId: bean.category_id, id: bean.id })
+        } else {
+          this.$message.error('复制接口失败')
+        }
       },
       async deleteApi (id, item) {
         const { data } = await ApiMock.delete({ id })

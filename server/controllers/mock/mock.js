@@ -273,4 +273,38 @@ export default class Mock {
       ctx.body = ctx.util.refail()
     }
   }
+
+  static async copy (ctx) {
+    // const uid = ctx.state.user.id
+    const id = ctx.checkQuery('id').notEmpty().value
+
+    if (ctx.errors) {
+      ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+    }
+
+    const mock = await MockProxy.findOne({ id })
+
+    if (!mock) {
+      ctx.body = ctx.util.refail('接口不存在')
+      return
+    }
+
+    const dataValues = mock.dataValues
+    const data = {
+      uid: dataValues.uid,
+      project_id: dataValues.project_id,
+      category_id: dataValues.category_id,
+      name: `${dataValues.name}_copy`,
+      url: `${dataValues.url}_copy`,
+      method: dataValues.method,
+      body: dataValues.body
+    }
+
+    const res = await MockProxy.save(data)
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
 }
