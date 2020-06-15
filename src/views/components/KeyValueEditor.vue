@@ -3,7 +3,7 @@
     <a-row type="flex" class="table-row table-header">
       <a-col class="th action" v-if="!readOnly">
         <a-button size="small" type="primary" @click="() => {showImportDialog=true; importData=''}">导入</a-button>
-<!--        <a-switch checked-children="json" un-checked-children="json" size="small" v-model="isJson" @change="changeEditor" />-->
+        <!--        <a-switch checked-children="json" un-checked-children="json" size="small" v-model="isJson" @change="changeEditor" />-->
         <a-icon style="float:right; margin-top: 5px" v-if="!isJson" type="plus-circle" @click="addItem" title="添加"/>
       </a-col>
       <a-col class="th key" v-if="!isJson">键Key</a-col>
@@ -48,15 +48,15 @@
         <a-col class="td desc" v-if="!onlyKeyValue"> <span v-if="readOnly">{{ item.desc }}</span> <a-input v-else v-model="item.desc" /></a-col>
       </a-row>
     </draggable>
-<!--    <json-editor v-if="isJson" ref="editor" :value="editorValue" style="height: 200px;border-right: 1px solid #eee;border-bottom: 1px solid #eee"></json-editor>-->
+    <!--    <json-editor v-if="isJson" ref="editor" :value="editorValue" style="height: 200px;border-right: 1px solid #eee;border-bottom: 1px solid #eee"></json-editor>-->
     <a-modal
-      title="批量导入参数"
+      title="批量导入参数 (支持json格式)"
       :visible="showImportDialog"
       :width="500"
       @ok="exportOk"
       @cancel="exportCancel"
     >
-      <a-textarea :rows="4" v-model="importData" placeholder="key:value (每行一个)"></a-textarea>
+      <a-textarea :rows="6" v-model="importData" placeholder="key:value (每行一个)"></a-textarea>
     </a-modal>
   </div>
 </template>
@@ -65,7 +65,7 @@
   import draggable from 'vuedraggable'
   import { AutoComplete } from 'ant-design-vue'
   // import JsonEditor from '@/views/components/editor/JsonEditor'
-  // import json5 from 'json5'
+  import json5 from 'json5'
   const defaultValue = {
     key: '',
     value: '',
@@ -203,13 +203,26 @@
           this.showImportDialog = false
           return
         }
-        const value = this.importData.replace(/\n(\n)*( )*(\n)*\n/g, '\n').replace(/(\r\n)|(\n)/g, ',').replace(/,+$/, '')
-        const inputArr = value.split(',')
-        const resArr = inputArr.map((item) => {
-          const splitArr = item.split(':')
-          return { key: splitArr[0], value: splitArr[1] || '' }
-        })
-        this.currentValue = this.currentValue.concat(resArr)
+
+        let resArr = []
+
+        try {
+          const importData = json5.parse(this.importData)
+          for (const [key, value] of Object.entries(importData)) {
+            resArr.push({ key, value })
+          }
+        } catch (e) {
+          const importData = this.importData.replace(/\n(\n)*( )*(\n)*\n/g, '\n').replace(/(\r\n)|(\n)/g, ',').replace(/,+$/, '')
+          const inputArr = importData.split(',')
+          resArr = inputArr.map((item) => {
+            const splitArr = item.split(':')
+            return { key: splitArr[0], value: splitArr[1] || '' }
+          })
+        }
+
+        if (resArr.length) {
+          this.currentValue = this.currentValue.concat(resArr)
+        }
         this.showImportDialog = false
       },
       exportCancel () {
