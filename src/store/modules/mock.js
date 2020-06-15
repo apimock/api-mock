@@ -29,6 +29,7 @@ const mock = {
     categoryTree: [],
     categoryTreeFlat: [],
     detail: null,
+    detailNotFound: false,
     mockValue: '',
     mockForm: null,
     tabActiveKey: 'preview',
@@ -60,6 +61,9 @@ const mock = {
     },
     SET_DETAIL (state, data) {
       state.detail = data
+    },
+    SET_DETAIL_NOT_FOUND (state, data) {
+      state.detailNotFound = data
     },
     SET_MOCK_VALUE (state, data) {
       state.mockValue = data
@@ -140,6 +144,7 @@ const mock = {
         mockForm.body_params = jsonParse(mockForm.body_params) || []
         mockForm.method = Method[bean.method]
         mockForm.enable_script = !!bean.enable_script
+        commit('SET_DETAIL_NOT_FOUND', false)
         commit('SET_MOCK_VALUE', mockValue)
         commit('SET_MOCK_FORM', mockForm)
         commit('SET_MOCK_ID', id)
@@ -153,9 +158,7 @@ const mock = {
           commit('SET_SHOW_BODY_PARAMS_TAB', false)
         }
       } else {
-        commit('SET_MOCK_VALUE', '')
-        commit('SET_MOCK_FORM', null)
-        commit('SET_MOCK_ID', '')
+        commit('SET_DETAIL_NOT_FOUND', true)
         this._vm.$message.error('加载失败！')
       }
     },

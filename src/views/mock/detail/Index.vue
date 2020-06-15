@@ -1,7 +1,7 @@
 <template>
   <div class="detail-wrap">
     <a-tabs
-      v-if="mockId"
+      v-if="!detailNotFound"
       type="card"
       class="top-tabs"
       :tabBarGutter="10"
@@ -42,7 +42,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['tabPanes', 'tabActiveKey', 'mockId'])
+      ...mapState('mock', ['tabPanes', 'tabActiveKey', 'detailNotFound'])
     },
     methods: {
       ...mapMutations('mock', ['SET_MOCK_ID', 'SET_TAB_ACTIVE_KEY']),
