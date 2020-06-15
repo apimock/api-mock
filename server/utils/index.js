@@ -111,8 +111,8 @@ export function keyValueToStr (data) {
   if (Array.isArray(data)) {
     data = filterEmptyKey(data)
     data.forEach((item) => {
-      item.key = item.key.trim()
-      item.value = item.value.trim()
+      typeof item.key === 'string' && (item.key = item.key.trim())
+      typeof item.value === 'string' && (item.value = item.value.trim())
     })
     data = uniqueKey(data, 'key')
     return JSON.stringify(data)

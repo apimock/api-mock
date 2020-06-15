@@ -209,7 +209,9 @@
         try {
           const importData = json5.parse(this.importData)
           for (const [key, value] of Object.entries(importData)) {
-            resArr.push({ key, value })
+            if (typeof value === 'string' || typeof value === 'number') {
+              resArr.push({ key, value })
+            }
           }
         } catch (e) {
           const importData = this.importData.replace(/\n(\n)*( )*(\n)*\n/g, '\n').replace(/(\r\n)|(\n)/g, ',').replace(/,+$/, '')
