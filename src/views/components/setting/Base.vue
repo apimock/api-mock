@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+  import { mapState } from 'vuex'
   import ApiProject from '@/api/project'
   export default {
     data () {
@@ -51,14 +51,18 @@
     computed: {
       ...mapState('mock', ['project'])
     },
+    watch: {
+      project (val) {
+        this.form = { ...val }
+      }
+    },
     methods: {
-      ...mapActions('mock', ['getProject']),
       async save () {
         const { data } = await ApiProject.update({ ...this.form })
         const { code, message } = data
         if (code === 200) {
           this.$message.success('保存成功！')
-          this.getProject()
+          this.$emit('updated')
         } else {
           this.$message.error(message)
         }
@@ -66,7 +70,9 @@
       async deleteProject () {
         const { data } = await ApiProject.delete({ id: this.project.id })
         const { code } = data
-        console.info(code)
+        if (code === 200) {
+          this.$emit('deleted')
+        }
       },
       del () {
         const that = this

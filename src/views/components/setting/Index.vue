@@ -9,7 +9,7 @@
   >
     <a-tabs default-active-key="1">
       <a-tab-pane key="1" tab="基本设置">
-        <Base></Base>
+        <Base @updated="updated" @deleted="deleted"></Base>
       </a-tab-pane>
     </a-tabs>
   </a-drawer>
@@ -44,6 +44,14 @@
     methods: {
       onClose () {
         this.currentValue = false
+      },
+      updated () {
+        this.$emit('updated')
+        this.onClose()
+      },
+      deleted () {
+        this.$emit('deleted')
+        this.onClose()
       }
     },
     mounted () {

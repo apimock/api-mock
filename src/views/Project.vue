@@ -1,30 +1,43 @@
 <template>
-  <div class="card-list" ref="content">
+  <div class="project-page" ref="content">
+    <a-button style="margin-bottom: 20px" type="primary" icon="plus" @click="showModal">添加项目</a-button>
     <a-list
+      class="card-list"
       rowKey="id"
+      :pagination="pagination"
       :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}"
       :dataSource="dataSource"
     >
-      <a-list-item slot="renderItem" slot-scope="item">
-        <template v-if="!item || item.id === undefined">
-          <a-button @click="showModal" class="new-btn" type="dashed">
-            <a-icon type="plus"/>
-            新增产品
-          </a-button>
-        </template>
-        <template v-else>
-          <a-card :hoverable="true">
-            <a-card-meta>
-              <a slot="title">{{ item.name }}</a>
-              <div class="meta-content" slot="description">{{ item.description }}</div>
-            </a-card-meta>
-            <template class="ant-card-actions" slot="actions">
-              <router-link :to="{name: 'mock', params: { projectId: item.id }}"><a-icon key="eye" type="eye" /></router-link>
-              <a><a-icon key="edit" type="edit" @click="update(item)"/></a>
-              <a><a-icon key="delete" type="delete" @click="remove(item.id)"/></a>
+      <a-list-item class="card-item" slot="renderItem" slot-scope="item">
+        <a-card :hoverable="true">
+          <a-list-item-meta :description="item.description">
+            <a slot="title">{{ item.name }}</a>
+            <a-avatar slot="avatar" :src="item.user.avatar"/>
+          </a-list-item-meta>
+          <div class="info">
+            <span><a-icon type="link"></a-icon> {{ item.base_url }}</span>
+            <span><a-icon type="api"></a-icon> 200</span>
+          </div>
+          <p class="date">
+            <template v-if="item.updated_at">
+              更新于：{{ item.updated_at| moment }}
             </template>
-          </a-card>
-        </template>
+            <template v-else>
+              创建于：{{ item.created_at| moment }}
+            </template>
+          </p>
+          <template class="ant-card-actions" slot="actions">
+            <router-link :to="{name: 'mock', params: { projectId: item.id }}">
+              <a-icon key="eye" type="eye"/> 查看
+            </router-link>
+            <a>
+              <a-icon key="star" type="star" @click="update(item)"/> 收藏
+            </a>
+            <a @click="onSetting(item)">
+              <a-icon key="setting" type="setting" /> 设置
+            </a>
+          </template>
+        </a-card>
       </a-list-item>
     </a-list>
     <a-modal
@@ -46,22 +59,37 @@
         </a-form-model-item>
       </a-form-model>
     </a-modal>
+    <Setting v-model="showSetting" @updated="settingUpdated" @deleted="settingUpdated"></Setting>
   </div>
 </template>
 
 <script>
   import ApiProject from '@/api/project'
+  import Setting from '@/views/components/setting/Index'
+  import { mapActions } from 'vuex'
 
   export default {
     name: 'CardList',
+    components: {
+      Setting
+    },
     data () {
       return {
         dataSource: [],
+        pagination: {
+          onChange: page => {
+            this.getList(page)
+          },
+          pageSize: 30,
+          total: 0,
+          hideOnSinglePage: true
+        },
         modal: {
           id: '',
           show: false,
           confirmLoading: false
         },
+        showSetting: false,
         projectForm: {},
         rules: {
           name: [
@@ -72,10 +100,15 @@
       }
     },
     methods: {
-      async getList () {
-        const { data } = await ApiProject.list()
+      ...mapActions('mock', ['getProject']),
+      async getList (page = 1) {
+        const { data } = await ApiProject.list({
+          pageNo: page,
+          pageSize: this.pagination.pageSize
+        })
         const { bean, code } = data
         if (code === 200) {
+          this.pagination.total = bean.totalCount
           this.dataSource = !bean.data.length ? [{}] : bean.data
         }
       },
@@ -119,6 +152,13 @@
         this.modal.id = item.id
         this.projectForm = Object.assign(Object.create(null), this.projectForm, item)
         this.modal.show = true
+      },
+      async onSetting (item) {
+        await this.getProject(item.id)
+        this.showSetting = true
+      },
+      settingUpdated () {
+        this.getList()
       }
     },
     created () {
@@ -127,36 +167,51 @@
   }
 </script>
 
-<style lang="less" scoped>
-  @import "~@/components/index.less";
+<style lang="less">
 
-  .card-list {
-    /deep/ .ant-card-body:hover {
-      .ant-card-meta-title>a {
-        color: @primary-color;
-      }
+  .project-page {
+    margin: 30px;
+
+    .ant-list-pagination{
+      text-align: center;
     }
 
-    /deep/ .ant-card-meta-title {
-      margin-bottom: 12px;
+    .card-list {
+      .ant-card {
+        background: #fff;
 
-      &>a {
-        display: inline-block;
-        max-width: 100%;
-        color: rgba(0,0,0,.85);
+        .ant-list-item-meta-title {
+          font-size: 16px;
+        }
+
+        .ant-list-item-meta-description{
+          font-size: 13px;
+          height: 47px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .info{
+          background: #f0f2f5;
+          color: #808080;
+          padding: 8px;
+          border-radius: 5px;
+          font-size: 16px;
+          margin-top: 5px;
+          span{
+            margin-right: 30px;
+          }
+        }
+
+        .date{
+          margin-top: 10px;
+          font-size: 13px;
+          color: rgba(0, 0, 0, 0.45);
+        }
       }
-    }
-
-    /deep/ .meta-content {
-      position: relative;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      height: 64px;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-
-      margin-bottom: 1em;
     }
   }
 
@@ -185,18 +240,8 @@
         line-height: 22px;
         display: inline-block;
         width: 100%;
-        &:hover {
-          color: @primary-color;
-        }
       }
     }
-  }
-
-  .new-btn {
-    background-color: #fff;
-    border-radius: 2px;
-    width: 100%;
-    height: 188px;
   }
 
 </style>

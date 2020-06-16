@@ -44,7 +44,7 @@
           </template>
         </a-col>
         <a-col class="td value"> <span v-if="readOnly">{{ item.value }}</span> <a-input v-else v-model="item.value" /></a-col>
-        <a-col class="td required" v-if="!onlyKeyValue"> <span v-if="readOnly">{{ item.required ? '是' : '否' }}</span> <a-checkbox v-else v-model="item.required"></a-checkbox></a-col>
+        <a-col class="td required" v-if="!onlyKeyValue"> <span v-if="readOnly"><template v-if="item.required"><a-badge status="warning" />是</template><template v-else><a-badge status="default" /><span style="color: #aaa">否</span></template></span> <a-checkbox v-else v-model="item.required"></a-checkbox></a-col>
         <a-col class="td desc" v-if="!onlyKeyValue"> <span v-if="readOnly">{{ item.desc }}</span> <a-input v-else v-model="item.desc" /></a-col>
       </a-row>
     </draggable>
