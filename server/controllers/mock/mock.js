@@ -215,6 +215,7 @@ export default class Mock {
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
     }
     const query = {
       where: {
@@ -252,6 +253,7 @@ export default class Mock {
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
     }
 
     const mock = await MockProxy.findOne({ id })
@@ -280,6 +282,7 @@ export default class Mock {
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
     }
 
     const mock = await MockProxy.findOne({ id })

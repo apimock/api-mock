@@ -19,8 +19,8 @@ export default class Project {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
-    const findQuery = { uid, [Op.or]: [{ name }, { base_url: baseUrl }] }
-    const project = await ProjectProxy.findOne(findQuery)
+    const where = { uid, [Op.or]: [{ name }, { base_url: baseUrl }] }
+    const project = await ProjectProxy.findOne(where)
 
     if (project) {
       ctx.body = project.name === name
@@ -57,8 +57,8 @@ export default class Project {
       return
     }
 
-    const findQuery = { id: { [Op.ne]: project.id }, [Op.or]: [{ name }, { base_url: baseUrl }] }
-    const existProject = await ProjectProxy.findOne(findQuery)
+    const where = { id: { [Op.ne]: project.id }, [Op.or]: [{ name }, { base_url: baseUrl }] }
+    const existProject = await ProjectProxy.findOne(where)
 
     if (existProject) {
       ctx.body = existProject.name === name

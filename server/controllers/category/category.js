@@ -103,6 +103,7 @@ export default class Category {
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
+      return
     }
 
     const category = await CategoryProxy.findOne({ id })
