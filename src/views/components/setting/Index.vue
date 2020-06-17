@@ -11,16 +11,21 @@
       <a-tab-pane key="1" tab="基本设置">
         <Base @updated="updated" @deleted="deleted"></Base>
       </a-tab-pane>
+      <a-tab-pane key="2" tab="成员列表">
+        <Member></Member>
+      </a-tab-pane>
     </a-tabs>
   </a-drawer>
 </template>
 
 <script>
   import Base from '@/views/components/setting/Base'
+  import Member from '@/views/components/setting/Member'
   export default {
     name: 'Setting',
     components: {
-      Base
+      Base,
+      Member
     },
     props: {
       value: {

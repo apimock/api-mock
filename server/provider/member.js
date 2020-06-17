@@ -30,6 +30,12 @@ module.exports = class Member {
     return res.map((item) => item.uid)
   }
 
+  static findOne (where) {
+    return Model.Member.findOne({
+      where
+    })
+  }
+
   static findAll (query) {
     return Model.Member.findAll(query)
   }
