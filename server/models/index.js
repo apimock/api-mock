@@ -7,7 +7,7 @@ module.exports = function () {
     User: require('./user')(_seq, DataTypes),
     Project: require('./project')(_seq, DataTypes),
     Category: require('./category')(_seq, DataTypes),
-    UserProject: require('./user_project')(_seq, DataTypes),
+    Member: require('./member')(_seq, DataTypes),
     Mock: require('./mock')(_seq, DataTypes),
     Expect: require('./expect')(_seq, DataTypes)
   })
@@ -18,6 +18,11 @@ module.exports = function () {
   }
 
   Model.Project.belongsTo(Model.User, {
+    foreignKey: 'uid',
+    sourceKey: 'id'
+  })
+
+  Model.Member.belongsTo(Model.User, {
     foreignKey: 'uid',
     sourceKey: 'id'
   })

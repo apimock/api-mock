@@ -1,17 +1,17 @@
 import dateTime from '~/server/utils/dateTime'
 const Model = require('~/server/models')()
 
-module.exports = class Project {
+module.exports = class Member {
   static save (data) {
-    return Model.UserProject.create({ ...data, created_at: dateTime() })
+    return Model.Member.create({ ...data, created_at: dateTime() })
   }
 
   static bulkCreate (data) {
-    return Model.UserProject.bulkCreate(data)
+    return Model.Member.bulkCreate(data)
   }
 
   static findProjectIdByUserId (uid) {
-    const res = Model.UserProject.findAll({
+    const res = Model.Member.findAll({
       attributes: ['project_id'],
       where: {
         uid
@@ -21,7 +21,7 @@ module.exports = class Project {
   }
 
   static findUserIdByProjectId (projectId) {
-    const res = Model.UserProject.findAll({
+    const res = Model.Member.findAll({
       attributes: ['uid'],
       where: {
         project_id: projectId
@@ -30,8 +30,12 @@ module.exports = class Project {
     return res.map((item) => item.uid)
   }
 
+  static findAll (query) {
+    return Model.Member.findAll(query)
+  }
+
   static destroy (where) {
-    return Model.UserProject.destroy({
+    return Model.Member.destroy({
       where
     })
   }

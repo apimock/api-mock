@@ -1,10 +1,8 @@
 import ProjectProxy from '~/server/provider/project'
-import ProjectUserProxy from '~/server/provider/userProject'
+import MemberProxy from '~/server/provider/member'
 import MockProxy from '~/server/provider/mock'
 import CategoryProxy from '~/server/provider/category'
-import dateTime from '~/server/utils/dateTime'
 import { getPage } from '~/server/utils'
-const _ = require('lodash')
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
 const Model = require('~/server/models')()
@@ -15,15 +13,7 @@ export default class Project {
     const { description } = ctx.request.body
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    const members = ctx.checkBody('members').empty().type('array').value || []
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
-
-    if (members && members.length) {
-      if (_.includes(members, uid)) {
-        ctx.body = ctx.util.refail('项目成员不能包含自己')
-        return
-      }
-    }
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -39,7 +29,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({ uid, name, description, members, base_url: baseUrl, swagger_url: swaggerUrl })
+    const res = await ProjectProxy.save({ uid, name, description, base_url: baseUrl, swagger_url: swaggerUrl })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -53,7 +43,6 @@ export default class Project {
     const id = ctx.checkBody('id').notEmpty().value
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
-    const members = ctx.checkBody('members').empty().type('array').value || []
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
 
     if (ctx.errors) {
@@ -62,32 +51,10 @@ export default class Project {
     }
 
     const project = await ProjectProxy.checkById(id, uid)
-    let diffMembers = _.difference(project.members, members)
-    if (diffMembers.length > 0) {
-      await ProjectUserProxy.destroy({
-        project_id: project.id,
-        uid: {
-          [Op.in]: diffMembers
-        }
-      })
-    }
-
-    diffMembers = _.difference(members, project.members)
-    if (diffMembers.length > 0) {
-      const userProjectAll = diffMembers.map(uid => ({ uid, project_id: id, created_at: dateTime() }))
-      await ProjectUserProxy.bulkCreate(userProjectAll)
-    }
 
     if (typeof project === 'string') {
       ctx.body = ctx.util.refail(project)
       return
-    }
-
-    if (members && members.length) {
-      if (project.uid && _.includes(members, project.uid)) {
-        ctx.body = ctx.util.refail('项目成员不能包含创建者')
-        return
-      }
     }
 
     const findQuery = { id: { [Op.ne]: project.id }, [Op.or]: [{ name }, { base_url: baseUrl }] }
@@ -100,7 +67,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({ id, uid, name, description, members, base_url: baseUrl, swagger_url: swaggerUrl })
+    const res = await ProjectProxy.save({ id, uid, name, description, base_url: baseUrl, swagger_url: swaggerUrl })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {
@@ -136,14 +103,14 @@ export default class Project {
     }
 
     if (source === 0) {
-      const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
+      const projectIds = await MemberProxy.findProjectIdByUserId(uid)
       query.where = {
         id: {
           [Op.in]: projectIds
         }
       }
     } else if (source === 2) {
-      const projectIds = await ProjectUserProxy.findProjectIdByUserId(uid)
+      const projectIds = await MemberProxy.findProjectIdByUserId(uid)
       query.where = {
         id: {
           [Op.in]: projectIds
@@ -211,7 +178,7 @@ export default class Project {
     const where = { project_id: id }
     await MockProxy.destroy(where)
     await CategoryProxy.destroy(where)
-    await ProjectUserProxy.destroy(where)
+    await MemberProxy.destroy(where)
     const res = ProjectProxy.destroy(id)
     if (res) {
       ctx.body = ctx.util.resuccess(res)
