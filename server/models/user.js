@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true
     },
     'username': {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: false,
       defaultValue: '',
       unique: true
@@ -36,7 +36,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: '1'
     },
-    'stars': {
+    'star_mock': {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    'star_project': {
       type: DataTypes.TEXT,
       allowNull: true
     },

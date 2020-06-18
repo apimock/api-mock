@@ -133,7 +133,7 @@
           )
           data.bean.data.forEach((item) => {
             try {
-              const starsArr = JSON.parse(item.user.stars)
+              const starsArr = JSON.parse(item.user.star_mock)
               if (starsArr.includes(item.id)) {
                 item.hadStar = true
               } else {
@@ -223,7 +223,7 @@
       },
       async star (record) {
         const type = record.hadStar ? 1 : 0
-        const { data } = await ApiUser.star({ stars: [record.id], type })
+        const { data } = await ApiUser.star({ field: 'star_mock', values: [record.id], type })
         const { code } = data
         if (code === 200) {
           this.refresh()

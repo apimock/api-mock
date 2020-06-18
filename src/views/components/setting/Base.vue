@@ -17,7 +17,7 @@
         <a-input type="textarea" v-model="form.description" placeholder="please input description"/>
       </a-form-model-item>
       <a-form-model-item :wrapper-col="{ offset: 5 }">
-        <a-button type="primary" @click="save">
+        <a-button type="primary" @click="save" icon="save">
           保存
         </a-button>
       </a-form-model-item>

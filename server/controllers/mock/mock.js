@@ -150,7 +150,7 @@ export default class Mock {
 
     if (categoryId && categoryId === 'stars') {
       const uid = ctx.state.user.id
-      const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+      const { stars } = await UserProxy.findOne({ id: uid }, ['star_mock'])
       if (stars) {
         try {
           const starsArr = JSON.parse(stars)
@@ -233,7 +233,7 @@ export default class Mock {
     }
 
     const expectCount = await ExpectProxy.count({ mock_id: mock.id })
-    const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+    const { star_mock: stars } = await UserProxy.findOne({ id: uid }, ['star_mock'])
     let hadStar = false
     if (stars) {
       try {

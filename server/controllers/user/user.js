@@ -82,20 +82,22 @@ export default class User {
 
   static async star (ctx) {
     const uid = ctx.state.user.id
-    const qstars = ctx.checkBody('stars').notEmpty().type('array').value
+    const field = ctx.checkBody('field').notEmpty().value
+    const values = ctx.checkBody('values').notEmpty().type('array').value
     const type = ctx.checkBody('type').notEmpty().value
-    if (ctx.errors || !qstars.length) {
+    if (ctx.errors || !values.length) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
 
-    const { stars } = await UserProxy.findOne({ id: uid }, ['stars'])
+    const userData = await UserProxy.findOne({ id: uid }, [field])
+    const stars = userData[field]
     let saveStarsArr = []
     if (stars) {
       try {
         const starsArr = JSON.parse(stars)
         if (type) {
-          qstars.forEach((item) => {
+          values.forEach((item) => {
             item = Number(item)
             if (!isNaN(item)) {
               const index = starsArr.indexOf(item)
@@ -106,16 +108,18 @@ export default class User {
           })
           saveStarsArr = starsArr
         } else {
-          saveStarsArr = starsArr.concat(qstars)
+          saveStarsArr = starsArr.concat(values)
         }
       } catch (e) {
-        if (type) saveStarsArr = qstars
+        if (type) saveStarsArr = values
       }
     }
     saveStarsArr = saveStarsArr.filter((item) => !isNaN(item) && item !== null)
 
     const saveStarStr = Array.from(new Set(saveStarsArr)).toString().replace(/,+$/g, '')
-    const user = await UserProxy.save({ id: uid, stars: `[${saveStarStr}]` })
+    const saveData = { id: uid }
+    saveData[field] = `[${saveStarStr}]`
+    const user = await UserProxy.save(saveData)
     if (user) {
       ctx.body = ctx.util.resuccess(user)
     } else {

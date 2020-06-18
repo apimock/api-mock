@@ -12,7 +12,7 @@ module.exports = class User {
     }
   }
 
-  static findOne (where, attributes = { exclude: ['password', 'stars'] }) {
+  static findOne (where, attributes = { exclude: ['password', 'star_mock', 'star_project'] }) {
     return Model.User.findOne({
       where,
       attributes

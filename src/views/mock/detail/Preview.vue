@@ -124,7 +124,7 @@
       },
       async star () {
         const type = this.detail.hadStar ? 1 : 0
-        const { data } = await ApiUser.star({ stars: [this.detail.id], type })
+        const { data } = await ApiUser.star({ field: 'star_mock', values: [this.detail.id], type })
         const { code } = data
         if (code === 200) {
           this.getDetail()

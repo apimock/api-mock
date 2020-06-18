@@ -30,8 +30,8 @@
             <router-link :to="{name: 'mock', params: { projectId: item.id }}">
               <a-icon key="eye" type="eye"/> 查看
             </router-link>
-            <a>
-              <a-icon key="star" type="star" @click="update(item)"/> 收藏
+            <a @click="star(item)">
+              <a-icon key="star" type="star" :theme="item.hadStar ? 'filled': 'outlined'"/> 收藏
             </a>
             <a @click="onSetting(item)">
               <a-icon key="setting" type="setting" /> 设置
@@ -67,6 +67,7 @@
   import ApiProject from '@/api/project'
   import Setting from '@/views/components/setting/Index'
   import { mapActions } from 'vuex'
+  import ApiUser from '@/api/user'
 
   export default {
     name: 'CardList',
@@ -159,6 +160,14 @@
       },
       settingUpdated () {
         this.getList()
+      },
+      async star (record) {
+        const type = record.hadStar ? 1 : 0
+        const { data } = await ApiUser.star({ field: 'star_project', values: [record.id], type })
+        const { code } = data
+        if (code === 200) {
+          this.getList()
+        }
       }
     },
     created () {

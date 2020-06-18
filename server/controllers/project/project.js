@@ -3,6 +3,7 @@ import MemberProxy from '~/server/provider/member'
 import MockProxy from '~/server/provider/mock'
 import CategoryProxy from '~/server/provider/category'
 import { getPage } from '~/server/utils'
+import UserProxy from '@server/provider/user'
 const Op = require('sequelize').Op
 const defaultPageSize = require('config').get('pageSize')
 const Model = require('~/server/models')()
@@ -139,6 +140,18 @@ export default class Project {
     const projectResult = await ProjectProxy.findAndCountAll(query)
     const page = getPage(projectResult, pageSize, pageNo)
     const projects = projectResult.rows
+    const { star_project: stars } = await UserProxy.findOne({ id: uid }, ['star_project'])
+    if (stars) {
+      try {
+        const starsArr = JSON.parse(stars)
+        projects.forEach((item) => {
+          let hadStar = false
+          if (starsArr.includes(item.id)) hadStar = true
+          item.dataValues.hadStar = hadStar
+        })
+      } catch (e) {
+      }
+    }
     const bean = {
       data: projects,
       ...page
