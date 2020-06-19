@@ -1,6 +1,26 @@
 <template>
   <div class="project-page" ref="content">
-    <a-button style="margin-bottom: 20px" type="primary" icon="plus" @click="showModal">添加项目</a-button>
+    <a-row type="flex" justify="space-between" style="margin-bottom: 20px">
+      <a-col>
+        <a-button type="primary" icon="plus" @click="showModal">添加项目</a-button>
+      </a-col>
+      <a-col>
+        <a-radio-group :value="source" @change="sourceChange">
+          <a-radio-button :value="0">
+            全部
+          </a-radio-button>
+          <a-radio-button :value="1">
+            我创建的
+          </a-radio-button>
+          <a-radio-button :value="2">
+            我加入的
+          </a-radio-button>
+          <a-radio-button :value="3">
+            我的收藏
+          </a-radio-button>
+        </a-radio-group>
+      </a-col>
+    </a-row>
     <a-list
       class="card-list"
       rowKey="id"
@@ -77,6 +97,7 @@
     data () {
       return {
         dataSource: [],
+        source: 0,
         pagination: {
           onChange: page => {
             this.getList(page)
@@ -105,13 +126,19 @@
       async getList (page = 1) {
         const { data } = await ApiProject.list({
           pageNo: page,
-          pageSize: this.pagination.pageSize
+          pageSize: this.pagination.pageSize,
+          source: this.source
         })
         const { bean, code } = data
         if (code === 200) {
           this.pagination.total = bean.totalCount
-          this.dataSource = !bean.data.length ? [{}] : bean.data
+          this.dataSource = bean.data
         }
+      },
+      sourceChange (e) {
+        const value = e.target.value
+        this.source = value
+        this.getList()
       },
       handleOk () {
         this.$refs.projectForm.validate(async valid => {

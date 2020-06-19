@@ -90,6 +90,8 @@
             if (value === that.project.name) {
               await that.deleteProject()
               modal.destroy()
+            } else {
+              that.$message.error('项目名输入错误！')
             }
           },
           onCancel () {

@@ -81,12 +81,14 @@ export default class Project {
     const { keywords } = ctx.query
     const pageSize = ctx.checkQuery('pageSize').empty().toInt().gt(0).default(defaultPageSize).value
     const pageNo = ctx.checkQuery('pageNo').empty().toInt().gt(0).default(1).value
-    const source = ctx.checkQuery('source').empty().toInt().default(0).value // 0：全部、1：我创建的、2：我加入的
+    const source = ctx.checkQuery('source').empty().toInt().default(0).value // 0：全部、1：我创建的、2：我加入的、3：我的收藏
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
+
+    const stars = await UserProxy.getStars(uid, 'star_project')
 
     const query = {
       where: {
@@ -120,6 +122,12 @@ export default class Project {
           [Op.ne]: [uid]
         }
       }
+    } else if (source === 3) {
+      query.where = {
+        id: {
+          [Op.in]: stars
+        }
+      }
     }
 
     if (keywords) {
@@ -140,18 +148,11 @@ export default class Project {
     const projectResult = await ProjectProxy.findAndCountAll(query)
     const page = getPage(projectResult, pageSize, pageNo)
     const projects = projectResult.rows
-    const { star_project: stars } = await UserProxy.findOne({ id: uid }, ['star_project'])
-    if (stars) {
-      try {
-        const starsArr = JSON.parse(stars)
-        projects.forEach((item) => {
-          let hadStar = false
-          if (starsArr.includes(item.id)) hadStar = true
-          item.dataValues.hadStar = hadStar
-        })
-      } catch (e) {
-      }
-    }
+    projects.forEach((item) => {
+      let hadStar = false
+      if (stars.includes(item.id)) hadStar = true
+      item.dataValues.hadStar = hadStar
+    })
     const bean = {
       data: projects,
       ...page

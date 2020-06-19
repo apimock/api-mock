@@ -150,19 +150,15 @@ export default class Mock {
 
     if (categoryId && categoryId === 'stars') {
       const uid = ctx.state.user.id
-      const { stars } = await UserProxy.findOne({ id: uid }, ['star_mock'])
-      if (stars) {
-        try {
-          const starsArr = JSON.parse(stars)
-          Object.assign(query.where, {
-            [Op.and]: {
-              id: {
-                [Op.in]: starsArr
-              }
+      const stars = await UserProxy.getStars(uid, 'star_mock')
+      if (stars.length) {
+        Object.assign(query.where, {
+          [Op.and]: {
+            id: {
+              [Op.in]: stars
             }
-          })
-        } catch (e) {
-        }
+          }
+        })
       }
     }
 
@@ -233,15 +229,9 @@ export default class Mock {
     }
 
     const expectCount = await ExpectProxy.count({ mock_id: mock.id })
-    const { star_mock: stars } = await UserProxy.findOne({ id: uid }, ['star_mock'])
+    const stars = await UserProxy.getStars(uid, 'star_mock')
     let hadStar = false
-    if (stars) {
-      try {
-        const starsArr = JSON.parse(stars)
-        if (starsArr.includes(mock.id)) hadStar = true
-      } catch (e) {
-      }
-    }
+    if (stars.includes(mock.id)) hadStar = true
     mock.dataValues.hadStar = hadStar
     mock.dataValues.expect_count = expectCount
     ctx.body = ctx.util.resuccess(mock)

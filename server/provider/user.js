@@ -27,6 +27,19 @@ module.exports = class User {
     })
   }
 
+  static async getStars (uid, field) {
+    const user = await this.findOne({ id: uid }, [field])
+    const stars = user[field]
+    let res = []
+    if (stars) {
+      try {
+        res = JSON.parse(stars)
+      } catch (e) {
+      }
+    }
+    return res
+  }
+
   static delete (id) {
     return this.save({ id, status: 0 })
   }

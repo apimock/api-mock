@@ -10,7 +10,10 @@ const Message = {
 module.exports = class Project {
   static async save (data) {
     if (!data.id) {
-      return Model.Project.create({ ...data, created_at: dateTime() })
+      const project = await Model.Project.create({ ...data, created_at: dateTime() })
+      const { id, uid } = project
+      await MemberProxy.save({ uid, project_id: id, created_at: dateTime() })
+      return project
     } else {
       return Model.Project.update({ ...data, updated_at: dateTime() }, {
         where: { id: data.id }
