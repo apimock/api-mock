@@ -1,5 +1,5 @@
 import { jsonParse } from '@/utils'
-import { CateKeyAll, Method, defaultMockForm, tabPaneObj } from '@/utils/enum'
+import { KeyAll, KeyStar, Method, defaultMockForm, tabPaneObj } from '@/utils/enum'
 import { getMockValue } from '~/common/mock'
 import ApiProject from '@/api/project'
 import ApiCategory from '@/api/category'
@@ -116,13 +116,13 @@ const mock = {
           })
         })
         bean.unshift({
-          key: CateKeyAll,
+          key: KeyAll,
           title: '全部接口',
           slots: { icon: 'appstore' },
           scopedSlots: { title: 'parent' }
         })
         bean.unshift({
-          key: 'star',
+          key: KeyStar,
           title: '我的收藏',
           slots: { icon: 'star' },
           scopedSlots: { title: 'parent' }

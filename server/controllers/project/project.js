@@ -148,11 +148,12 @@ export default class Project {
     const projectResult = await ProjectProxy.findAndCountAll(query)
     const page = getPage(projectResult, pageSize, pageNo)
     const projects = projectResult.rows
-    projects.forEach((item) => {
+    for (const item of projects) {
       let hadStar = false
       if (stars.includes(item.id)) hadStar = true
       item.dataValues.hadStar = hadStar
-    })
+      item.dataValues.mockCount = await MockProxy.count({ project_id: item.id })
+    }
     const bean = {
       data: projects,
       ...page

@@ -148,7 +148,7 @@ export default class Mock {
       })
     }
 
-    if (categoryId && categoryId === 'stars') {
+    if (categoryId && categoryId === 'star') {
       const uid = ctx.state.user.id
       const stars = await UserProxy.getStars(uid, 'star_mock')
       if (stars.length) {
@@ -288,7 +288,7 @@ export default class Mock {
       project_id: dataValues.project_id,
       category_id: dataValues.category_id,
       name: `${dataValues.name}_copy`,
-      url: `${dataValues.url}_copy`,
+      url: `${dataValues.url}_copy_${Date.now()}`,
       method: dataValues.method,
       body: dataValues.body
     }

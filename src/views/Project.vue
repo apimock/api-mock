@@ -36,7 +36,7 @@
           </a-list-item-meta>
           <div class="info">
             <span><a-icon type="link"></a-icon> {{ item.base_url }}</span>
-            <span><a-icon type="api"></a-icon> 200</span>
+            <span><a-icon type="api"></a-icon> {{ item.mockCount }}</span>
           </div>
           <p class="date">
             <template v-if="item.updated_at">

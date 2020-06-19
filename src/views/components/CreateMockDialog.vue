@@ -11,9 +11,9 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
       :rules="rules">
-      <a-form-model-item label="接口分类" prop="category">
+      <a-form-model-item label="接口分类" prop="category_id">
         <a-select v-model="mockForm.category_id">
-          <a-select-option v-for="(item, index) in categoryTree" :key="index" :value="item.id">
+          <a-select-option v-for="(item, index) in categoryList" :key="index" :value="item.id">
             {{ item.name }}
           </a-select-option>
         </a-select>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus, KeyAll, KeyStar } from '@/utils/enum'
   import ApiMock from '@/api/mock'
   import { mapState, mapActions, mapMutations } from 'vuex'
 
@@ -52,7 +52,7 @@
     body_params: [],
     body_params_type: 1,
     project_id: '',
-    category_id: -1,
+    category_id: '',
     body: '{}'
   }
   export default {
@@ -72,16 +72,18 @@
     data () {
       return {
         currentValue: false,
+        categoryList: [],
         mockForm,
         MethodArray,
         ResponseStatus,
         labelCol: { span: 5 },
         wrapperCol: { span: 19 },
         rules: {
+          category_id: [{ required: true, message: '请选择分类', trigger: 'blur' }],
           url: [
-            { required: true, message: 'Please input url', trigger: 'blur' }
+            { required: true, message: '请输入地址', trigger: 'blur' }
           ],
-          name: [{ required: true, message: 'Please input name', trigger: 'blur' }]
+          name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
         }
       }
     },
@@ -91,7 +93,12 @@
       },
       value (val) {
         this.currentValue = val
-        this.mockForm.category_id = Number(this.categoryId)
+        this.getCategoryList()
+        if (!isNaN(Number(this.categoryId))) {
+          this.mockForm.category_id = Number(this.categoryId)
+        } else if (this.categoryList.length && this.categoryList[0]) {
+          this.mockForm.category_id = Number(this.categoryList[0].key)
+        }
         this.mockForm.name = ''
         this.mockForm.url = ''
       }
@@ -110,6 +117,9 @@
         if (!/^\/.*$/.test(value)) {
           this.mockForm.url = `/${this.mockForm.url}`
         }
+      },
+      getCategoryList () {
+        this.categoryList = this.categoryTree.filter((item) => ![KeyAll, KeyStar].includes(item.key))
       },
       async createApiOk () {
         this.$refs.mockForm.validate(async valid => {
@@ -142,6 +152,7 @@
     mounted () {
       if (this.value) {
         this.currentValue = true
+        this.getCategoryList()
       }
     }
   }

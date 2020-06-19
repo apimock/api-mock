@@ -20,7 +20,7 @@
               </a-menu-item>
               <a-menu-divider />
               <a-menu-item v-for="(item, index) in projectList" :key="index">
-                <router-link :to="{name: 'mock', params: { projectId: item.id }}" replace>{{ item.name }}</router-link>
+                <div @click="replaceProject(item)">{{ item.name }}</div>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -145,7 +145,7 @@
   import { Tree } from 'ant-design-vue'
   import ApiCategory from '@/api/category'
   import { RouteView } from '@/layouts'
-  import { MethodTagColor, Method, CateKeyAll } from '@/utils/enum'
+  import { MethodTagColor, Method, KeyAll, KeyStar } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
   import Vue from 'vue'
   import { mapState, mapMutations, mapActions } from 'vuex'
@@ -205,7 +205,7 @@
         autoExpandParent: true,
         searchValue: '',
         expandedKeys: [this.$route.params.categoryId],
-        selectedKeys: this.$route.params.categoryId === 'all' ? [CateKeyAll] : this.$route.params.mockId ? [`${this.$route.params.categoryId}-${this.$route.params.mockId}`] : [this.$route.params.categoryId]
+        selectedKeys: this.$route.params.categoryId === 'all' ? [KeyAll] : this.$route.params.mockId ? [`${this.$route.params.categoryId}-${this.$route.params.mockId}`] : [this.$route.params.categoryId]
       }
     },
     computed: {
@@ -235,6 +235,9 @@
       toProjectList () {
         this.$router.push({ name: 'project' })
       },
+      replaceProject (item) {
+        location.href = `${location.origin}/project/${item.id}/all`
+      },
       methodToString (num) {
         return Method[num].toUpperCase()
       },
@@ -242,7 +245,7 @@
         return MethodTagColor[num]
       },
       mouseover (e) {
-        if (e.eventKey !== CateKeyAll && this.mouseEnable) {
+        if (![KeyAll, KeyStar].includes(e.eventKey) && this.mouseEnable) {
           e.dataRef.showRightButton = true
         }
       },
@@ -328,7 +331,7 @@
             const { code } = data
             if (code === 200) {
               await that.getCategoryList()
-              that.toList({ eventKey: CateKeyAll }, true)
+              that.toList({ eventKey: KeyAll }, true)
             } else {
               that.$message.error('删除分类失败')
             }
@@ -364,10 +367,8 @@
       },
       toList (item, refresh = false) {
         let categoryId = item.id
-        if (item.eventKey === CateKeyAll) {
-          categoryId = 'all'
-        } else if (item.eventKey === 'star') {
-          categoryId = 'stars'
+        if ([KeyAll, KeyStar].includes(item.eventKey)) {
+          categoryId = item.eventKey
         }
         if (refresh) {
           this.$router.push({ name: 'mockList', params: { categoryId }, query: { refresh: new Date().getTime() } })
@@ -377,8 +378,8 @@
       },
       toDetail (item) {
         let categoryId = item.parentId
-        if (item.eventKey === CateKeyAll) {
-          categoryId = 'all'
+        if ([KeyAll, KeyStar].includes(item.eventKey)) {
+          categoryId = item.eventKey
         }
         this.SET_MOCK_ID(item.id)
         this.$router.push({ name: 'mockDetail', params: { categoryId, mockId: item.id } })
@@ -462,7 +463,7 @@
       this.expandedKeys.splice(0, this.expandedKeys.length)
       this.expandedKeys.push(String(categoryId))
       setTimeout(() => {
-        this.selectedKeys = categoryId === 'all' ? [CateKeyAll] : mockId ? [`${categoryId}-${mockId}`] : [categoryId]
+        this.selectedKeys = categoryId === 'all' ? [KeyAll] : mockId ? [`${categoryId}-${mockId}`] : [categoryId]
       }, 500)
       next()
     },

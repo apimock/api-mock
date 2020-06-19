@@ -1,6 +1,7 @@
 import dateTime from '~/server/utils/dateTime'
 import ProjectProxy from '~/server/provider/project'
 const Model = require('~/server/models')()
+const sequelize = require('sequelize')
 const Message = {
   NoPermission: '无权限操作',
   NotExist: '接口不存在'
@@ -15,6 +16,10 @@ module.exports = class Mock {
         where: { id: data.id }
       })
     }
+  }
+
+  static count (where) {
+    return Model.Mock.count({ where })
   }
 
   static findAndCountAll (query) {
