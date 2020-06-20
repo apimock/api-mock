@@ -18,7 +18,12 @@ class Api {
     return User.login(ctx)
   }
 
-  @Route('post', '/star')
+  @Route('post', '/user/update')
+  update (ctx) {
+    return User.update(ctx)
+  }
+
+  @Route('post', '/user/star')
   star (ctx) {
     return User.star(ctx)
   }

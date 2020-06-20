@@ -79,7 +79,7 @@ const user = {
 
           commit('SET_NAME', { name: bean.username, welcome: welcome() })
           commit('SET_AVATAR', bean.avatar)
-
+          commit('SET_INFO', bean)
           resolve(response.data)
         }).catch(error => {
           reject(error)

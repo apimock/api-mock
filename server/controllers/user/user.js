@@ -80,6 +80,19 @@ export default class User {
     }
   }
 
+  static async update (ctx) {
+    const uid = ctx.state.user.id
+    const username = ctx.checkBody('username').empty().value
+    const email = ctx.checkBody('email').empty().value
+    const password = ctx.checkBody('password').empty().value
+    const res = await UserProxy.save({ id: uid, username, email, password })
+    if (res) {
+      ctx.body = ctx.util.resuccess(res)
+    } else {
+      ctx.body = ctx.util.refail()
+    }
+  }
+
   static async star (ctx) {
     const uid = ctx.state.user.id
     const field = ctx.checkBody('field').notEmpty().value

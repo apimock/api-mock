@@ -2,7 +2,7 @@
   <div class="footer">
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2020 <span>api-mock.com</span>
+      <a-icon type="copyright" /> 2020 <a href="http://www.api-mock.com" style="color: #00000073" target="_blank">api-mock.com</a>
     </div>
   </div>
 </template>

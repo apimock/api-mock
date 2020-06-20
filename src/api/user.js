@@ -12,8 +12,12 @@ export default wraperApi({
     url: '/api/userInfo',
     method: 'get'
   },
+  update: {
+    url: '/api/user/update',
+    method: 'post'
+  },
   star: {
-    url: '/api/star',
+    url: '/api/user/star',
     method: 'post'
   }
 })

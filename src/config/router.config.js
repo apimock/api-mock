@@ -36,6 +36,14 @@ export const asyncRouterMap = [
             component: () => import('@/views/mock/detail/Index')
           }
         ]
+      },
+      {
+        path: '/user/profile/:userId',
+        name: 'profile',
+        hidden: true,
+        component: () => import('@/views/user/Profile'),
+        meta: { title: '用户信息', keepAlive: true, icon: 'profile' },
+        permissions: [0]
       }
     ]
   },

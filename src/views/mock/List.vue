@@ -15,7 +15,6 @@
       :columns="columns"
       :data="loadData"
       showPagination="auto"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
       <span slot="name" slot-scope="text, record">
         <a @click="toDetail(record)">{{ text }}</a>
@@ -129,8 +128,8 @@
           {
             slots: { title: 'actionTitle' },
             dataIndex: 'action',
-            align: 'center',
-            width: 120,
+            align: 'right',
+            width: 110,
             scopedSlots: { customRender: 'action' }
           }
         ],
