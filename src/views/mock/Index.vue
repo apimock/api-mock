@@ -134,7 +134,7 @@
           </a-form-model-item>
         </a-form-model>
       </a-modal>
-      <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog"></CreateMockDialog>
+      <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog" @success="getCategoryList"></CreateMockDialog>
       <Setting v-model="showSetting"></Setting>
     </a-card>
   </div>

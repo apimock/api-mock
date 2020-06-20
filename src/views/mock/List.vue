@@ -37,18 +37,25 @@
       <span slot="actionTitle"> 操作 <span style="color: #ccc">|</span> <a-icon @click="test" type="ellipsis" style="font-size: 30px; vertical-align: middle" /></span>
       <span slot="action" slot-scope="text, record">
         <a-button-group size="small">
-          <!--          <a-button @click="view(record, text)"><a-icon type="eye" /></a-button>-->
-          <!--          <a-button @click="createOrUpdate(record)"><a-icon type="left-circle" /></a-button>-->
           <a-button
             v-clipboard:copy="baseURL+record.url"
             v-clipboard:success="onCopySuccess"
             v-clipboard:error="onCopyError"><a-icon type="link" /></a-button>
+          <a-button @click="star(record)"><a-icon type="star" :theme="record.hadStar ? 'filled': 'outlined'" /></a-button>
+          <a-button @click="copyApi(record.id)"><a-icon type="copy"></a-icon></a-button>
+          <a-popconfirm
+            trigger="click"
+            title="确定删除吗?"
+            @confirm="deleteApi(record.id)"
+          >
+            <a-button><a-icon type="delete"></a-icon></a-button>
+          </a-popconfirm>
+
         </a-button-group>
-        <a-button size="small" @click="star(record)"><a-icon type="star" :theme="record.hadStar ? 'filled': 'outlined'" /></a-button>
-        <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>
+<!--        <a-button style="margin-left:5px" size="small"><a-icon type="more" /></a-button>-->
       </span>
     </s-table>
-    <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog" @success="refresh"></CreateMockDialog>
+    <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog" @success="reload"></CreateMockDialog>
   </a-card>
 </template>
 
@@ -58,7 +65,7 @@
   import ApiCategory from '@/api/category'
   import { Method, MethodTagColor } from '@/utils/enum'
   import CreateMockDialog from '@/views/components/CreateMockDialog'
-  import { mapMutations } from 'vuex'
+  import { mapActions, mapMutations } from 'vuex'
   import ApiUser from '@/api/user'
 
   export default {
@@ -123,7 +130,7 @@
             slots: { title: 'actionTitle' },
             dataIndex: 'action',
             align: 'center',
-            width: 150,
+            width: 120,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -170,8 +177,13 @@
     },
     methods: {
       ...mapMutations('mock', ['SET_MOCK_ID']),
+      ...mapActions('mock', ['getCategoryList']),
       refresh () {
         this.$refs.table.refresh(true)
+      },
+      reload () {
+        this.refresh()
+        this.getCategoryList()
       },
       methodToString (num) {
         return Method[num].toUpperCase()
@@ -227,6 +239,24 @@
         const { code } = data
         if (code === 200) {
           this.refresh()
+        }
+      },
+      async copyApi (id) {
+        const { data } = await ApiMock.copy({ id })
+        const { code } = data
+        if (code === 200) {
+          this.reload()
+        } else {
+          this.$message.error('复制接口失败')
+        }
+      },
+      async deleteApi (id) {
+        const { data } = await ApiMock.delete({ id })
+        const { code } = data
+        if (code === 200) {
+          this.reload()
+        } else {
+          this.$message.error('删除接口失败')
         }
       },
       test () {
