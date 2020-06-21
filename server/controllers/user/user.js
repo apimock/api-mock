@@ -7,8 +7,8 @@ const config = require('config')
 const jwtSecret = config.get('jwt.secret')
 const jwtExpire = config.get('jwt.expire')
 
-async function createUser (username, password) {
-  const user = await UserProxy.save({ username, password })
+async function createUser (username, email, password) {
+  const user = await UserProxy.save({ username, email, password })
   return user
 }
 
@@ -19,19 +19,20 @@ export default class User {
    */
   static async register (ctx) {
     const username = ctx.checkBody('username').notEmpty().len(4, 20).value
+    const email = ctx.checkBody('email').notEmpty().len(4, 20).value
     const password = ctx.checkBody('password').notEmpty().len(6, 20).value
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
-    const user = await UserProxy.findByUserName(username)
+    const user = await UserProxy.findByUserName(username, email)
     if (user) {
       ctx.body = ctx.util.refail('用户名已被使用')
       return
     }
 
     const newPassword = bhash(password)
-    const res = await createUser(username, newPassword)
+    const res = await createUser(username, email, newPassword)
 
     ctx.body = ctx.util.resuccess(res)
   }

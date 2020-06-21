@@ -108,9 +108,10 @@
   .profile{
     margin-top: 100px;
     .ant-card{
-      width: 600px;
+      width: 500px;
       margin: 0px auto;
       background: #fff;
+      border-radius: 5px;
 
       .avatar{
         display: block;

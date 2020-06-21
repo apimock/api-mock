@@ -1,5 +1,6 @@
 import dateTime from '~/server/utils/dateTime'
 const Model = require('~/server/models')()
+const Op = require('sequelize').Op
 
 module.exports = class User {
   static save (data) {
@@ -19,10 +20,10 @@ module.exports = class User {
     })
   }
 
-  static findByUserName (username) {
+  static findByUserName (username, email) {
     return Model.User.findOne({
       where: {
-        username
+        [Op.or]: [{ username }, { email }]
       }
     })
   }
