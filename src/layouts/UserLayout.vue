@@ -22,7 +22,7 @@
           <a href="_self">条款</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2020 <a href="http://www.api-mock.com" style="color: #00000073" target="_blank">api-mock.com</a>
+          &copy;{{copyRightYear}}  <a href="http://www.api-mock.com" style="color: #00000073" target="_blank">api-mock.com</a>
         </div>
       </div>
     </div>
@@ -38,7 +38,9 @@ export default {
   components: { RouteView },
   mixins: [mixinDevice],
   data () {
-    return {}
+    return {
+      copyRightYear: new Date().getFullYear()
+    }
   },
   mounted () {
     document.body.classList.add('userLayout')

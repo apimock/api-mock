@@ -96,6 +96,7 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "lint-staged": "^10.0.0",
+    "nodemailer": "^6.4.10",
     "nodemon": "^1.18.9",
     "opencollective": "^1.0.3",
     "opencollective-postinstall": "^2.0.2",

@@ -12,10 +12,10 @@
         <a-input
           size="large"
           type="text"
-          placeholder="请输入用户名"
+          placeholder="请输入邮箱"
           v-decorator="[
-                'username',
-                {rules: [{ required: true, message: '请输入用户名' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+                'email',
+                {rules: [{ required: true, message: '请输入邮箱' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
               ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -120,14 +120,14 @@ export default {
 
       state.loginBtn = true
 
-      const validateFieldsKey = ['username', 'password']
+      const validateFieldsKey = ['email', 'password']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
           console.log('login form', values)
           const loginParams = { ...values }
-          delete loginParams.username
-          loginParams[!state.loginType ? 'email' : 'username'] = values.username
+          // delete loginParams.email
+          // loginParams[!state.loginType ? 'email' : 'username'] = values.username
           // loginParams.password = md5(values.password)
           Login(loginParams)
             .then((res) => this.loginSuccess(res))

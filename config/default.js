@@ -5,7 +5,7 @@ module.exports = {
   mysql: {
     database: 'apimock',
     user: 'root',
-    password: '123456789',
+    password: 'root',
     option: {
       host: '127.0.0.1',
       port: 3306,
@@ -21,7 +21,7 @@ module.exports = {
         timestamps: false // 不自动添加 updateAt 和 createdAt
       },
       logging (sql, { bind }) {
-        const res = bind ? sql + bind : sql
+        const res = bind ? `${sql} {${bind}}` : sql
         console.info(res)
       }
     }
@@ -29,5 +29,16 @@ module.exports = {
   jwt: {
     'expire': '14 days',
     'secret': 'apimock-secret'
+  },
+  'mail': {
+    'enable': true,
+    'host': 'smtp.126.com',
+    'port': 25,
+    'secure': false, // true for 465, false for other ports
+    'from': 'apimock@126.com',
+    'auth': {
+      'user': 'apimock@126.com',
+      'pass': 'QSGUCSTEWQDZQHTL'
+    }
   }
 }

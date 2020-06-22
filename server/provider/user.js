@@ -20,10 +20,18 @@ module.exports = class User {
     })
   }
 
-  static findByUserName (username, email) {
+  static findByUserName (username) {
     return Model.User.findOne({
       where: {
-        [Op.or]: [{ username }, { email }]
+        username
+      }
+    })
+  }
+
+  static findByEmail (email) {
+    return Model.User.findOne({
+      where: {
+        email
       }
     })
   }

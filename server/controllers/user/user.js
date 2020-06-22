@@ -25,9 +25,9 @@ export default class User {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
       return
     }
-    const user = await UserProxy.findByUserName(username, email)
+    const user = await UserProxy.findByEmail(email)
     if (user) {
-      ctx.body = ctx.util.refail('用户名已被使用')
+      ctx.body = ctx.util.refail('邮箱已被使用')
       return
     }
 
@@ -42,7 +42,7 @@ export default class User {
    * @param ctx
    */
   static async login (ctx) {
-    const username = ctx.checkBody('username').notEmpty().value
+    const email = ctx.checkBody('email').notEmpty().value
     const password = ctx.checkBody('password').notEmpty().value
 
     if (ctx.errors) {
@@ -50,7 +50,7 @@ export default class User {
       return
     }
 
-    const user = await UserProxy.findByUserName(username)
+    const user = await UserProxy.findByEmail(email)
     if (!user) {
       ctx.body = ctx.util.refail('用户不存在')
       return
@@ -62,7 +62,7 @@ export default class User {
       return
     }
 
-    const token = jwt.sign({ id: user.id, username }, jwtSecret, {
+    const token = jwt.sign({ id: user.id, email }, jwtSecret, {
       expiresIn: jwtExpire
     })
 

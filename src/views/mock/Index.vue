@@ -48,7 +48,7 @@
                 <a-input-search placeholder="Search" @change="onChangeCategory" @search="onSearchCategory" />
               </a-col>
               <a-col>
-                <a-button type="primary" @click="createOrUpdateCategory" icon="plus">添加分类</a-button>
+                <a-button type="primary" @click="createOrUpdateCategory" icon="plus">分类</a-button>
               </a-col>
             </a-row>
             <a-tree
