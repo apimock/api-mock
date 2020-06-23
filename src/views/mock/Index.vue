@@ -394,6 +394,7 @@
         const { data } = await ApiMock.update(updateObj)
         const { code, message } = data
         if (code === 200) {
+          this.getCategoryList()
         } else {
           this.$message.error(message)
         }
@@ -403,8 +404,10 @@
         const dragKey = info.dragNode.eventKey
         const dropPos = info.node.pos.split('-')
         const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1])
+        const dropArr = dropKey.split('-')
         const dragArr = dragKey.split('-')
         const dragId = dragArr[dragArr.length - 1]
+        const dropId = Number(dropArr[0])
         const loop = (data, key, callback) => {
           data.forEach((item, index, arr) => {
             if (item.key === key) {
@@ -416,7 +419,7 @@
           })
         }
         const data = [...this.categoryTree]
-        if (!info.dropToGap) return // ignore drop on the content
+        if (isNaN(dropId) || (!info.dropToGap && /-/g.test(dropKey))) return
         // Find dragObject
         let dragObj
         loop(data, dragKey, (item, index, arr) => {
@@ -453,7 +456,7 @@
             ar.splice(i + 1, 0, dragObj)
           }
         }
-       this.updateMock({ id: dragId, category_id: dropKey })
+       this.updateMock({ id: dragId, category_id: dropId })
       }
     },
     beforeRouteUpdate (to, from, next) {

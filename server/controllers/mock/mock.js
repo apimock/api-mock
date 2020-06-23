@@ -64,7 +64,7 @@ export default class Mock {
   static async update (ctx) {
     const uid = ctx.state.user.id
     const id = ctx.checkBody('id').notEmpty().value
-    const categoryId = ctx.checkBody('category_id').empty().value
+    const categoryId = ctx.checkBody('category_id').notEmpty().value
     const defaultExpectId = ctx.checkBody('default_expect_id').empty().value
     const url = ctx.checkBody('url').empty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const method = ctx.checkBody('method').empty().toLow().in(['get', 'post', 'put', 'delete', 'patch', 'options', 'head']).value
