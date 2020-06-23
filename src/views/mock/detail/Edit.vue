@@ -1,10 +1,15 @@
 <template>
   <div class="edit" ref="edit">
     <a-affix :offset-top="20" class="affix-buttons">
-      <a-button-group>
-        <a-button type="primary" size="large" icon="save" @click="submit">保存</a-button>
-        <a-button size="large" icon="logout" @click="cancelSave">取消</a-button>
-      </a-button-group>
+      <div class="affix-border">
+        <div style="padding: 5px">
+          <span style="color: #aaa">通知：</span><a-switch size="small" v-model="mockForm.notify"/>
+        </div>
+        <a-button-group>
+          <a-button type="primary" size="large" icon="save" @click="submit">保存</a-button>
+          <a-button size="large" icon="logout" @click="cancelSave">取消</a-button>
+        </a-button-group>
+      </div>
     </a-affix>
     <a-card title="基础设置" size="small" class="edit-card mock-form">
       <a-form-model
@@ -16,7 +21,7 @@
         @submit="submit">
         <a-form-model-item label="接口分类" prop="category_id">
           <a-select v-model="mockForm.category_id">
-            <a-select-option v-for="(item, index) in categoryTree" :key="index" :value="item.id">
+            <a-select-option v-for="(item, index) in categoryList" :key="index" :value="item.id">
               {{ item.name }}
             </a-select-option>
           </a-select>
@@ -125,7 +130,7 @@
       }
     },
     computed: {
-      ...mapState('mock', ['projectId', 'categoryTree', 'detail', 'mockForm', 'showBodyParamsTab'])
+      ...mapState('mock', ['projectId', 'categoryList', 'detail', 'mockForm', 'showBodyParamsTab'])
     },
     watch: {
       'showBodyParamsTab': function (val) {
@@ -247,7 +252,10 @@
       right:50px;
       top:90px;
       z-index: 99;
-      box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
+      .affix-border{
+        background: #fff;
+        box-shadow: 0 3px 1px -2px rgba(0,0,0,.05), 0 2px 2px 0 rgba(0,0,0,.05), 0 1px 5px 1px rgba(0,0,0,.05);
+      }
     }
 
     .edit-card{

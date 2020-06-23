@@ -135,7 +135,7 @@
         </a-form-model>
       </a-modal>
       <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog" @success="getCategoryList"></CreateMockDialog>
-      <Setting v-model="showSetting"></Setting>
+      <Setting v-model="showSetting" @updated="getProject"></Setting>
     </a-card>
   </div>
 </template>
@@ -416,7 +416,7 @@
           })
         }
         const data = [...this.categoryTree]
-
+        if (!info.dropToGap) return // ignore drop on the content
         // Find dragObject
         let dragObj
         loop(data, dragKey, (item, index, arr) => {

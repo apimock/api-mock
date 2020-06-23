@@ -16,6 +16,9 @@
       <a-form-model-item label="描述">
         <a-input type="textarea" v-model="form.description" placeholder="please input description"/>
       </a-form-model-item>
+      <a-form-model-item label="开启邮件通知">
+        <a-switch v-model="form.notify"/>
+      </a-form-model-item>
       <a-form-model-item :wrapper-col="{ offset: 5 }">
         <a-button type="primary" @click="save" icon="save">
           保存
@@ -52,13 +55,19 @@
       ...mapState('mock', ['project'])
     },
     watch: {
-      project (val) {
-        this.form = { ...val }
+      project () {
+        this.setForm()
       }
     },
     methods: {
+      setForm () {
+        this.form = { ...this.project }
+        this.form.notify = !!this.project.notify
+      },
       async save () {
-        const { data } = await ApiProject.update({ ...this.form })
+        const saveData = { ...this.form }
+        saveData.notify = this.form.notify ? 1 : 0
+        const { data } = await ApiProject.update(saveData)
         const { code, message } = data
         if (code === 200) {
           this.$message.success('保存成功！')
@@ -100,7 +109,7 @@
       }
     },
     mounted () {
-      this.form = { ...this.project }
+      this.setForm()
     }
   }
 </script>

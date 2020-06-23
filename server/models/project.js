@@ -29,6 +29,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    'notify': {
+      type: DataTypes.INTEGER(1),
+      allowNull: true,
+      defaultValue: '1'
+    },
     'created_at': {
       type: DataTypes.DATE,
       allowNull: true

@@ -45,6 +45,7 @@ export default class Project {
     const name = ctx.checkBody('name').notEmpty().value
     const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
+    const notify = ctx.checkBody('notify').empty().value
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -68,7 +69,7 @@ export default class Project {
       return
     }
 
-    const res = await ProjectProxy.save({ id, uid, name, description, base_url: baseUrl, swagger_url: swaggerUrl })
+    const res = await ProjectProxy.save({ id, uid, name, description, base_url: baseUrl, swagger_url: swaggerUrl, notify })
     if (res) {
       ctx.body = ctx.util.resuccess(res)
     } else {

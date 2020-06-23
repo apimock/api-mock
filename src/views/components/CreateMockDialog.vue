@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import { Method, MethodTagColor, MethodArray, ResponseStatus, KeyAll, KeyStar } from '@/utils/enum'
+  import { Method, MethodTagColor, MethodArray, ResponseStatus } from '@/utils/enum'
   import ApiMock from '@/api/mock'
   import { mapState, mapActions, mapMutations } from 'vuex'
 
@@ -67,12 +67,11 @@
       }
     },
     computed: {
-      ...mapState('mock', ['projectId', 'categoryTree'])
+      ...mapState('mock', ['projectId', 'categoryList'])
     },
     data () {
       return {
         currentValue: false,
-        categoryList: [],
         mockForm,
         MethodArray,
         ResponseStatus,
@@ -93,7 +92,6 @@
       },
       value (val) {
         this.currentValue = val
-        this.getCategoryList()
         if (!isNaN(Number(this.categoryId))) {
           this.mockForm.category_id = Number(this.categoryId)
         } else if (this.categoryList.length && this.categoryList[0]) {
@@ -117,9 +115,6 @@
         if (!/^\/.*$/.test(value)) {
           this.mockForm.url = `/${this.mockForm.url}`
         }
-      },
-      getCategoryList () {
-        this.categoryList = this.categoryTree.filter((item) => ![KeyAll, KeyStar].includes(item.key))
       },
       async createApiOk () {
         this.$refs.mockForm.validate(async valid => {
@@ -152,7 +147,6 @@
     mounted () {
       if (this.value) {
         this.currentValue = true
-        this.getCategoryList()
       }
     }
   }

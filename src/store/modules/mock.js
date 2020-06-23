@@ -26,6 +26,7 @@ const mock = {
     mockId: '',
     project: null,
     baseURL: '',
+    categoryList: [],
     categoryTree: [],
     categoryTreeFlat: [],
     detail: null,
@@ -52,6 +53,9 @@ const mock = {
     },
     SET_BASE_URL (state, data) {
       state.baseURL = data
+    },
+    SET_CATEGORY_LIST (state, data) {
+      state.categoryList = data
     },
     SET_CATEGORY_TREE (state, data) {
       state.categoryTree = data
@@ -90,8 +94,11 @@ const mock = {
       if (code === 200) {
         const { id, base_url: baseUrl } = bean
         const baseURL = `${location.origin}/mock/${id}${baseUrl}`
+        const mockForm = { ...state.mockForm }
+        mockForm.notify = !!bean.notify
         commit('SET_BASE_URL', baseURL)
         commit('SET_PROJECT', bean)
+        commit('SET_MOCK_FORM', mockForm)
       } else {
         this._vm.$message.error('加载失败！')
       }
@@ -100,13 +107,14 @@ const mock = {
       const { data } = await ApiCategory.list({ project_id: state.projectId, keywords })
       const { bean, code } = data
       if (code === 200) {
-        bean.forEach((parent, m) => {
+        let treeData = []
+        treeData = bean.slice()
+        treeData.forEach((parent, m) => {
           parent.key = `${parent.id}`
           parent.title = parent.name
           parent.slots = { icon: 'folder' }
           parent.scopedSlots = { title: 'parent' }
           parent.showRightButton = false
-          // this.expandedKey.push(parent.key)
           parent.children.forEach((child, n) => {
             child.key = `${parent.id}-${child.id}`
             child.title = child.url
@@ -115,20 +123,21 @@ const mock = {
             child.parentId = parent.id
           })
         })
-        bean.unshift({
+        treeData.unshift({
           key: KeyAll,
           title: '全部接口',
           slots: { icon: 'appstore' },
           scopedSlots: { title: 'parent' }
         })
-        bean.unshift({
+        treeData.unshift({
           key: KeyStar,
           title: '我的收藏',
           slots: { icon: 'star' },
           scopedSlots: { title: 'parent' }
         })
-        const flat = treeFlat(bean)
-        commit('SET_CATEGORY_TREE', bean)
+        const flat = treeFlat(treeData)
+        commit('SET_CATEGORY_LIST', bean)
+        commit('SET_CATEGORY_TREE', treeData)
         commit('SET_CATEGORY_TREE_FLAT', flat)
       }
     },
@@ -144,6 +153,7 @@ const mock = {
         mockForm.body_params = jsonParse(mockForm.body_params) || []
         mockForm.method = Method[bean.method]
         mockForm.enable_script = !!bean.enable_script
+        mockForm.notify = !!state.project.notify
         commit('SET_DETAIL_NOT_FOUND', false)
         commit('SET_MOCK_VALUE', mockValue)
         commit('SET_MOCK_FORM', mockForm)
