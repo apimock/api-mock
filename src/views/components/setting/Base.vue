@@ -13,7 +13,7 @@
       <a-form-model-item label="基本路径">
         <a-input v-model="form.base_url" placeholder="please input base_url"/>
       </a-form-model-item>
-      <a-form-model-item label="描述">
+      <a-form-model-item label="项目描述">
         <a-input type="textarea" v-model="form.description" placeholder="please input description"/>
       </a-form-model-item>
       <a-form-model-item label="开启邮件通知">

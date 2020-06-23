@@ -13,7 +13,7 @@ export default class Project {
     const uid = ctx.state.user.id
     const { description } = ctx.request.body
     const name = ctx.checkBody('name').notEmpty().value
-    const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
+    const baseUrl = ctx.checkBody('base_url').empty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
 
     if (ctx.errors) {
       ctx.body = ctx.util.refail(null, 10001, ctx.errors)
@@ -43,7 +43,7 @@ export default class Project {
     const { description } = ctx.request.body
     const id = ctx.checkBody('id').notEmpty().value
     const name = ctx.checkBody('name').notEmpty().value
-    const baseUrl = ctx.checkBody('base_url').notEmpty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
+    const baseUrl = ctx.checkBody('base_url').empty().match(/^\/.*$/i, 'URL 必须以 / 开头').value
     const swaggerUrl = ctx.checkBody('swagger_url').empty().isUrl(null, { allow_underscores: true, require_protocol: true }).value
     const notify = ctx.checkBody('notify').empty().value
 

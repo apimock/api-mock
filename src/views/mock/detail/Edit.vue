@@ -167,9 +167,11 @@
         return MethodTagColor[num]
       },
       onUrlBlur (e) {
-        const value = e.target.value
-        if (!/^\/.*$/.test(value)) {
-          this.mockForm.url = `/${this.mockForm.url}`
+        const value = e.target.value.trim()
+        if (value !== '' && !/^\/.*$/.test(value)) {
+          this.mockForm.url = `/${value}`
+        } else if (value === '') {
+          this.mockForm.url = ''
         }
       },
       submit (e) {

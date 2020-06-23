@@ -48,34 +48,42 @@
           </p>
           <template class="ant-card-actions" slot="actions">
             <router-link :to="{name: 'mock', params: { projectId: item.id }}">
-              <a-icon key="eye" type="eye"/> 查看
+              <a-icon key="eye" type="eye"/>
+              查看
             </router-link>
             <a @click="star(item)">
-              <a-icon key="star" type="star" :theme="item.hadStar ? 'filled': 'outlined'"/> 收藏
+              <a-icon key="star" type="star" :theme="item.hadStar ? 'filled': 'outlined'"/>
+              收藏
             </a>
             <a @click="onSetting(item)">
-              <a-icon key="setting" type="setting" /> 设置
+              <a-icon key="setting" type="setting"/>
+              设置
             </a>
           </template>
         </a-card>
       </a-list-item>
     </a-list>
     <a-modal
-      title="add project"
+      title="添加项目"
       :visible="modal.show"
       :confirm-loading="modal.confirmLoading"
       @ok="handleOk"
       @cancel="handleCancel"
     >
-      <a-form-model layout="vertical" :model="projectForm" ref="projectForm" :rules="rules">
-        <a-form-model-item label="Name" prop="name">
+      <a-form-model
+        :label-col="modal.labelCol"
+        :wrapper-col="modal.wrapperCol"
+        :model="projectForm"
+        ref="projectForm"
+        :rules="rules">
+        <a-form-model-item label="项目名称" prop="name">
           <a-input v-model="projectForm.name" placeholder="please input name"/>
         </a-form-model-item>
-        <a-form-model-item label="Base Url" prop="base_url">
-          <a-input v-model="projectForm.base_url" placeholder="please input base url"/>
+        <a-form-model-item label="基本路径" prop="base_url">
+          <a-input v-model="projectForm.base_url" placeholder="please input base url" @blur="onUrlBlur"/>
         </a-form-model-item>
-        <a-form-model-item label="Description" prop="description">
-          <a-input v-model="projectForm.description" placeholder="please input description"/>
+        <a-form-model-item label="项目描述" prop="description">
+          <a-textarea v-model="projectForm.description" placeholder="please input description"/>
         </a-form-model-item>
       </a-form-model>
     </a-modal>
@@ -88,7 +96,11 @@
   import Setting from '@/views/components/setting/Index'
   import { mapActions } from 'vuex'
   import ApiUser from '@/api/user'
-
+  const defaultProjectForm = {
+    name: '',
+    base_url: '',
+    description: ''
+  }
   export default {
     name: 'CardList',
     components: {
@@ -107,17 +119,17 @@
           hideOnSinglePage: true
         },
         modal: {
-          id: '',
           show: false,
+          labelCol: { span: 6 },
+          wrapperCol: { span: 18 },
           confirmLoading: false
         },
         showSetting: false,
-        projectForm: {},
+        projectForm: { ...defaultProjectForm },
         rules: {
           name: [
-            { required: true, message: 'Please input Activity name', trigger: 'blur' }
-          ],
-          description: [{ required: true, message: 'Please input activity form', trigger: 'blur' }]
+            { required: true, message: '请输入项目名称', trigger: 'blur' }
+          ]
         }
       }
     },
@@ -140,32 +152,28 @@
         this.source = value
         this.getList()
       },
+      onUrlBlur (e) {
+        const value = e.target.value.trim()
+        if (value !== '' && !/^\/.*$/.test(value)) {
+          this.projectForm.base_url = `/${value}`
+        } else if (value === '') {
+          this.projectForm.base_url = ''
+        }
+      },
       handleOk () {
         this.$refs.projectForm.validate(async valid => {
           if (!valid) {
             console.log('error submit!!')
             return false
           }
-          if (!this.modal.id) {
-            const { data } = await ApiProject.create({ ...this.projectForm })
-            const { code, message } = data
-            if (code === 200) {
-              this.$message.success('创建成功')
-              this.modal.show = false
-              this.getList()
-            } else {
-              this.$message.error(message)
-            }
+          const { data } = await ApiProject.create({ ...this.projectForm })
+          const { code, message } = data
+          if (code === 200) {
+            this.$message.success('创建成功')
+            this.modal.show = false
+            this.getList()
           } else {
-            const { data } = await ApiProject.update({ ...this.projectForm })
-            const { code, message } = data
-            if (code === 200) {
-              this.$message.success('更新成功')
-              this.modal.show = false
-              this.getList()
-            } else {
-              this.$message.error(message)
-            }
+            this.$message.error(message)
           }
         })
       },
@@ -173,12 +181,7 @@
         this.modal.show = false
       },
       showModal () {
-        this.modal.id = ''
-        this.modal.show = true
-      },
-      update (item) {
-        this.modal.id = item.id
-        this.projectForm = Object.assign(Object.create(null), this.projectForm, item)
+        this.projectForm = { ...defaultProjectForm }
         this.modal.show = true
       },
       async onSetting (item) {
@@ -208,7 +211,7 @@
   .project-page {
     margin: 30px;
 
-    .ant-list-pagination{
+    .ant-list-pagination {
       text-align: center;
     }
 
@@ -220,7 +223,7 @@
           font-size: 16px;
         }
 
-        .ant-list-item-meta-description{
+        .ant-list-item-meta-description {
           font-size: 13px;
           height: 47px;
           overflow: hidden;
@@ -230,19 +233,20 @@
           -webkit-box-orient: vertical;
         }
 
-        .info{
+        .info {
           background: #f0f2f5;
           color: #808080;
           padding: 8px;
           border-radius: 5px;
           font-size: 16px;
           margin-top: 5px;
-          span{
+
+          span {
             margin-right: 30px;
           }
         }
 
-        .date{
+        .date {
           margin-top: 10px;
           font-size: 13px;
           color: rgba(0, 0, 0, 0.45);
