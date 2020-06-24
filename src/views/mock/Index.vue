@@ -34,7 +34,7 @@
           <a class="min-btn"><a-icon type="export"></a-icon> 导出</a>
         </a-col>
         <a-col class="right">
-          <a-button class="interaction" icon="control">动态</a-button>
+          <a-button class="interaction" icon="control" @click="showHistory=true">动态</a-button>
           <a-button class="setting" icon="setting" @click="showSetting=true">设置</a-button>
         </a-col>
       </a-row>
@@ -136,6 +136,7 @@
       </a-modal>
       <CreateMockDialog :categoryId="categoryId" v-model="showCreateMockDialog" @success="getCategoryList"></CreateMockDialog>
       <Setting v-model="showSetting" @updated="getProject"></Setting>
+      <History v-model="showHistory"></History>
     </a-card>
   </div>
 </template>
@@ -153,6 +154,7 @@
   import ApiProject from '@/api/project'
   import ApiMock from '@/api/mock'
   import Setting from '@/views/components/setting/Index'
+  import History from '@/views/components/History'
 
   const getParentKey = (key, tree) => {
     let parentKey
@@ -176,11 +178,13 @@
       RouteView,
       CreateMockDialog,
       'a-tree': Tree,
-      Setting
+      Setting,
+      History
     },
     data () {
       return {
         showSetting: false,
+        showHistory: false,
         projectList: [],
         projectSearch: '',
         mockLeftWidth: Vue.ls.get(MOCK_LEFT_WIDTH) || '300px',

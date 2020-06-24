@@ -9,7 +9,8 @@ module.exports = function () {
     Category: require('./category')(_seq, DataTypes),
     Member: require('./member')(_seq, DataTypes),
     Mock: require('./mock')(_seq, DataTypes),
-    Expect: require('./expect')(_seq, DataTypes)
+    Expect: require('./expect')(_seq, DataTypes),
+    History: require('./history')(_seq, DataTypes)
   })
 
   // CREATE TABLE IF NOT EXISTS
@@ -39,6 +40,11 @@ module.exports = function () {
   })
 
   Model.Expect.belongsTo(Model.User, {
+    foreignKey: 'uid',
+    sourceKey: 'id'
+  })
+
+  Model.History.belongsTo(Model.User, {
     foreignKey: 'uid',
     sourceKey: 'id'
   })

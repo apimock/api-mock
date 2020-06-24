@@ -52,6 +52,7 @@
     "mockjs": "^1.1.0",
     "module-alias": "^2.2.2",
     "moment": "^2.24.0",
+    "monaco-editor": "^0.20.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "nprogress": "^0.2.0",
