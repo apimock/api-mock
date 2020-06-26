@@ -97,6 +97,8 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "lint-staged": "^10.0.0",
+    "monaco-editor-webpack-plugin": "^1.9.0",
+    "nano-assign": "^1.0.1",
     "nodemailer": "^6.4.10",
     "nodemon": "^1.18.9",
     "opencollective": "^1.0.3",

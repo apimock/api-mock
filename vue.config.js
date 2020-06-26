@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const createThemeColorReplacerPlugin = require('./src/config/plugin.config')
 const alias = require('./alias')
 const config = require('config')
@@ -32,7 +33,10 @@ const vueConfig = {
     // webpack plugins
     plugins: [
       // Ignore all locale files of moment.js
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      new MonacoWebpackPlugin({
+        languages: ['javascript', 'css', 'html', 'typescript', 'json']
+      })
     ],
     // if prod, add externals
     externals: isProd ? assetsCDN.externals : {}

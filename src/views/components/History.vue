@@ -20,13 +20,20 @@
     </a-timeline>
     <a-modal
       :title="detailModal.title"
-      :width="700"
+      :width="900"
       :visible="detailModal.show"
       class="detail-dialog"
       @ok="detailModal.show=false"
       @cancel="detailModal.show=false"
     >
-      <diff-editor :original-code="detailModal.originalCode" :modified-code="detailModal.modifiedCode"></diff-editor>
+      <!--      <diff-editor :original-code="detailModal.originalCode" :modified-code="detailModal.modifiedCode"></diff-editor>-->
+      <MonacoEditor
+        style="height: 600px"
+        class="editor"
+        v-model="code"
+        :original="original"
+        language="javascript"
+        :diffEditor="true" />
     </a-modal>
   </a-drawer>
 </template>
@@ -35,10 +42,12 @@
   import ApiHistory from '@/api/history'
   import { mapState } from 'vuex'
   import DiffEditor from '@/views/components/editor/DiffEditor'
+  import MonacoEditor from '@/views/components/editor/MonacoEditor'
   export default {
     name: 'History',
     components: {
-      DiffEditor
+      DiffEditor,
+      MonacoEditor
     },
     props: {
       value: {
@@ -55,7 +64,9 @@
           show: false,
           originalCode: '',
           modifiedCode: ''
-        }
+        },
+        code: 'const noop = () => {}',
+        original: '// abc \n const noop = () => {}'
       }
     },
     watch: {
