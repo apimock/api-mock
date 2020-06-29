@@ -1,7 +1,8 @@
 'use strict'
 const DataTypes = require('sequelize')
+const __seq = Symbol.for('__seq')
 
-const _seq = global.__seq
+const _seq = global[__seq]
 module.exports = function () {
   const Model = Object.assign(Object.create(null), {
     User: require('./user')(_seq, DataTypes),
