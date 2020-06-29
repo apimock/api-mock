@@ -11,6 +11,7 @@ const app = new Koa()
 config.dev = app.env !== 'production'
 require('./core/dbConnect')()
 validate(app)
+app.use(middleware.onError)
 app.use(middleware.util)
 app.use(koaBody({ multipart: true }))
 

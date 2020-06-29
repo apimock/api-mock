@@ -28,6 +28,14 @@ const utilFn = {
 }
 
 module.exports = class Middleware {
+  static async onError (ctx, next) {
+    try {
+      await next()
+    } catch (err) {
+      ctx.body = 'server error'
+      ctx.status = err.status || 500
+    }
+  }
   static util (ctx, next) {
     ctx.set('X-Request-Id', ctx.req.id)
     ctx.util = utilFn
