@@ -107,6 +107,15 @@ const vueConfig = {
         target: server,
         hostRewrite: 301,
         logLevel: 'debug'
+      },
+      // 示例pathRewrite
+      '^/dev-api/customer/': {
+        target: `http://127.0.0.1:8000/`,
+        changeOrigin: true,
+        logLevel: 'debug',
+        pathRewrite: function (path, req) {
+          return path.replace('dev-api/customer', '/mock/95/dev-api/customer/')
+        }
       }
     }
   },
