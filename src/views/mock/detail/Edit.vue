@@ -183,15 +183,15 @@
             console.log('error submit!!')
             return false
           }
-          if (!checkJson5(this.mockForm.body)) {
-            this.$message.error('返回Body json格式有问题，请检查！')
-            return
-          }
           if (!/^\/.*$/.test(this.mockForm.url)) {
             this.mockForm.url = `/${this.mockForm.url}`
           }
           const mockData = { ...this.mockForm }
           mockData.body = this.$refs.codeEditor.getValue()
+          if (!checkJson5(mockData.body)) {
+            this.$message.error('返回Body json格式有问题，请检查！')
+            return
+          }
 
           const { data } = await ApiMock.update(mockData)
           const { code, message } = data
